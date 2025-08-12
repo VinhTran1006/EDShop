@@ -184,7 +184,7 @@
                 </form>
 
                 <!-- Google Login Button -->
-                <a href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&access_type=online&include_granted_scopes=true&response_type=code&redirect_uri=http://localhost:8080/TMobile/LoginGoogle&client_id=311074511236-tveal4v1lt2euj2o36qpvrseigthsfol.apps.googleusercontent.com"
+                <a href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&access_type=online&include_granted_scopes=true&response_type=code&redirect_uri=http://localhost:8080/TMobile/LoginGoogle&client_id=205673219686-t8hk6qtttbtbjk3m6klmg990uk1sb7d8.apps.googleusercontent.com"
                    class="btn btn-google">
                     <i class="bi bi-google me-2"></i>
                     Login with Google

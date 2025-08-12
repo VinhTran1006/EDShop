@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dao.AccountDAO;
 import dao.AccountDAO;
+import dao.CustomerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -26,6 +27,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import model.Account;
+import model.Customer;
 import utils.GoogleOAuthService;
 
 /**
@@ -78,6 +80,7 @@ public class LoginGoogleServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AccountDAO dao = new AccountDAO();
+        CustomerDAO CusDao = new CustomerDAO();
 
         String code = request.getParameter("code");
         if (code == null || code.isEmpty()) {
@@ -105,6 +108,9 @@ public class LoginGoogleServlet extends HttpServlet {
         session.setAttribute("user", acc);
         session.setAttribute("role", role);
         session.setAttribute("accountId", acc.getAccountID());
+        
+        Customer cus = CusDao.getCustomerByAccountId(acc.getAccountID());
+        session.setAttribute("cus", cus);
 
         if (role == 1) {
             response.sendRedirect("AdminDashboard");

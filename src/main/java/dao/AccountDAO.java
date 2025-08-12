@@ -193,7 +193,11 @@ public class AccountDAO extends DBContext {
     }
 
     public boolean addNewAccountGoogle(String email, String fullName, String phone) {
-        String insertAccountSQL = "INSERT INTO Accounts (Email, RoleID, IsActive) VALUES (?, ?, ?)";
+        
+        String randomPassword = generateRandomPassword(10);
+        String passwordHash = hashMD5(randomPassword);
+        
+        String insertAccountSQL = "INSERT INTO Accounts (Email, PasswordHash, RoleID, IsActive) VALUES (?, ?, ?)";
         String getNextCustomerIdSQL = "SELECT ISNULL(MAX(CustomerID), 0) + 1 AS NextID FROM Customers";
         String insertCustomerSQL = "INSERT INTO Customers (CustomerID, AccountID, FullName, PhoneNumber) VALUES (?, ?, ?, ?)";
 
@@ -203,8 +207,9 @@ public class AccountDAO extends DBContext {
             // Thêm account
             PreparedStatement psAcc = conn.prepareStatement(insertAccountSQL, Statement.RETURN_GENERATED_KEYS);
             psAcc.setString(1, email);
-            psAcc.setInt(2, 3); // RoleID = 3 (customer)
-            psAcc.setBoolean(3, true);
+            psAcc.setString(2, passwordHash);
+            psAcc.setInt(3, 3); // RoleID = 3 (customer)
+            psAcc.setBoolean(4, true);
             int accInserted = psAcc.executeUpdate();
 
             if (accInserted == 0) {
@@ -322,6 +327,16 @@ public class AccountDAO extends DBContext {
             e.printStackTrace();
             return false;
         }
+    }
+    
+    private String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%";
+        StringBuilder sb = new StringBuilder();
+        java.util.Random random = new java.util.Random();
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 
     public static void main(String[] args) {
