@@ -78,6 +78,6 @@ public class AddAddressServlet extends HttpServlet {
         addressDAO.createAddress(newAddress);
 
         response.sendRedirect("ViewShippingAddress");
-        System.out.println("123");
+        System.out.println("minhquocgavkl");
     }
 }
