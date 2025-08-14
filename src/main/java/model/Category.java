@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 
 /**
  *
- * @author HP - Gia Khiêm
+ * 
  */
 public class Category {
     private int categoryId;

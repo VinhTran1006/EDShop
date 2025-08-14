@@ -6,48 +6,49 @@ package model;
 
 /**
  *
- * @author HP
+ * 
  */
 public class ImportStockDetail {
 
-    private int ioid;
-    private Product product;
-    private int quantity;
+    private int importStockDetailsID;
+    private int importID;
+    private int stock;
     private long unitPrice;
-    private int quantityLeft;
+    private int productID;
 
-    public ImportStockDetail(int ioid, Product product, int quantity, long unitPrice, int quantityLeft) {
-        this.ioid = ioid;
-        this.product = product;
-        this.quantity = quantity;
+    public ImportStockDetail() {
+    }
+
+    public ImportStockDetail(int importStockDetailsID, int importID, int stock, long unitPrice, int productID) {
+        this.importStockDetailsID = importStockDetailsID;
+        this.importID = importID;
+        this.stock = stock;
         this.unitPrice = unitPrice;
-        this.quantityLeft = quantityLeft;
-    }
-    
-    public ImportStockDetail(){}
-
-    public int getIoid() {
-        return ioid;
+        this.productID = productID;
     }
 
-    public void setIoid(int ioid) {
-        this.ioid = ioid;
+    public int getImportStockDetailsID() {
+        return importStockDetailsID;
     }
 
-    public Product getProduct() {
-        return product;
+    public void setImportStockDetailsID(int importStockDetailsID) {
+        this.importStockDetailsID = importStockDetailsID;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public int getImportID() {
+        return importID;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public void setImportID(int importID) {
+        this.importID = importID;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 
     public long getUnitPrice() {
@@ -58,13 +59,12 @@ public class ImportStockDetail {
         this.unitPrice = unitPrice;
     }
 
-    public int getQuantityLeft() {
-        return quantityLeft;
+    public int getProductID() {
+        return productID;
     }
 
-    public void setQuantityLeft(int quantityLeft) {
-        this.quantityLeft = quantityLeft;
+    public void setProductID(int productID) {
+        this.productID = productID;
     }
-
-    
+  
 }

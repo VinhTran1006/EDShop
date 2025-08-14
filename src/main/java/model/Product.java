@@ -8,124 +8,53 @@ import java.math.BigDecimal;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 public class Product {
 
-    private int productId;
+    private int productID;
     private String productName;
     private String description;
     private BigDecimal price;
-    private int discount;
-    private int supplierId;
-    private String supplierName;
-    private int categoryId;
-    private String categoryName;
-    private int brandId;
-    private String brandName;
-    private boolean isFeatured;
-    private boolean isBestSeller;
-    private boolean isNew;
+    private int supplierID;
+    private int categoryID;
+    private int brandID;
     private int warrantyPeriod;
     private boolean isActive;
-    private String imageUrl;
+    private int quantity;
+    private String imageUrl1;
+    private String imageUrl2;
+    private String imageUrl3;
+    private String imageUrl4;
     private BigDecimal ImportPrice;
 
-    
-    public Product(int productId, String productName, String description, BigDecimal price, int discount, int supplierId, int categoryId, int brandId, boolean isFeatured, boolean isBestSeller, boolean isNew, int warrantyPeriod, boolean isActive, String imageUrl) {
-        this.productId = productId;
+    public Product() {
+    }
+
+    public Product(int productID, String productName, String description, BigDecimal price, int supplierID, int categoryID, int brandID, int warrantyPeriod, boolean isActive, int quantity, String imageUrl1, String imageUrl2, String imageUrl3, String imageUrl4, BigDecimal ImportPrice) {
+        this.productID = productID;
         this.productName = productName;
         this.description = description;
         this.price = price;
-        this.discount = discount;
-        this.supplierId = supplierId;
-        this.categoryId = categoryId;
-        this.brandId = brandId;
-        this.isFeatured = isFeatured;
-        this.isBestSeller = isBestSeller;
-        this.isNew = isNew;
+        this.supplierID = supplierID;
+        this.categoryID = categoryID;
+        this.brandID = brandID;
         this.warrantyPeriod = warrantyPeriod;
         this.isActive = isActive;
-        this.imageUrl = imageUrl;
+        this.quantity = quantity;
+        this.imageUrl1 = imageUrl1;
+        this.imageUrl2 = imageUrl2;
+        this.imageUrl3 = imageUrl3;
+        this.imageUrl4 = imageUrl4;
+        this.ImportPrice = ImportPrice;
     }
 
-    public Product(int productId, String productName, String description, BigDecimal price, int discount, int supplierId, int categoryId, String categoryName, int brandId, String brandName, boolean isFeatured, boolean isBestSeller, boolean isNew, int warrantyPeriod, boolean isActive, String imageUrl) {
-        this.productId = productId;
-        this.productName = productName;
-        this.description = description;
-        this.price = price;
-        this.discount = discount;
-        this.supplierId = supplierId;
-        this.categoryId = categoryId;
-        this.categoryName = categoryName;
-        this.brandId = brandId;
-        this.brandName = brandName;
-        this.isFeatured = isFeatured;
-        this.isBestSeller = isBestSeller;
-        this.isNew = isNew;
-        this.warrantyPeriod = warrantyPeriod;
-        this.isActive = isActive;
-        this.imageUrl = imageUrl;
-    }
-    
-    public Product(int productId, String productName, String description, BigDecimal price, int discount, int supplierId, String supplierName, int categoryId, String categoryName, int brandId, String brandName, boolean isFeatured, boolean isBestSeller, boolean isNew, int warrantyPeriod, boolean isActive, String imageUrl) {
-        this.productId = productId;
-        this.productName = productName;
-        this.description = description;
-        this.price = price;
-        this.discount = discount;
-        this.supplierId = supplierId;
-        this.supplierName = supplierName;
-        this.categoryId = categoryId;
-        this.categoryName = categoryName;
-        this.brandId = brandId;
-        this.brandName = brandName;
-        this.isFeatured = isFeatured;
-        this.isBestSeller = isBestSeller;
-        this.isNew = isNew;
-        this.warrantyPeriod = warrantyPeriod;
-        this.isActive = isActive;
-        this.imageUrl = imageUrl;
-    }
-    
-    public Product(int productId, String productName, String description, BigDecimal price, int discount, int supplierId, String supplierName, int categoryId, String categoryName, int brandId, String brandName, boolean isFeatured, boolean isBestSeller, boolean isNew, int warrantyPeriod, boolean isActive, String imageUrl, BigDecimal importStock) {
-        this.productId = productId;
-        this.productName = productName;
-        this.description = description;
-        this.price = price;
-        this.discount = discount;
-        this.supplierId = supplierId;
-        this.supplierName = supplierName;
-        this.categoryId = categoryId;
-        this.categoryName = categoryName;
-        this.brandId = brandId;
-        this.brandName = brandName;
-        this.isFeatured = isFeatured;
-        this.isBestSeller = isBestSeller;
-        this.isNew = isNew;
-        this.warrantyPeriod = warrantyPeriod;
-        this.isActive = isActive;
-        this.imageUrl = imageUrl;
-        this.ImportPrice = importStock;
+    public int getProductID() {
+        return productID;
     }
 
-    public Product(int productId, String productName, BigDecimal price, int discount, boolean isActive) {
-        this.productId = productId;
-        this.productName = productName;
-        this.price = price;
-        this.discount = discount;
-        this.isActive = isActive;
-    }
-
-
-    public Product(){}
-
-    public int getProductId() {
-        return productId;
-    }
-
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setProductID(int productID) {
+        this.productID = productID;
     }
 
     public String getProductName() {
@@ -152,60 +81,28 @@ public class Product {
         this.price = price;
     }
 
-    public int getDiscount() {
-        return discount;
+    public int getSupplierID() {
+        return supplierID;
     }
 
-    public void setDiscount(int discount) {
-        this.discount = discount;
+    public void setSupplierID(int supplierID) {
+        this.supplierID = supplierID;
     }
 
-    public int getSupplierId() {
-        return supplierId;
+    public int getCategoryID() {
+        return categoryID;
     }
 
-    public void setSupplierId(int supplierId) {
-        this.supplierId = supplierId;
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
     }
 
-    public int getCategoryId() {
-        return categoryId;
+    public int getBrandID() {
+        return brandID;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public int getBrandId() {
-        return brandId;
-    }
-
-    public void setBrandId(int brandId) {
-        this.brandId = brandId;
-    }
-
-    public boolean isIsFeatured() {
-        return isFeatured;
-    }
-
-    public void setIsFeatured(boolean isFeatured) {
-        this.isFeatured = isFeatured;
-    }
-
-    public boolean isIsBestSeller() {
-        return isBestSeller;
-    }
-
-    public void setIsBestSeller(boolean isBestSeller) {
-        this.isBestSeller = isBestSeller;
-    }
-
-    public boolean isIsNew() {
-        return isNew;
-    }
-
-    public void setIsNew(boolean isNew) {
-        this.isNew = isNew;
+    public void setBrandID(int brandID) {
+        this.brandID = brandID;
     }
 
     public int getWarrantyPeriod() {
@@ -224,44 +121,54 @@ public class Product {
         this.isActive = isActive;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public String getImageUrl1() {
+        return imageUrl1;
     }
 
-
-    public String getBrandName() {
-        return brandName;
+    public void setImageUrl1(String imageUrl1) {
+        this.imageUrl1 = imageUrl1;
     }
 
-    public String getSupplierName() {
-        return supplierName;
+    public String getImageUrl2() {
+        return imageUrl2;
+    }
+
+    public void setImageUrl2(String imageUrl2) {
+        this.imageUrl2 = imageUrl2;
+    }
+
+    public String getImageUrl3() {
+        return imageUrl3;
+    }
+
+    public void setImageUrl3(String imageUrl3) {
+        this.imageUrl3 = imageUrl3;
+    }
+
+    public String getImageUrl4() {
+        return imageUrl4;
+    }
+
+    public void setImageUrl4(String imageUrl4) {
+        this.imageUrl4 = imageUrl4;
     }
 
     public BigDecimal getImportPrice() {
         return ImportPrice;
     }
 
-    public void setSupplierName(String supplierName) {
-        this.supplierName = supplierName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
-    public void setBrandName(String brandName) {
-        this.brandName = brandName;
-    }
-
     public void setImportPrice(BigDecimal ImportPrice) {
         this.ImportPrice = ImportPrice;
     }
+
+    
+     
 }

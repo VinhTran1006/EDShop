@@ -6,7 +6,7 @@ package model;
 
 /**
  *
- * @author HP
+ * 
  */
 
 public class Address {
@@ -18,11 +18,13 @@ public class Address {
     private String wardName;
     private String addressDetails;
     private boolean isDefault;
+    private boolean isActive;
+    
 
     public Address() {
     }
 
-    public Address(int addressId, int customerId, String provinceName, String districtName, String wardName, String addressDetails, boolean isDefault) {
+    public Address(int addressId, int customerId, String provinceName, String districtName, String wardName, String addressDetails, boolean isDefault, boolean isActive) {
         this.addressId = addressId;
         this.customerId = customerId;
         this.provinceName = provinceName;
@@ -30,7 +32,10 @@ public class Address {
         this.wardName = wardName;
         this.addressDetails = addressDetails;
         this.isDefault = isDefault;
+        this.isActive = isActive;
     }
+
+  
 
     // Getters & Setters
     public int getAddressId() {
@@ -88,4 +93,21 @@ public class Address {
     public void setDefault(boolean isDefault) {
         this.isDefault = isDefault;
     }
+
+    public boolean isIsDefault() {
+        return isDefault;
+    }
+
+    public void setIsDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+    
 }

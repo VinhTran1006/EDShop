@@ -6,46 +6,38 @@ package model;
 
 /**
  *
- * @author HP - Gia Khiêm
+ * 
  */
 public class CategoryDetail {
     private int categoryDetailID;
-    private int CategoryID;
-    private String categoryDatailName;
+    private String atrributeName;
     private int categoryDetailsGroupID;
+    private boolean isActive;
 
     public CategoryDetail() {
     }
 
-    public CategoryDetail(int categoryDetailID, int CategoryID, String categoryDatailName, int categoryDetailsGroupID) {
+    public CategoryDetail(int categoryDetailID, String atrributeName, int categoryDetailsGroupID, boolean isActive) {
         this.categoryDetailID = categoryDetailID;
-        this.CategoryID = CategoryID;
-        this.categoryDatailName = categoryDatailName;
+        this.atrributeName = atrributeName;
         this.categoryDetailsGroupID = categoryDetailsGroupID;
+        this.isActive = isActive;
     }
 
     public int getCategoryDetailID() {
         return categoryDetailID;
     }
 
-    public int getCategoryID() {
-        return CategoryID;
-    }
-
-    public String getCategoryDatailName() {
-        return categoryDatailName;
-    }
-
     public void setCategoryDetailID(int categoryDetailID) {
         this.categoryDetailID = categoryDetailID;
     }
 
-    public void setCategoryID(int CategoryID) {
-        this.CategoryID = CategoryID;
+    public String getAtrributeName() {
+        return atrributeName;
     }
 
-    public void setCategoryDatailName(String categoryDatailName) {
-        this.categoryDatailName = categoryDatailName;
+    public void setAtrributeName(String atrributeName) {
+        this.atrributeName = atrributeName;
     }
 
     public int getCategoryDetailsGroupID() {
@@ -56,6 +48,16 @@ public class CategoryDetail {
         this.categoryDetailsGroupID = categoryDetailsGroupID;
     }
 
-    
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+   
+
+  
     
 }

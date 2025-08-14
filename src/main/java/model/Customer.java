@@ -8,52 +8,81 @@ import java.util.Date;
 
 /**
  *
- * @author pc
+ *
  */
 public class Customer {
-    private int id;
-    private String email;
-    private String password;
-    private String fullName;
-    private String phone;
-    private Date createAt;
+    private int customerID;
+    private String Email;
+    private String Password;
+    private String FullName;
+    private String PhoneNumber;
     private boolean isActive;
     private String birthDay;
     private String gender;
-    private String address;
+    private Date createAt;
 
  
     public Customer() {
     }
 
-    public Customer(int id, String email, String fullName, String phone, Date createAt, boolean isActive) {
-        this.id = id;
-        this.email = email;
-        this.fullName = fullName;
-        this.phone = phone;
+    public Customer(int customerID, String Email, String Password, String FullName, String PhoneNumber, boolean isActive, String birthDay, String gender, Date createAt) {
+        this.customerID = customerID;
+        this.Email = Email;
+        this.Password = Password;
+        this.FullName = FullName;
+        this.PhoneNumber = PhoneNumber;
+        this.isActive = isActive;
+        this.birthDay = birthDay;
+        this.gender = gender;
         this.createAt = createAt;
-        this.isActive = isActive;
     }
 
-    public Customer(int id, String email, String fullName, String phone, boolean isActive, String birthDay, String gender) {
-        this.id = id;
-        this.email = email;
-        this.fullName = fullName;
-        this.phone = phone;
-        this.isActive = isActive;
-        this.birthDay = birthDay;
-        this.gender = gender;
+    public int getCustomerID() {
+        return customerID;
     }
 
-    public Customer(int id, String email, String fullName, String phone, boolean active, String birthday, String gender, String address) {
-        this.id = id;
-        this.email = email;
-        this.fullName = fullName;
-        this.phone = phone;
+    public void setCustomerID(int customerID) {
+        this.customerID = customerID;
+    }
+
+    public String getEmail() {
+        return Email;
+    }
+
+    public void setEmail(String Email) {
+        this.Email = Email;
+    }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public void setPassword(String Password) {
+        this.Password = Password;
+    }
+
+    public String getFullName() {
+        return FullName;
+    }
+
+    public void setFullName(String FullName) {
+        this.FullName = FullName;
+    }
+
+    public String getPhoneNumber() {
+        return PhoneNumber;
+    }
+
+    public void setPhoneNumber(String PhoneNumber) {
+        this.PhoneNumber = PhoneNumber;
+    }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
         this.isActive = isActive;
-        this.birthDay = birthDay;
-        this.gender = gender;
-        this.address = address;
     }
 
     public String getBirthDay() {
@@ -71,50 +100,6 @@ public class Customer {
     public void setGender(String gender) {
         this.gender = gender;
     }
-    
-    
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
- 
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public Date getCreateAt() {
         return createAt;
@@ -124,19 +109,5 @@ public class Customer {
         this.createAt = createAt;
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
     
-       public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
 }

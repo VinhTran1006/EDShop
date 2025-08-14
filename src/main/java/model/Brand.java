@@ -6,68 +6,57 @@ package model;
 
 /**
  *
- * @author HP - Gia Khiêm
+ * 
  */
 public class Brand {
     private int brandId;
     private String brandName;
-    private String desciptionBrand;
-    private int categoryID;
     private String imgUrlLogo;
+    private boolean isActive;
 
     public Brand() {
     }
 
-    public Brand(int brandId, String brandName, String desciptionBrand, int categoryID, String imgUrlLogo) {
+    public Brand(int brandId, String brandName, String imgUrlLogo, boolean isActive) {
         this.brandId = brandId;
         this.brandName = brandName;
-        this.desciptionBrand = desciptionBrand;
-        this.categoryID = categoryID;
         this.imgUrlLogo = imgUrlLogo;
-    }
-
-    public Brand(int brandId, String brandName) {
-        this.brandId = brandId;
-        this.brandName = brandName;
-    }
-    
-    public void setCategoryID(int categoryID) {
-        this.categoryID = categoryID;
-    }
-
-    public int getCategoryID() {
-        return categoryID;
-    }
-
-    public void setImgUrlLogo(String imgUrlLogo) {
-        this.imgUrlLogo = imgUrlLogo;
-    }
-
-    public String getImgUrlLogo() {
-        return imgUrlLogo;
+        this.isActive = isActive;
     }
 
     public int getBrandId() {
         return brandId;
     }
 
-    public String getBrandName() {
-        return brandName;
-    }
-
-    public String getDesciptionBrand() {
-        return desciptionBrand;
-    }
-
     public void setBrandId(int brandId) {
         this.brandId = brandId;
+    }
+
+    public String getBrandName() {
+        return brandName;
     }
 
     public void setBrandName(String brandName) {
         this.brandName = brandName;
     }
 
-    public void setDesciptionBrand(String desciptionBrand) {
-        this.desciptionBrand = desciptionBrand;
+    public String getImgUrlLogo() {
+        return imgUrlLogo;
     }
+
+    public void setImgUrlLogo(String imgUrlLogo) {
+        this.imgUrlLogo = imgUrlLogo;
+    }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+
+
+   
 }

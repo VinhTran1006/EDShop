@@ -10,25 +10,30 @@ package model;
  */
 public class OrderDetail {
 
+    private int orderDetailsID;
     private int orderID;
     private int productID;
     private int quantity;
     private long price;
-    private String category;
-    private String productName;
    
 
     public OrderDetail() {
     }
 
-    public OrderDetail(int orderID, int productID, int quantity, long price, String category, String productName) {
+    public OrderDetail(int orderDetailsID, int orderID, int productID, int quantity, long price) {
+        this.orderDetailsID = orderDetailsID;
         this.orderID = orderID;
         this.productID = productID;
         this.quantity = quantity;
         this.price = price;
-        this.category = category;
-        this.productName = productName;
-        
+    }
+
+    public int getOrderDetailsID() {
+        return orderDetailsID;
+    }
+
+    public void setOrderDetailsID(int orderDetailsID) {
+        this.orderDetailsID = orderDetailsID;
     }
 
     public int getOrderID() {
@@ -63,24 +68,7 @@ public class OrderDetail {
         this.price = price;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-
-
+   
     
     
 }

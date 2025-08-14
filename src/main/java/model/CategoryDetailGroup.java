@@ -6,46 +6,57 @@ package model;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 public class CategoryDetailGroup {
-    private int CategoryDetailsGroupID;
-    private String NameCategoryDetailsGroup;
-    private int CategoryID;
+    private int categoryDetailsGroupID;
+    private String nameCategoryDetailsGroup;
+    private int categoryID;
+    private boolean isActive;
 
-    public CategoryDetailGroup(int CategoryDetailsGroupID, String NameCategoryDetailsGroup, int CategoryID) {
-        this.CategoryDetailsGroupID = CategoryDetailsGroupID;
-        this.NameCategoryDetailsGroup = NameCategoryDetailsGroup;
-        this.CategoryID = CategoryID;
+    public CategoryDetailGroup(int categoryDetailsGroupID, String nameCategoryDetailsGroup, int categoryID, boolean isActive) {
+        this.categoryDetailsGroupID = categoryDetailsGroupID;
+        this.nameCategoryDetailsGroup = nameCategoryDetailsGroup;
+        this.categoryID = categoryID;
+        this.isActive = isActive;
     }
 
+   
     public CategoryDetailGroup() {
     }
 
     public int getCategoryDetailsGroupID() {
-        return CategoryDetailsGroupID;
+        return categoryDetailsGroupID;
+    }
+
+    public void setCategoryDetailsGroupID(int categoryDetailsGroupID) {
+        this.categoryDetailsGroupID = categoryDetailsGroupID;
     }
 
     public String getNameCategoryDetailsGroup() {
-        return NameCategoryDetailsGroup;
+        return nameCategoryDetailsGroup;
+    }
+
+    public void setNameCategoryDetailsGroup(String nameCategoryDetailsGroup) {
+        this.nameCategoryDetailsGroup = nameCategoryDetailsGroup;
     }
 
     public int getCategoryID() {
-        return CategoryID;
+        return categoryID;
     }
 
-    public void setCategoryDetailsGroupID(int CategoryDetailsGroupID) {
-        this.CategoryDetailsGroupID = CategoryDetailsGroupID;
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
     }
 
-    public void setNameCategoryDetailsGroup(String NameCategoryDetailsGroup) {
-        this.NameCategoryDetailsGroup = NameCategoryDetailsGroup;
+    public boolean isIsActive() {
+        return isActive;
     }
 
-    public void setCategoryID(int CategoryID) {
-        this.CategoryID = CategoryID;
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
-    
+  
     
 }

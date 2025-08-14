@@ -9,29 +9,27 @@ package model;
  * @author VinhNTCE181630
  */
 public class RatingReplies {
-    private int replyID;
+    private int ratingReplyID;
     private int staffID;
     private int rateID;
     private String answer;
-    private boolean isRead; 
 
     public RatingReplies() {
     }
 
-    public RatingReplies(int replyID, int staffID, int rateID, String answer, boolean isRead) {
-        this.replyID = replyID;
+    public RatingReplies(int ratingReplyID, int staffID, int rateID, String answer) {
+        this.ratingReplyID = ratingReplyID;
         this.staffID = staffID;
         this.rateID = rateID;
         this.answer = answer;
-        this.isRead = isRead;
-    }
-    
-    public int getReplyID() {
-        return replyID;
     }
 
-    public void setReplyID(int replyID) {
-        this.replyID = replyID;
+    public int getRatingReplyID() {
+        return ratingReplyID;
+    }
+
+    public void setRatingReplyID(int ratingReplyID) {
+        this.ratingReplyID = ratingReplyID;
     }
 
     public int getStaffID() {
@@ -58,13 +56,6 @@ public class RatingReplies {
         this.answer = answer;
     }
 
-    public boolean isIsRead() {
-        return isRead;
-    }
-
-    public void setIsRead(boolean isRead) {
-        this.isRead = isRead;
-    }
-    
+   
 }
 

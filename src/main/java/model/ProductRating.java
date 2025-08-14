@@ -24,50 +24,22 @@ public class ProductRating {
     private Date createdDate;
     private int star;
     private String comment;
-    private boolean isDeleted;
+    private boolean isActive;
     private boolean isRead;
-    private String fullName;
-    private Customer customer;
-    private List<RatingReplies> replies;
-
-    public ProductRating(int star) {
-        this.star = star;
-    }
-
-    public ProductRating(int rateID, int customerID, int productID, int orderID, Date createdDate, int star, String comment, boolean isDeleted, boolean isRead, String fullName) {
-        this.rateID = rateID;
-        this.customerID = customerID;
-        this.productID = productID;
-        this.orderID = orderID;
-        this.createdDate = createdDate;
-        this.star = star;
-        this.comment = comment;
-        this.isDeleted = isDeleted;
-        this.isRead = isRead;
-        this.fullName = fullName;
-    }
-
-    public ProductRating(int rateID, int customerID, int productID, int orderID, Date createdDate, int star, String comment, boolean isDeleted, boolean isRead) {
-        this.rateID = rateID;
-        this.customerID = customerID;
-        this.productID = productID;
-        this.orderID = orderID;
-        this.createdDate = createdDate;
-        this.star = star;
-        this.comment = comment;
-        this.isDeleted = isDeleted;
-        this.isRead = isRead;
-    }
-
+    
     public ProductRating() {
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public ProductRating(int rateID, int customerID, int productID, int orderID, Date createdDate, int star, String comment, boolean isActive, boolean isRead) {
+        this.rateID = rateID;
+        this.customerID = customerID;
+        this.productID = productID;
+        this.orderID = orderID;
+        this.createdDate = createdDate;
+        this.star = star;
+        this.comment = comment;
+        this.isActive = isActive;
+        this.isRead = isRead;
     }
 
     public int getRateID() {
@@ -126,12 +98,12 @@ public class ProductRating {
         this.comment = comment;
     }
 
-    public boolean isIsDeleted() {
-        return isDeleted;
+    public boolean isIsActive() {
+        return isActive;
     }
 
-    public void setIsDeleted(boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public boolean isIsRead() {
@@ -142,19 +114,6 @@ public class ProductRating {
         this.isRead = isRead;
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public List<RatingReplies> getReplies() {
-        return replies;
-    }
-
-    public void setReplies(List<RatingReplies> replies) {
-        this.replies = replies;
-    }
+    
+   
 }
