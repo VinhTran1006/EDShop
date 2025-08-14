@@ -2,7 +2,6 @@ package controller;
 
 import dao.AddressDAO;
 import dao.CartDAO;
-import dao.CustomerVoucherDAO;
 import dao.ImportStockDetailDAO;
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
@@ -115,7 +114,7 @@ public class CheckoutServlet extends HttpServlet {
                     int id = Integer.parseInt(voucherId);
                     voucher = voucherDAO.getVoucherById(id);
                     if (voucher != null && customer != null) {
-                        voucher = voucherDAO.getVoucherByCodeForCustomer(voucher.getCode(), customer.getId());
+                      //  voucher = voucherDAO.getVoucherByCodeForCustomer(voucher.getCode(), customer.getId());
                     }
                 } catch (NumberFormatException e) {
                     Logger.getLogger(CheckoutServlet.class.getName()).log(Level.WARNING, "Invalid voucherId: {0}", voucherId);
@@ -125,7 +124,7 @@ public class CheckoutServlet extends HttpServlet {
                 }
             } else if (voucherCode != null) {
                 if (customer != null) {
-                    voucher = voucherDAO.getVoucherByCodeForCustomer(voucherCode, customer.getId());
+               //     voucher = voucherDAO.getVoucherByCodeForCustomer(voucherCode, customer.getId());
                 } else {
                     voucher = voucherDAO.getVoucherByCode(voucherCode);
                 }
@@ -380,15 +379,7 @@ public class CheckoutServlet extends HttpServlet {
                 return;
             }
 
-            // Cập nhật voucher
-            if (appliedVoucher != null) {
-                voucherDAO.increaseUsedCount(appliedVoucher.getVoucherID());
-                if (!appliedVoucher.isIsGlobal()) {
-                    CustomerVoucherDAO cvDAO = new CustomerVoucherDAO();
-                    cvDAO.decreaseVoucherQuantity(customer.getId(), appliedVoucher.getVoucherID());
-                }
-                session.removeAttribute("appliedVoucher");
-            }
+          
 
             // Xóa session attributes
             session.removeAttribute("selectedItems");

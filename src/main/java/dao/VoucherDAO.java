@@ -63,8 +63,8 @@ public class VoucherDAO extends DBContext {
 
     public boolean addVoucher(Voucher v) {
         String sql = "INSERT INTO Vouchers (Code, DiscountPercent, ExpiryDate, MinOrderAmount, "
-                + "MaxDiscountAmount, UsageLimit, UsedCount, IsActive, CreatedAt, Description, IsGlobal) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "MaxDiscountAmount, UsageLimit, UsedCount, IsActive, CreatedAt, Description) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, v.getCode());
             ps.setInt(2, v.getDiscountPercent());
@@ -76,7 +76,6 @@ public class VoucherDAO extends DBContext {
             ps.setBoolean(8, v.isActive());
             ps.setDate(9, new java.sql.Date(v.getCreatedAt().getTime()));
             ps.setString(10, v.getDescription());
-            ps.setBoolean(11, v.isIsGlobal());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -86,7 +85,7 @@ public class VoucherDAO extends DBContext {
 
     public boolean updateVoucher(Voucher v) {
         String sql = "UPDATE Vouchers SET Code=?, DiscountPercent=?, ExpiryDate=?, MinOrderAmount=?, "
-                + "MaxDiscountAmount=?, UsageLimit=?, UsedCount=?, IsActive=?, Description=?, IsGlobal=? "
+                + "MaxDiscountAmount=?, UsageLimit=?, UsedCount=?, IsActive=?, Description=?"
                 + "WHERE VoucherID = ?";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, v.getCode());
@@ -98,8 +97,7 @@ public class VoucherDAO extends DBContext {
             ps.setInt(7, v.getUsedCount());
             ps.setBoolean(8, v.isActive());
             ps.setString(9, v.getDescription());
-            ps.setBoolean(10, v.isIsGlobal());
-            ps.setInt(11, v.getVoucherID());
+            ps.setInt(10, v.getVoucherID());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -147,23 +145,9 @@ public class VoucherDAO extends DBContext {
         v.setActive(rs.getBoolean("IsActive"));
         v.setCreatedAt(rs.getDate("CreatedAt"));
         v.setDescription(rs.getString("Description"));
-        v.setIsGlobal(rs.getBoolean("IsGlobal"));
         return v;
     }
 
-    public List<Voucher> getPersonalVouchersAvailable() {
-        List<Voucher> list = new ArrayList<>();
-        // Lấy các voucher cá nhân, đang còn hạn, đang active
-        String sql = "SELECT * FROM Vouchers WHERE IsGlobal = 0 AND IsActive = 1 AND ExpiryDate >= GETDATE()";
-        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                list.add(mapResultSetToVoucher(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
 
      public Voucher getVoucherByCode(String code) {
         String sql = "SELECT * FROM Vouchers WHERE Code = ? AND IsActive = 1 AND ExpiryDate >= GETDATE()";
@@ -183,7 +167,6 @@ public class VoucherDAO extends DBContext {
                     v.setActive(rs.getBoolean("IsActive"));
                     v.setCreatedAt(rs.getDate("CreatedAt"));
                     v.setDescription(rs.getString("Description"));
-                    v.setIsGlobal(rs.getBoolean("IsGlobal"));
                     return v;
                 }
             }
@@ -203,24 +186,4 @@ public class VoucherDAO extends DBContext {
         }
     }
 
-    
-
-    public Voucher getVoucherByCodeForCustomer(String code, int customerId) {
-        String sql = "SELECT v.* FROM Vouchers v "
-                + "LEFT JOIN CustomerVoucher cv ON v.VoucherID = cv.VoucherID "
-                + "WHERE v.Code = ? AND v.IsActive = 1 AND v.ExpiryDate >= GETDATE() "
-                + "AND (v.IsGlobal = 1 OR (cv.CustomerID = ? AND cv.Quantity > 0 AND (cv.ExpirationDate IS NULL OR cv.ExpirationDate >= GETDATE())))";
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, code);
-            ps.setInt(2, customerId);
-            try ( ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToVoucher(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

@@ -51,7 +51,6 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Code</th>
-                                <th>Type</th> 
                                 <th>Discount (%)</th>
                                 <th>Expiry</th>
                                 <th>Usage Limit</th>
@@ -73,12 +72,7 @@
                             %>
                             <tr>
                                 <td><%= v.getVoucherID()%></td>
-                                <td><%= v.getCode()%></td>
-                                <td>
-                                    <%= v.isIsGlobal()
-                                            ? "<span style='color: #20c997;'>Global</span>"
-                                            : "<span style='color: #0dcaf0;'>Personal</span>"%>
-                                </td>
+                                <td><%= v.getCode()%></td>                              
                                 <td><%= v.getDiscountPercent()%></td>
                                 <td><%= v.getExpiryDate()%></td>
                                 <td><%= v.getUsageLimit()%></td>

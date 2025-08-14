@@ -64,12 +64,7 @@
                                    class="btn btn-warning">
                                     <%= cus.isActive() ? "Block" : "Unblock"%>
                                 </a>
-                                <a href="CustomerList?action=detail&id=<%= cus.getId()%>" class="btn btn-primary">Detail</a>   
-
-                                <a href="AssignVoucher?customerId=<%= cus.getId()%>" class="btn btn-success">
-                                    Assign Voucher
-                                </a>
-
+                                <a href="CustomerList?action=detail&id=<%= cus.getId()%>" class="btn btn-primary">Detail</a>                               
                             </td>
                         </tr>
                         <%

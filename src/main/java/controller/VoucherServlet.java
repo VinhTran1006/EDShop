@@ -107,8 +107,7 @@ public class VoucherServlet extends HttpServlet {
             int usageLimit = Integer.parseInt(request.getParameter("usageLimit"));
             boolean isActive = "true".equals(request.getParameter("isActive"));
             Date createdAt = new Date();
-            String description = request.getParameter("description");
-            boolean isGlobal = "1".equals(request.getParameter("isGlobal"));
+            String description = request.getParameter("description");       
 
             int usedCount = 0; // Default when creating new
             if (id != 0) {
@@ -139,7 +138,7 @@ public class VoucherServlet extends HttpServlet {
             }
 
             Voucher v = new Voucher(id, code, discount, expiry, minAmount, maxDiscount,
-                    usageLimit, usedCount, isActive, createdAt, description, isGlobal);
+                    usageLimit, usedCount, isActive, createdAt, description);
 
             if (id == 0) {
                 voucherDAO.addVoucher(v);
@@ -164,14 +163,13 @@ public class VoucherServlet extends HttpServlet {
                 boolean isActive = request.getParameter("isActive") != null;
                 Date createdAt = new Date();
                 String description = request.getParameter("description");
-                boolean isGlobal = "1".equals(request.getParameter("isGlobal"));
                 int usedCount = 0;
                 if (id != 0) {
                     Voucher old = voucherDAO.getVoucherById(id);
                     usedCount = old != null ? old.getUsedCount() : 0;
                 }
                 Voucher retryVoucher = new Voucher(id, code, discount, expiry, minAmount,
-                        maxDiscount, usageLimit, usedCount, isActive, createdAt, description, isGlobal);
+                        maxDiscount, usageLimit, usedCount, isActive, createdAt, description);
                 request.setAttribute("voucher", retryVoucher);
             } catch (Exception ex) {
                 request.setAttribute("voucher", null);

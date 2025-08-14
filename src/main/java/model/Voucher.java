@@ -24,12 +24,12 @@ public class Voucher {
     private boolean isActive;
     private Date createdAt;
     private String description;
-    private boolean isGlobal;
+
 
     public Voucher() {
     }
 
-    public Voucher(int voucherID, String code, int discountPercent, Date expiryDate, double minOrderAmount, double maxDiscountAmount, int usageLimit, int usedCount, boolean isActive, Date createdAt, String description, boolean isGlobal) {
+    public Voucher(int voucherID, String code, int discountPercent, Date expiryDate, double minOrderAmount, double maxDiscountAmount, int usageLimit, int usedCount, boolean isActive, Date createdAt, String description) {
         this.voucherID = voucherID;
         this.code = code;
         this.discountPercent = discountPercent;
@@ -41,7 +41,6 @@ public class Voucher {
         this.isActive = isActive;
         this.createdAt = createdAt;
         this.description = description;
-        this.isGlobal = isGlobal;
     }
 
     public int getVoucherID() {
@@ -134,13 +133,5 @@ public class Voucher {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public boolean isIsGlobal() {
-        return isGlobal;
-    }
-
-    public void setIsGlobal(boolean isGlobal) {
-        this.isGlobal = isGlobal;
     }
 }

@@ -59,7 +59,7 @@
                         <div class="mb-4 p-4" style="background: #fff; border-radius: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.08);">
                             <div class="profile-body">
                                 <p><strong><i class="bi bi-calendar-date me-1"></i>Order Date:</strong> ${data.orderDate}</p>
-                                <p><strong><i class="bi bi-pencil-square me-1"></i>Updated At:</strong> ${data.updatedDate}</p>
+                                <p><strong><i class="bi bi-pencil-square me-1"></i>Last Updated:</strong> ${data.updatedDate}</p>
                                 <p><strong><i class="bi bi-bar-chart-line me-1"></i>Status:</strong>
                                     <span class="badge status-${data.status}">
                                         <c:choose>
