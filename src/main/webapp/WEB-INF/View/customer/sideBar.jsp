@@ -32,21 +32,14 @@
             <a href="${pageContext.request.contextPath}/ViewOrderOfCustomer"
                class="nav-link<%= currentPage.contains("ViewOrder") ? " active" : ""%>"
                style="display:flex;align-items:center;">
-                <i class="bi bi-bag-check me-2"></i> <span>Order</span>
+                <i class="bi bi-bag-check me-2"></i> <span>My Orders History</span>
             </a>
         </li>
         <li class="nav-item mb-1">
             <a href="ViewShippingAddress"
                class="nav-link<%= currentPage.contains("ViewShippingAddress") ? " active" : ""%>"
                style="display:flex;align-items:center;">
-                <i class="bi bi-geo-alt me-2"></i> <span>Shipping Addresses</span>
-            </a>
-        </li>
-        <li class="nav-item mb-1">
-            <a href="ViewCustomerVoucher"
-               class="nav-link<%= currentPage.contains("ViewVoucher") ? " active" : ""%>"
-               style="display:flex;align-items:center;">
-                <i class="bi bi-ticket-perforated me-2"></i> <span>My Vouchers</span>
+                <i class="bi bi-geo-alt me-2"></i> <span>My Addresses</span>
             </a>
         </li>
         <li class="nav-item mt-2">

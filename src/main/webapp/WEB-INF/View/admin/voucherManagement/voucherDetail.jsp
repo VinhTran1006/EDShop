@@ -33,15 +33,7 @@
                     <% if (v != null) {%>
                     <table class="table table-borderless">
                         <tr><th>ID:</th><td><%= v.getVoucherID()%></td></tr>
-                        <tr><th>Code:</th><td><%= v.getCode()%></td></tr>
-                        <tr>
-                            <th>Type:</th>
-                            <td>
-                                <%= v.isIsGlobal()
-                                        ? "<span class='badge bg-success'>Global</span>"
-                                        : "<span class='badge bg-info text-dark'>Personal</span>"%>
-                            </td>
-                        </tr>
+                        <tr><th>Code:</th><td><%= v.getCode()%></td></tr>                       
                         <tr><th>Discount (%):</th><td><%= v.getDiscountPercent()%></td></tr>
                         <tr><th>Expiry Date:</th><td><%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(v.getExpiryDate())%></td></tr>
                         <tr><th>Min Order:</th><td><%= currencyVN.format(v.getMinOrderAmount()) + " ₫"%></td></tr>

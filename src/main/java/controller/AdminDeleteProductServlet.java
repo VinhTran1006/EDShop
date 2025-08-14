@@ -45,7 +45,7 @@ public class AdminDeleteProductServlet extends HttpServlet {
             out.println("</html>");
         }
     } 
-
+//ạodsjdjss
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
      * Handles the HTTP <code>GET</code> method.
@@ -58,10 +58,8 @@ public class AdminDeleteProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         ProductDAO proDAO = new ProductDAO();
-        int productId = Integer.parseInt(request.getParameter("productId"));
-        
-        boolean isSuccess = proDAO.deleteProduct(productId);
-        
+        int productId = Integer.parseInt(request.getParameter("productId"));       
+        boolean isSuccess = proDAO.deleteProduct(productId);        
         if (isSuccess) {
             response.sendRedirect("StaffProduct?success=1");
         } else {

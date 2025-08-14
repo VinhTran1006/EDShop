@@ -48,15 +48,7 @@
                                    value="<%= isEdit ? v.getCode() : ""%>"/>
                         </td>
                     </tr>
-                    <tr>
-                        <th>Type:</th>
-                        <td>
-                            <select class="form-select" name="isGlobal" id="isGlobal" required>
-                                <option value="1" <%= !isEdit || (isEdit && v.isIsGlobal()) ? "selected" : ""%>>Global (All customers can use)</option>
-                                <option value="0" <%= isEdit && !v.isIsGlobal() ? "selected" : ""%>>Personal (Must be assigned to customer)</option>
-                            </select>
-                        </td>
-                    </tr>
+                  
                     <tr>
                         <th>Discount Percentage (%):</th>
                         <td>
