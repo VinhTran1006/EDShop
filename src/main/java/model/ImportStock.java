@@ -9,65 +9,49 @@ import java.util.List;
 
 /**
  *
- * @author HP
+ * @author
  */
 public class ImportStock {
 
-    private int ioid;
-    private int staffId;
-    private int supplierId;
+    private int importID;
+    private int staffID;
+    private int supplierID;
     private Timestamp importDate;
     private long totalAmount;
-    private int isCompleted;
-    private Suppliers supplier;
-    private String fullName;
-    private List<ImportStockDetail> importStockDetails;
 
     public ImportStock() {
     }
 
-    public ImportStock(int staffId, int supplierId) {
-        this.staffId = staffId;
-        this.supplierId = supplierId;
-    }
-
-    public ImportStock(int staffId, int supplierId, long totalAmount) {
-        this.staffId = staffId;
-        this.supplierId = supplierId;
-        this.totalAmount = totalAmount;
-    }
-
-    public ImportStock(int ioid, int staffId, int supplierId, Timestamp importDate, long totalAmount, int isCompleted) {
-        this.ioid = ioid;
-        this.staffId = staffId;
-        this.supplierId = supplierId;
+    public ImportStock(int importID, int staffID, int supplierID, Timestamp importDate, long totalAmount) {
+        this.importID = importID;
+        this.staffID = staffID;
+        this.supplierID = supplierID;
         this.importDate = importDate;
         this.totalAmount = totalAmount;
-        this.isCompleted = isCompleted;
     }
 
-    public int getIoid() {
-        return ioid;
+    public int getImportID() {
+        return importID;
     }
 
-    public void setIoid(int ioid) {
-        this.ioid = ioid;
+    public void setImportID(int importID) {
+        this.importID = importID;
     }
 
-    public int getStaffId() {
-        return staffId;
+    public int getStaffID() {
+        return staffID;
     }
 
-    public void setStaffId(int staffId) {
-        this.staffId = staffId;
+    public void setStaffID(int staffID) {
+        this.staffID = staffID;
     }
 
-    public int getSupplierId() {
-        return supplierId;
+    public int getSupplierID() {
+        return supplierID;
     }
 
-    public void setSupplierId(int supplierId) {
-        this.supplierId = supplierId;
+    public void setSupplierID(int supplierID) {
+        this.supplierID = supplierID;
     }
 
     public Timestamp getImportDate() {
@@ -86,35 +70,4 @@ public class ImportStock {
         this.totalAmount = totalAmount;
     }
 
-    public int getIsCompleted() {
-        return isCompleted;
-    }
-
-    public void setIsCompleted(int isCompleted) {
-        this.isCompleted = isCompleted;
-    }
-
-    public Suppliers getSupplier() {
-        return supplier;
-    }
-
-    public void setSupplier(Suppliers supplier) {
-        this.supplier = supplier;
-    }
-
-    public List<ImportStockDetail> getImportStockDetails() {
-        return importStockDetails;
-    }
-
-    public void setImportStockDetails(List<ImportStockDetail> importStockDetails) {
-        this.importStockDetails = importStockDetails;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
 }

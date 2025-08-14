@@ -5,45 +5,30 @@ import java.time.LocalDateTime;
 public class Suppliers {
 
     private int supplierID;
-    private String taxId;
+    private String taxID;
     private String name;
     private String email;
     private String phoneNumber;
     private String address;
-    private LocalDateTime createdDate;
-    private LocalDateTime lastModify;
-    private int activate;
     private String contactPerson;   
-    private String supplyGroup;     
-    private String description;     
+    private String description;
+    private boolean isActive;
 
     public Suppliers() {
     }
 
-    // Constructor có tất cả thuộc tính
-    public Suppliers(int supplierID, String taxId, String name, String email, String phoneNumber, String address,
-                     LocalDateTime createdDate, LocalDateTime lastModify, int activate,
-                     String contactPerson, String supplyGroup, String description) {
+    public Suppliers(int supplierID, String taxID, String name, String email, String phoneNumber, String address, String contactPerson, String description, boolean isActive) {
         this.supplierID = supplierID;
-        this.taxId = taxId;
+        this.taxID = taxID;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;
-        this.createdDate = createdDate;
-        this.lastModify = lastModify;
-        this.activate = activate;
         this.contactPerson = contactPerson;
-        this.supplyGroup = supplyGroup;
         this.description = description;
+        this.isActive = isActive;
     }
 
-    public Suppliers(int supplierID, String name) {
-        this.supplierID = supplierID;
-        this.name = name;
-    }
-    
-    // Getters and Setters
     public int getSupplierID() {
         return supplierID;
     }
@@ -52,12 +37,12 @@ public class Suppliers {
         this.supplierID = supplierID;
     }
 
-    public String getTaxId() {
-        return taxId;
+    public String getTaxID() {
+        return taxID;
     }
 
-    public void setTaxId(String taxId) {
-        this.taxId = taxId;
+    public void setTaxID(String taxID) {
+        this.taxID = taxID;
     }
 
     public String getName() {
@@ -92,45 +77,12 @@ public class Suppliers {
         this.address = address;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public LocalDateTime getLastModify() {
-        return lastModify;
-    }
-
-    public void setLastModify(LocalDateTime lastModify) {
-        this.lastModify = lastModify;
-    }
-
-
-    public int getActivate() {
-        return activate;
-    }
-
-    public void setActivate(int activate) {
-        this.activate = activate;
-    }
-
     public String getContactPerson() {
         return contactPerson;
     }
 
     public void setContactPerson(String contactPerson) {
         this.contactPerson = contactPerson;
-    }
-
-    public String getSupplyGroup() {
-        return supplyGroup;
-    }
-
-    public void setSupplyGroup(String supplyGroup) {
-        this.supplyGroup = supplyGroup;
     }
 
     public String getDescription() {
@@ -140,4 +92,14 @@ public class Suppliers {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+  
 }

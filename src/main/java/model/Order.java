@@ -11,61 +11,32 @@ package model;
 public class Order {
 
     private int orderID;
-    private int accountID;
-    private int CustomerId;
-    private String fullName;
-    private String phone;
+    private int customerID;
+    private int staffID;
     private long totalAmount;
     private String orderDate;
     private String deliveredDate;
     private int status;
-    private int discount;
+    private int voucherID;
     private String addressSnapshot;
     private int addressID;
-    private String updatedDate;
+    private String updatedAt;
 
     public Order() {
     }
 
-    public Order(int CustomerId, String fullName, String phone, long totalAmount, String orderDate, String deliveredDate, int status, int discount, String addressSnapshot, int addressID, String updatedDate) {
-        this.CustomerId = CustomerId;
-        this.fullName = fullName;
-        this.phone = phone;
-        this.totalAmount = totalAmount;
-        this.orderDate = orderDate;
-        this.deliveredDate = deliveredDate;
-        this.status = status;
-        this.discount = discount;
-        this.addressSnapshot = addressSnapshot;
-        this.addressID = addressID;
-        this.updatedDate = updatedDate;
-    }
-
-    public Order(int CustomerId, String fullName, String phone, String orderDate, String addressSnapshot) {
-        this.CustomerId = CustomerId;
-        this.fullName = fullName;
-        this.phone = phone;
-        this.orderDate = orderDate;
-        this.addressSnapshot = addressSnapshot;
-    }
-
-   
-
-    public Order(int orderID, int accountID, String fullName, String phone, long totalAmount,
-            String orderDate, String deliveredDate, int status, int discount,
-            String addressSnapshot, int addressID, String updatedDate) {
+    public Order(int orderID, int customerID, int staffID, long totalAmount, String orderDate, String deliveredDate, int status, int voucherID, String addressSnapshot, int addressID, String updatedAt) {
         this.orderID = orderID;
-        this.accountID = accountID;
-        this.fullName = fullName;
-        this.phone = phone;
+        this.customerID = customerID;
+        this.staffID = staffID;
         this.totalAmount = totalAmount;
         this.orderDate = orderDate;
         this.deliveredDate = deliveredDate;
         this.status = status;
-        this.discount = discount;
+        this.voucherID = voucherID;
         this.addressSnapshot = addressSnapshot;
         this.addressID = addressID;
-        this.updatedDate = updatedDate;
+        this.updatedAt = updatedAt;
     }
 
     public int getOrderID() {
@@ -76,36 +47,20 @@ public class Order {
         this.orderID = orderID;
     }
 
-    public int getAccountID() {
-        return accountID;
+    public int getCustomerID() {
+        return customerID;
     }
 
-    public void setAccountID(int accountID) {
-        this.accountID = accountID;
+    public void setCustomerID(int customerID) {
+        this.customerID = customerID;
     }
 
-    public int getCustomerId() {
-        return CustomerId;
+    public int getStaffID() {
+        return staffID;
     }
 
-    public void setCustomerId(int CustomerId) {
-        this.CustomerId = CustomerId;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setStaffID(int staffID) {
+        this.staffID = staffID;
     }
 
     public long getTotalAmount() {
@@ -140,12 +95,12 @@ public class Order {
         this.status = status;
     }
 
-    public int getDiscount() {
-        return discount;
+    public int getVoucherID() {
+        return voucherID;
     }
 
-    public void setDiscount(int discount) {
-        this.discount = discount;
+    public void setVoucherID(int voucherID) {
+        this.voucherID = voucherID;
     }
 
     public String getAddressSnapshot() {
@@ -164,12 +119,14 @@ public class Order {
         this.addressID = addressID;
     }
 
-    public String getUpdatedDate() {
-        return updatedDate;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdatedDate(String updatedDate) {
-        this.updatedDate = updatedDate;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
+
+   
 
 }

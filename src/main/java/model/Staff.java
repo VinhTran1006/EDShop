@@ -8,66 +8,39 @@ import java.util.Date;
 
 /**
  *
- * @author pc
+ *
  */
 public class Staff {
 
     private int staffID;
     private String email;
     private String fullName;
-    private String phone;
+    private String phoneNumber;
     private String gender;
-
-    private int accountId;
     private Date birthDay;
     private String position;
     private Date hiredDate;
-
-    public int getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
+    private String role;
+    private Date createAt;
+    private String passwordHash;
+    private boolean isActive;
 
     public Staff() {
     }
 
-    public Staff(int staffID, String email, String fullName, Date hiredDate) {
+    public Staff(int staffID, String email, String fullName, String phoneNumber, String gender, Date birthDay, String position, Date hiredDate, String role, Date createAt, String passwordHash, boolean isActive) {
         this.staffID = staffID;
         this.email = email;
         this.fullName = fullName;
-        this.hiredDate = hiredDate;
-    }
-
-    public Staff(int staffID, String email, String fullName, String phone, Date hiredDate, Date birthDay, String gender) {
-        this.staffID = staffID;
-        this.email = email;
-        this.fullName = fullName;
-        this.phone = phone;
-        this.hiredDate = hiredDate;
-        this.birthDay = birthDay;
+        this.phoneNumber = phoneNumber;
         this.gender = gender;
-    }
-    
-     public Staff(int staffID, String email, String fullName, String phone, Date hiredDate,String position, Date birthDay, String gender) {
-        this.staffID = staffID;
-        this.email = email;
-        this.fullName = fullName;
-        this.phone = phone;
-        this.hiredDate = hiredDate;
+        this.birthDay = birthDay;
         this.position = position;
-        this.birthDay = birthDay;
-        this.gender = gender;
+        this.hiredDate = hiredDate;
+        this.role = role;
+        this.createAt = createAt;
+        this.passwordHash = passwordHash;
+        this.isActive = isActive;
     }
 
     public int getStaffID() {
@@ -94,28 +67,12 @@ public class Staff {
         this.fullName = fullName;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public Date getHiredDate() {
-        return hiredDate;
-    }
-
-    public void setHiredDate(Date hiredDate) {
-        this.hiredDate = hiredDate;
-    }
-
-    public Date getBirthDay() {
-        return birthDay;
-    }
-
-    public void setBirthDay(Date birthDay) {
-        this.birthDay = birthDay;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getGender() {
@@ -126,4 +83,62 @@ public class Staff {
         this.gender = gender;
     }
 
+    public Date getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(Date birthDay) {
+        this.birthDay = birthDay;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public Date getHiredDate() {
+        return hiredDate;
+    }
+
+    public void setHiredDate(Date hiredDate) {
+        this.hiredDate = hiredDate;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public Date getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+    
+
+   
 }
