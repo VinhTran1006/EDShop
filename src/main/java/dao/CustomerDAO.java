@@ -4,17 +4,11 @@
  */
 package dao;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 import model.Customer;
 import utils.DBContext;
 
@@ -22,151 +16,135 @@ import utils.DBContext;
  *
  * @author pc
  */
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class CustomerDAO extends DBContext {
 
     public CustomerDAO() {
         super();
     }
 
+    // Lấy danh sách tất cả khách hàng
     public List<Customer> getCustomerList() {
         List<Customer> list = new ArrayList<>();
-        String sql = "Select CustomerID, a.Email, FullName, PhoneNumber,a.CreatedAt, a.IsActive from Customers c JOIN Accounts a on c.AccountID = a.AccountID";
+        String sql = "SELECT CustomerID, Email, PasswordHash, FullName, PhoneNumber, "
+                   + "BirthDate, Gender, CreatedAt, IsActive, EmailVerified "
+                   + "FROM Customers";
 
-        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                int id = rs.getInt("CustomerID");
-                String email = rs.getString("Email");
-                String fullName = rs.getString("FullName");
-                String phone = rs.getString("PhoneNumber");
-                Date createdAt = rs.getTimestamp("CreatedAt");
-                boolean isActive = rs.getBoolean("IsActive");
-
-                list.add(new Customer(id, email, fullName, phone, createdAt, isActive));
+                Customer cus = new Customer(
+                    rs.getInt("CustomerID"),
+                    rs.getString("Email"),
+                    rs.getString("PasswordHash"),
+                    rs.getString("FullName"),
+                    rs.getString("PhoneNumber"),
+                    rs.getDate("BirthDate"),
+                    rs.getString("Gender"),
+                    rs.getBoolean("IsActive"),
+                    rs.getBoolean("EmailVerified"),
+                    rs.getDate("CreatedAt")
+                );
+                list.add(cus);
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return list;
     }
 
-    public Customer getCustomerbyID(int customerID) {
+    // Lấy khách hàng theo ID
+    public Customer getCustomerById(int customerId) {
         Customer cus = null;
-        String sql = "SELECT c.CustomerID, a.Email, c.FullName, c.PhoneNumber,a.IsActive, c.BirthDate, c.Gender, d.AddressDetails FROM Customers c  JOIN Accounts a ON c.AccountID = a.AccountID JOIN Addresses d ON c.CustomerID = d.CustomerID WHERE c.CustomerID = ?";
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, customerID);
-            try ( ResultSet rs = ps.executeQuery()) {
+        String sql = "SELECT CustomerID, Email, PasswordHash, FullName, PhoneNumber, "
+                   + "BirthDate, Gender, CreatedAt, IsActive, EmailVerified "
+                   + "FROM Customers WHERE CustomerID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, customerId);
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    int id = rs.getInt("CustomerID");
-                    String email = rs.getString("Email");
-                    String fullName = rs.getString("FullName");
-                    String phone = rs.getString("PhoneNumber");
-                    boolean isActive = rs.getBoolean("IsActive");
-                    String birthday = rs.getString("BirthDate");
-                    String gender = rs.getString("Gender");
-                    String address = rs.getString("AddressDetails");
-
-                    // Gọi constructor có thêm addressDetails
-                    cus = new Customer(id, email, fullName, phone, isActive, birthday, gender, address);
+                    cus = new Customer(
+                        rs.getInt("CustomerID"),
+                        rs.getString("Email"),
+                        rs.getString("PasswordHash"),
+                        rs.getString("FullName"),
+                        rs.getString("PhoneNumber"),
+                        rs.getDate("BirthDate"),
+                        rs.getString("Gender"),
+                        rs.getBoolean("IsActive"),
+                        rs.getBoolean("EmailVerified"),
+                        rs.getDate("CreatedAt")
+                    );
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return cus;
     }
 
-    public boolean updateStatus(int customerID) {
-        String sqlUpdate = "UPDATE Accounts SET isActive = CASE WHEN isActive = 1 THEN 0 ELSE 1 END WHERE AccountID = (SELECT AccountID FROM Customers WHERE CustomerID = ?)";
-
-        try ( PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate)) {
-            psUpdate.setInt(1, customerID);
-            int rowsAffected = psUpdate.executeUpdate();
-
+    // Cập nhật trạng thái active/inactive của khách hàng
+    public boolean updateStatus(int customerId) {
+        String sqlUpdate = "UPDATE Customers "
+                         + "SET IsActive = CASE WHEN IsActive = 1 THEN 0 ELSE 1 END "
+                         + "WHERE CustomerID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) {
+            ps.setInt(1, customerId);
+            int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
         return false;
     }
 
+    // Tìm kiếm khách hàng theo tên
     public List<Customer> searchCustomerByName(String keyword) {
         List<Customer> list = new ArrayList<>();
-        String sql = "Select CustomerID, a.Email, FullName, PhoneNumber,a.CreatedAt, a.IsActive from Customers c JOIN Accounts a on c.AccountID = a.AccountID WHERE LOWER(FullName) LIKE ?";
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, "%" + keyword.toLowerCase() + "%");  // tìm theo tên gần đúng
-
-            try ( ResultSet rs = ps.executeQuery()) {
+        String sql = "SELECT CustomerID, Email, PasswordHash, FullName, PhoneNumber, "
+                   + "BirthDate, Gender, CreatedAt, IsActive, EmailVerified "
+                   + "FROM Customers WHERE LOWER(FullName) LIKE ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + keyword.toLowerCase() + "%");
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    int id = rs.getInt("CustomerID");
-                    String email = rs.getString("Email");
-                    String fullName = rs.getString("FullName");
-                    String phone = rs.getString("PhoneNumber");
-                    Date createdAt = rs.getTimestamp("CreatedAt");
-                    boolean isActive = rs.getBoolean("IsActive");
-
-                    list.add(new Customer(id, email, fullName, phone, createdAt, isActive));
+                    Customer cus = new Customer(
+                        rs.getInt("CustomerID"),
+                        rs.getString("Email"),
+                        rs.getString("PasswordHash"),
+                        rs.getString("FullName"),
+                        rs.getString("PhoneNumber"),
+                        rs.getDate("BirthDate"),
+                        rs.getString("Gender"),
+                        rs.getBoolean("IsActive"),
+                        rs.getBoolean("EmailVerified"),
+                        rs.getDate("CreatedAt")
+                    );
+                    list.add(cus);
                 }
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
         return list;
     }
 
-    public Customer getCustomerByAccountId(int accountId) {
-        Customer cus = null;
-        String sql = "SELECT CustomerID, a.Email, FullName, PhoneNumber, a.IsActive, BirthDate, Gender "
-                + "FROM Customers c JOIN Accounts a ON c.AccountID = a.AccountID "
-                + "WHERE c.AccountID = ?";
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, accountId);
-            try ( ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    int id = rs.getInt("CustomerID");
-                    String email = rs.getString("Email");
-                    String fullName = rs.getString("FullName");
-                    String phone = rs.getString("PhoneNumber");
-                    boolean isActive = rs.getBoolean("IsActive");
-                    String birthday = rs.getString("BirthDate");
-                    String gender = rs.getString("Gender");
-                    cus = new Customer(id, email, fullName, phone, isActive, birthday, gender);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return cus;
-    }
-    //-----TAI-----//
-
+    // Đếm tổng số khách hàng
     public int countTotalCustomers() {
         String sql = "SELECT COUNT(*) FROM Customers";
-        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
-
-    public static void main(String[] args) {
-        CustomerDAO dao = new CustomerDAO(); // giả sử bạn đã có class này
-        List<Customer> accounts = dao.getCustomerList();
-
-        for (Customer acc : accounts) {
-            System.out.println("ID: " + acc.getId());
-            System.out.println("Email: " + acc.getEmail());
-            System.out.println("Password: " + acc.getPassword());
-            System.out.println("Full Name: " + acc.getFullName());
-            System.out.println("Phone: " + acc.getPhone());
-            System.out.println("Created At: " + acc.getCreateAt());
-            System.out.println("Is Active: " + acc.isActive());
-            System.out.println("------------------------------");
-        }
-    }
 }
+

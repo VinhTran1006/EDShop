@@ -76,30 +76,46 @@ public class LoginStaffServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String email = request.getParameter("email");
-        String pass = request.getParameter("pass");
-        AccountDAO dao = new AccountDAO();
-        StaffDAO staffDAO = new StaffDAO();
-        HttpSession session = request.getSession();
-        Account acc = dao.verifyMD5(email, pass);
-        if (acc != null && acc.getAccountID() != -1) {
-            if (acc.getRoleID() == 2) {
-                // Lấy Staff theo AccountID
-                int staffId = staffDAO.getStaffIdByAccountId(acc.getAccountID());
-                Staff staff = staffDAO.getStaffById(staffId);
+String pass = request.getParameter("pass");
 
-                session.setAttribute("user", acc);   // Nếu cần dùng thông tin Account
-                session.setAttribute("staff", staff); // Đây là đối tượng Staff thực sự!
-                session.setAttribute("role", acc.getRoleID());
+AccountDAO dao = new AccountDAO();
+StaffDAO staffDAO = new StaffDAO();
+HttpSession session = request.getSession();
 
-                response.sendRedirect("StaffDashboard");
-            } else {
-                request.setAttribute("err", "<p style='color:red'>You do not have permission to access this page.</p>");
-                request.getRequestDispatcher("WEB-INF/View/account/login-staff.jsp").forward(request, response);
-            }
-        } else {
-            request.setAttribute("err", "<p style='color:red'>Email or password invalid</p>");
-            request.getRequestDispatcher("WEB-INF/View/account/login-staff.jsp").forward(request, response);
-        }
+Account acc = dao.verifyMD5(email, pass);
+if (acc != null) {
+    if ("Staff".equalsIgnoreCase(acc.getRole())) {
+        // Lấy Staff theo AccountID
+        Staff staff = staffDAO.getStaffByAccountId(acc.getAccountId());
+
+        // Lưu vào session
+        session.setAttribute("user", acc);
+        session.setAttribute("staff", staff);
+        session.setAttribute("role", acc.getRole());
+
+        // --- LOG detail ---
+        System.out.println("=== LOGIN STAFF SUCCESS ===");
+        System.out.println("Account ID: " + acc.getAccountId());
+        System.out.println("Email: " + acc.getEmail());
+        System.out.println("Role: " + acc.getRole());
+        System.out.println("Staff ID: " + staff.getStaffId());
+        System.out.println("Full Name: " + staff.getFullName());
+        System.out.println("Phone: " + staff.getPhoneNumber());
+        System.out.println("Position: " + staff.getPosition());
+        System.out.println("==========================");
+        // Log detail
+        
+        
+        response.sendRedirect("StaffDashboard");
+    } else {
+        request.setAttribute("err", "<p style='color:red'>You do not have permission to access this page.</p>");
+        request.getRequestDispatcher("WEB-INF/View/account/login-staff.jsp").forward(request, response);
+    }
+} else {
+    request.setAttribute("err", "<p style='color:red'>Email or password invalid</p>");
+    request.getRequestDispatcher("WEB-INF/View/account/login-staff.jsp").forward(request, response);
+}
+
     }
 
     /**

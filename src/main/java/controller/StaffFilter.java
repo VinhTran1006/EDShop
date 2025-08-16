@@ -48,8 +48,8 @@ public class StaffFilter implements Filter {
         }
 
         // Lấy account để kiểm tra role
-        Account acc = (Account) session.getAttribute("user");
-        if (acc == null || acc.getRoleID() != 2) {
+        Staff staff = (Staff) session.getAttribute("user");
+        if (acc == null || acc.getRole().equalsIgnoreCase("staff") == false) {
             res.sendRedirect(req.getContextPath() + "/LoginStaff");
             return;
         }

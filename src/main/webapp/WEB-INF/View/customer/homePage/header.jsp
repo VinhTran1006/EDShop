@@ -4,7 +4,7 @@
     Author     : HP - Gia Khiêm
 --%>
 
-<%@page import="model.Account"%>
+<%@page import="model.Customer"%>
 <%@page import="model.Brand"%>
 <%@page import="model.Category"%>
 <%@page import="java.util.List"%>
@@ -12,7 +12,7 @@
 <%
     List<Category> categoryList = (List<Category>) request.getAttribute("categoryList");
     List<Brand> brandList = (List<Brand>) request.getAttribute("brandList");
-    Account user = (Account) session.getAttribute("user");
+    Customer user = (Customer) session.getAttribute("user");
 %>
 <style>
     .user-dropdown {
@@ -244,7 +244,7 @@
                 </div>
                 <% }%>
 
-                <a style="width: 60%; border-radius: 15px;" href="${pageContext.request.contextPath}/CartList?accountId=<%= user != null ? user.getAccountID() : 0 %>" class="btn btn-outline-dark" title="Giỏ hàng">
+                <a style="width: 60%; border-radius: 15px;" href="${pageContext.request.contextPath}/CartList?accountId=<%= user != null ? user.getCustomerID(): 0 %>" class="btn btn-outline-dark" title="Giỏ hàng">
                     <i class="bi bi-cart"></i> Cart
                 </a>
             </div>

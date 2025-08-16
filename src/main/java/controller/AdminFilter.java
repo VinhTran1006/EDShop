@@ -57,7 +57,7 @@ public class AdminFilter implements Filter {
         Account acc = (session != null) ? (Account) session.getAttribute("admin") : null;
 
 
-        if (acc == null || acc.getRoleID() != 1) {
+        if (acc == null || acc.getRole().equalsIgnoreCase("admin") == false) {
             // Not logged in or not an admin
             res.sendRedirect(req.getContextPath() + "/LoginAdmin");
             return;
