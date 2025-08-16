@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import model.Account;
 import model.Category;
 import model.Customer;
 
@@ -28,7 +27,8 @@ import model.Customer;
 public class LoginServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -82,31 +82,47 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String email = request.getParameter("email");
+
         String pass = request.getParameter("pass");
 
-        AccountDAO dao = new AccountDAO();
+        System.out.println("[LOGIN] Email input: " + email);
+        System.out.println("[LOGIN] Password input: " + pass);
+
+        AccountDAO accountDao = new AccountDAO();
         HttpSession session = request.getSession();
-        Account acc = dao.verifyMD5(email, pass);
-        if (dao.checkEmailExisted(email) == false) {
-            request.setAttribute("err", "<p style='color:yellow'>The account you entered is not registered. Please sign up first.</p>");
+
+// Xác thực Customer bằng email + mật khẩu
+        Customer cus = accountDao.verifyCustomer(email, pass);
+
+        System.out.println("[LOGIN] Customer object returned: " + cus);
+        String inputHash = accountDao.hashMD5(pass);
+        System.out.println("[DEBUG] Input email: '" + email + "'");
+        System.out.println("[DEBUG] Input password hash: '" + inputHash + "'");
+
+        if (cus == null) {
+            if (!accountDao.checkEmailExisted(email)) {
+                System.out.println("[LOGIN] Email does not exist in DB: " + email);
+                request.setAttribute("err", "<p style='color:yellow'>The account you entered is not registered. Please sign up first.</p>");
+            } else {
+                System.out.println("[LOGIN] Email exists but password incorrect for: " + email);
+                request.setAttribute("err", "<p style='color:red'>Email or password invalid</p>");
+            }
             request.getRequestDispatcher("WEB-INF/View/account/login.jsp").forward(request, response);
-        } else if (acc == null || acc.getAccountID() == -1) {
-            request.setAttribute("err", "<p style='color:red'>Email or password invalid</p>");
-            request.getRequestDispatcher("WEB-INF/View/account/login.jsp").forward(request, response);
-        } else if (acc.isIsActive() == false) {
+        } else if (!cus.isActive()) {
+            System.out.println("[LOGIN] Account is blocked: " + email);
             request.setAttribute("err", "<p style='color:red'>Your account is blocked</p>");
             request.getRequestDispatcher("WEB-INF/View/account/login.jsp").forward(request, response);
-        } else if (acc.getRoleID() != 3) {
-            request.setAttribute("err", "<p style='color:red'>You are not allowed to login with this role</p>");
-            request.getRequestDispatcher("WEB-INF/View/account/login.jsp").forward(request, response);
         } else {
-            CustomerDAO customerDao = new CustomerDAO();
-            Customer cus = customerDao.getCustomerByAccountId(acc.getAccountID());
+            System.out.println("[LOGIN] Login successful: " + email);
             session.setAttribute("cus", cus);
-            session.setAttribute("accountId", acc.getAccountID());
-            session.setAttribute("role", acc.getRoleID());
+            session.setAttribute("accountId", cus.getCustomerID());
+            session.setAttribute("role", "Customer");
+            session.setAttribute("user", cus);
+            System.out.println("[LOGIN] Session 'cus': " + session.getAttribute("cus"));
+            System.out.println("[LOGIN] Session 'accountId': " + session.getAttribute("accountId"));
+            System.out.println("[LOGIN] Session 'role': " + session.getAttribute("role"));
+            System.out.println("[LOGIN] Session 'user': " + session.getAttribute("user"));
 
-            session.setAttribute("user", acc);
             response.sendRedirect("Home");
         }
 

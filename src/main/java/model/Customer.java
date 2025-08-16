@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,31 +13,37 @@ import java.util.Date;
  */
 public class Customer {
     private int customerID;
-    private String Email;
-    private String Password;
-    private String FullName;
-    private String PhoneNumber;
-    private boolean isActive;
-    private String birthDay;
+    private String email;
+    private String passwordHash;
+    private String fullName;
+    private String phoneNumber;
+    private Date birthDate;
     private String gender;
-    private Date createAt;
+    private boolean isActive;
+    private boolean emailVerified;
+    private Date createdAt;
 
- 
+    // Constructor không tham số
     public Customer() {
     }
 
-    public Customer(int customerID, String Email, String Password, String FullName, String PhoneNumber, boolean isActive, String birthDay, String gender, Date createAt) {
+    // Constructor đầy đủ
+    public Customer(int customerID, String email, String passwordHash, String fullName,
+                    String phoneNumber, Date birthDate, String gender,
+                    boolean isActive, boolean emailVerified, Date createdAt) {
         this.customerID = customerID;
-        this.Email = Email;
-        this.Password = Password;
-        this.FullName = FullName;
-        this.PhoneNumber = PhoneNumber;
-        this.isActive = isActive;
-        this.birthDay = birthDay;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
         this.gender = gender;
-        this.createAt = createAt;
+        this.isActive = isActive;
+        this.emailVerified = emailVerified;
+        this.createdAt = createdAt;
     }
 
+    // Getter và Setter
     public int getCustomerID() {
         return customerID;
     }
@@ -46,51 +53,43 @@ public class Customer {
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
-    public void setEmail(String Email) {
-        this.Email = Email;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getPassword() {
-        return Password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String Password) {
-        this.Password = Password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getFullName() {
-        return FullName;
+        return fullName;
     }
 
-    public void setFullName(String FullName) {
-        this.FullName = FullName;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getPhoneNumber() {
-        return PhoneNumber;
+        return phoneNumber;
     }
 
-    public void setPhoneNumber(String PhoneNumber) {
-        this.PhoneNumber = PhoneNumber;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public boolean isIsActive() {
-        return isActive;
+    public Date getBirthDate() {
+        return birthDate;
     }
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public String getBirthDay() {
-        return birthDay;
-    }
-
-    public void setBirthDay(String birthDay) {
-        this.birthDay = birthDay;
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
     }
 
     public String getGender() {
@@ -101,13 +100,27 @@ public class Customer {
         this.gender = gender;
     }
 
-    public Date getCreateAt() {
-        return createAt;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setCreateAt(Date createAt) {
-        this.createAt = createAt;
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
-    
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 }
