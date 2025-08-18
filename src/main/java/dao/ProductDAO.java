@@ -86,14 +86,8 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getProductIsFeatured() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT TOP 30 p.ProductID, p.ProductName, p.Price, "
-            + " p.Quantity, "
-            + "p.SupplierID, sup.Name, cate.CategoryID, cate.CategoryName, br.BrandID, br.BrandName, "
-            + "p.IsFeatured, p.WarrantyPeriod, p.isActive, p.ImageURL1,p.ImageURL2,p.ImageURL3,p.ImageURL4"
+        String sql = "SELECT TOP 30 *"
             + "FROM Products p "
-            + "JOIN Categories cate ON cate.CategoryID = p.CategoryID "
-            + "JOIN Brands br ON br.BrandID = p.BrandID "
-            + "JOIN Suppliers sup ON sup.SupplierID = p.SupplierID "
             + "ORDER BY NEWID()";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -106,9 +100,7 @@ public class ProductDAO extends DBContext {
                 BigDecimal price = rs.getBigDecimal("Price");
                 int supplierId = rs.getInt("SupplierID");
                 int categoryId = rs.getInt("CategoryID");
-                String categoryName = rs.getString("CategoryName");
                 int brandId = rs.getInt("BrandID");
-                String brandName = rs.getString("BrandName");
                 int warrantyPeriod = rs.getInt("WarrantyPeriod");
                 boolean isActive = rs.getBoolean("isActive");
                 String imageUrl1 = rs.getString("ImageURL1");
@@ -117,7 +109,7 @@ public class ProductDAO extends DBContext {
                 String imageUrl4 = rs.getString("ImageURL4");
                 int quatity = rs.getInt("Quantity");
 
-                Product product = new Product(productId, productName, price, supplierId, categoryId, categoryName, brandId, brandName,warrantyPeriod, isActive, imageUrl1,imageUrl2,imageUrl3,imageUrl4);
+                Product product = new Product(productId, productName, price, supplierId, categoryId, brandId,warrantyPeriod, isActive, imageUrl1,imageUrl2,imageUrl3,imageUrl4);
 
                 list.add(product);
             }
