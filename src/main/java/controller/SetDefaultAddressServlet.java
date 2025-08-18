@@ -38,8 +38,8 @@ public class SetDefaultAddressServlet extends HttpServlet {
 
         AddressDAO dao = new AddressDAO();
         Address addr = dao.getAddressById(addressId);
-        if (addr != null && addr.getCustomerId() == cus.getId()) {
-            dao.unsetDefaultAddresses(cus.getId());// bo dia chi cu
+        if (addr != null && addr.getCustomerId() == cus.getCustomerID()) {
+            dao.unsetDefaultAddresses(cus.getCustomerID());// bo dia chi cu
             // Set địa chỉ này là mặc định
             addr.setDefault(true);
             dao.updateAddress(addr);

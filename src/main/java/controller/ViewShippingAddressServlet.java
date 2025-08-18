@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpSession;
 
 @WebServlet(name = "ViewShippingAddressServlet", urlPatterns = {"/ViewShippingAddress"})
 public class ViewShippingAddressServlet extends HttpServlet {
-
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -24,7 +24,7 @@ public class ViewShippingAddressServlet extends HttpServlet {
             return;
         }
         AddressDAO dao = new AddressDAO();
-        List<Address> addressList = dao.getAllAddressesByCustomerId(cus.getId());
+        List<Address> addressList = dao.getAllAddressesByCustomerId(cus.getCustomerID());
         if (addressList == null || addressList.isEmpty()) {
             request.setAttribute("noAddress", true);
         } else {

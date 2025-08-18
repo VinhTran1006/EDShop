@@ -1,7 +1,6 @@
-<%@page import="model.Account"%>
 <%@page import="model.Customer"%>
 <%
-        Account acc = (Account) session.getAttribute("user");
+        Customer acc = (Customer) session.getAttribute("user");
         Customer user = (Customer) session.getAttribute("cus");
         if (acc == null || user == null) {
             response.sendRedirect("Login");
@@ -17,12 +16,12 @@
         </div>
         <div>
             <div style="font-weight: 600;"><%= user != null ? user.getFullName() : "Customer"%></div>
-            <div class="text-muted" style="font-size:13px;"><%= user != null ? user.getPhone() : ""%></div>
+            <div class="text-muted" style="font-size:13px;"><%= user != null ? user.getPhoneNumber(): ""%></div>
         </div>
     </div>
     <ul class="nav flex-column account-menu">
         <li class="nav-item mb-1">
-            <a href="ViewProfile?id=<%= acc.getAccountID()%>"
+            <a href="ViewProfile?id=<%= acc.getCustomerID()%>"
                class="nav-link<%= currentPage.contains("ViewProfile") ? " active" : ""%>"
                style="display:flex;align-items:center;">
                 <i class="bi bi-person-circle me-2"></i> <span>Profile</span>

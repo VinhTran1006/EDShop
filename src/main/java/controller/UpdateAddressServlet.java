@@ -42,13 +42,13 @@ public class UpdateAddressServlet extends HttpServlet {
         Address addr = dao.getAddressById(addressId);
 
         // Không cho sửa nếu không đúng chủ sở hữu
-        if (addr == null || addr.getCustomerId() != cus.getId()) {
+        if (addr == null || addr.getCustomerId() != cus.getCustomerID()) {
             response.sendRedirect("ViewShippingAddress");
             return;
         }
 
         request.setAttribute("address", addr);
-        request.setAttribute("hasDefault", dao.hasDefaultAddress(cus.getId()));
+        request.setAttribute("hasDefault", dao.hasDefaultAddress(cus.getCustomerID()));
         request.getRequestDispatcher("/WEB-INF/View/customer/shippingAddress/UpdateShippingAddress.jsp").forward(request, response);
     }
 
@@ -91,19 +91,21 @@ public class UpdateAddressServlet extends HttpServlet {
 
         AddressDAO dao = new AddressDAO();
         // Nếu chọn default hoặc chưa có default thì set default
-        if (!dao.hasDefaultAddress(cus.getId()) || isDefault) {
+        if (!dao.hasDefaultAddress(cus.getCustomerID()) || isDefault) {
             isDefault = true;
-            dao.unsetDefaultAddresses(cus.getId());
+            dao.unsetDefaultAddresses(cus.getCustomerID());
         }
 
         Address address = new Address(
             addressId,
-            cus.getId(),
+            cus.getCustomerID(),
             province,
             district,
             ward,
             addressDetails,
-            isDefault
+            isDefault,
+            true
+                
         );
         dao.updateAddress(address);
 
