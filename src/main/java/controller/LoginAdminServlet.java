@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Account;
+import model.Staff;
 
 /**
  *
@@ -23,7 +23,8 @@ import model.Account;
 public class LoginAdminServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -78,22 +79,47 @@ public class LoginAdminServlet extends HttpServlet {
 
         AccountDAO dao = new AccountDAO();
         HttpSession session = request.getSession();
-        Account acc = dao.verifyMD5(email, pass);
-        if (acc != null && acc.getAccountID() != -1) {
-            if (acc.getRoleID() == 1) {
-                session.setAttribute("admin", acc);
-                session.setAttribute("role", acc.getRoleID());
+
+        // Lấy staff theo email/pass
+        Staff staff = dao.verifyStaff(email, pass);
+
+        String clientIp = request.getRemoteAddr();
+        String loginTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                .format(new java.util.Date());
+
+        if (staff != null) {
+            
+            if ("Admin".equalsIgnoreCase(staff.getRole())) {
+                session.setAttribute("admin", staff);
+                session.setAttribute("role", staff.getRole());
+
+                System.out.println("========== [ADMIN LOGIN SUCCESS] ==========");
+                System.out.println("Time: " + loginTime);
+                System.out.println("IP: " + clientIp);
+                System.out.println("Email: " + staff.getEmail());
+                System.out.println("Role: " + staff.getRole());
+                System.out.println("SessionID: " + session.getId());
+                System.out.println("===========================================");
 
                 response.sendRedirect("AdminDashboard");
             } else {
+                System.out.println("========== [ACCESS DENIED - NOT ADMIN] ==========");
+                System.out.println("Email: " + staff.getEmail() + " | Role: " + staff.getRole());
+                System.out.println("===============================================");
+
                 request.setAttribute("err", "<p style='color:red'>You do not have permission to access this page.</p>");
                 request.getRequestDispatcher("WEB-INF/View/account/login-admin.jsp").forward(request, response);
             }
         } else {
+            System.out.println("========== [LOGIN FAILED] ==========");
+            System.out.println("Time: " + loginTime);
+            System.out.println("IP: " + clientIp);
+            System.out.println("Email input: " + email);
+            System.out.println("===================================");
+
             request.setAttribute("err", "<p style='color:red'>Email or password invalid</p>");
             request.getRequestDispatcher("WEB-INF/View/account/login-admin.jsp").forward(request, response);
         }
-
     }
 
     /**

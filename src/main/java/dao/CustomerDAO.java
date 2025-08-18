@@ -7,8 +7,6 @@ package dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import model.Customer;
 import utils.DBContext;
 
@@ -16,7 +14,6 @@ import utils.DBContext;
  *
  * @author pc
  */
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 

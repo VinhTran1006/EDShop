@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import model.Account;
+import model.Staff;
 
 @WebFilter(urlPatterns = {
     "/AddPromotionServlet",
@@ -54,10 +54,10 @@ public class AdminFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
 
         HttpSession session = req.getSession(false); // avoid creating new session
-        Account acc = (session != null) ? (Account) session.getAttribute("admin") : null;
+        Staff staff = (session != null) ? (Staff) session.getAttribute("admin") : null;
 
 
-        if (acc == null || acc.getRole().equalsIgnoreCase("admin") == false) {
+        if (staff == null || staff.getRole().equalsIgnoreCase("admin") == false) {
             // Not logged in or not an admin
             res.sendRedirect(req.getContextPath() + "/LoginAdmin");
             return;

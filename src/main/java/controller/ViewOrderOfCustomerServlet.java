@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Account;
 import model.Customer;
 import model.Order;
 
@@ -65,15 +64,15 @@ public class ViewOrderOfCustomerServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-        Account acc = (Account) session.getAttribute("user");
+
         Customer cus = (Customer) session.getAttribute("cus");
 
-        if (acc == null || cus == null) {
+        if ( cus == null) {
             response.sendRedirect("Login");
             return;
         }
         OrderDAO dao = new OrderDAO();
-        List<Order> orders = dao.getOrdersByCustomerID(cus.getId());
+        List<Order> orders = dao.getOrdersByCustomerID(cus.getCustomerID());
         String success = request.getParameter("success");
         String error = request.getParameter("error");
 
