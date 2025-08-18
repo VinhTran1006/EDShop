@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import model.Account;
+import model.Staff;
 
 @WebFilter(urlPatterns = {
     "/StaffDashboard",
@@ -35,7 +35,7 @@ public class StaffFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
-                         FilterChain chain) throws IOException, ServletException {
+            FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
@@ -49,7 +49,7 @@ public class StaffFilter implements Filter {
 
         // Lấy account để kiểm tra role
         Staff staff = (Staff) session.getAttribute("user");
-        if (acc == null || acc.getRole().equalsIgnoreCase("staff") == false) {
+        if (!(staff.getRole().equalsIgnoreCase("staff") || staff.getRole().equalsIgnoreCase("admin"))) {
             res.sendRedirect(req.getContextPath() + "/LoginStaff");
             return;
         }

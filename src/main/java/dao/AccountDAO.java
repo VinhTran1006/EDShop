@@ -61,32 +61,32 @@ public class AccountDAO extends DBContext {
     }
 
     public Staff verifyStaff(String email, String pass) {
-        String sql = "SELECT * FROM Staff WHERE Email = ? AND PasswordHash = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, email);
-            ps.setString(2, hashMD5(pass));
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new Staff(
-                        rs.getInt("StaffID"),
-                        rs.getString("Email"),
-                        rs.getString("PasswordHash"),
-                        rs.getString("FullName"),
-                        rs.getString("PhoneNumber"),
-                        rs.getDate("BirthDate"),
-                        rs.getString("Gender"),
-                        rs.getString("Role"),
-                        rs.getDate("HiredDate"),
-                        rs.getBoolean("IsActive"),
-                        rs.getDate("CreatedAt")
-                    );
-                }
+    String sql = "SELECT * FROM Staffs WHERE Email = ? AND PasswordHash = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, email);
+        ps.setString(2, hashMD5(pass));
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return new Staff(
+                    rs.getInt("StaffID"),
+                    rs.getString("Email"),
+                    rs.getString("PasswordHash"),
+                    rs.getString("FullName"),
+                    rs.getString("PhoneNumber"),
+                    rs.getDate("BirthDate"),
+                    rs.getString("Gender"),
+                    rs.getString("Role"),
+                    rs.getDate("HiredDate"),
+                    rs.getBoolean("IsActive"),
+                    rs.getTimestamp("CreatedAt") // nên dùng getTimestamp cho DATETIME
+                );
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return null;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return null;
+}
 
     // ----------------------
     // CHECK EMAIL EXIST
