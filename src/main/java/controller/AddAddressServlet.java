@@ -23,7 +23,8 @@ public class AddAddressServlet extends HttpServlet {
             return;
         }
         AddressDAO addressDAO = new AddressDAO();
-        boolean hasDefault = addressDAO.hasDefaultAddress(cus.getId());
+
+        boolean hasDefault = addressDAO.hasDefaultAddress(cus.getCustomerID());
         request.setAttribute("hasDefault", hasDefault); // truyền biến vào JSP
         request.getRequestDispatcher("/WEB-INF/View/customer/shippingAddress/AddShippingAddress.jsp").forward(request, response);
     }
@@ -47,15 +48,14 @@ public class AddAddressServlet extends HttpServlet {
                 || ward.trim().isEmpty() || addressDetails.trim().isEmpty()) {
             request.setAttribute("error", "Please fill in all required fields.");
             AddressDAO addressDAO = new AddressDAO();
-            boolean hasDefault = addressDAO.hasDefaultAddress(cus.getId());
+            boolean hasDefault = addressDAO.hasDefaultAddress(cus.getCustomerID());
             request.setAttribute("hasDefault", hasDefault);
             request.getRequestDispatcher("/WEB-INF/View/customer/shippingAddress/AddShippingAddress.jsp").forward(request, response);
             return;
         }
 
         AddressDAO addressDAO = new AddressDAO();
-        boolean hasDefault = addressDAO.hasDefaultAddress(cus.getId());
-
+        boolean hasDefault = addressDAO.hasDefaultAddress(cus.getCustomerID());
         boolean isDefault;
         if (!hasDefault) {
             isDefault = true;
@@ -63,21 +63,23 @@ public class AddAddressServlet extends HttpServlet {
             isDefault = (request.getParameter("isDefault") != null);
         }
         if (isDefault) {
-            addressDAO.unsetDefaultAddresses(cus.getId());
+            addressDAO.unsetDefaultAddresses(cus.getCustomerID());
         }
 
         Address newAddress = new Address(
                 0,
-                cus.getId(),
+                cus.getCustomerID(),
                 province,
                 district,
                 ward,
                 addressDetails,
-                isDefault
+                isDefault,
+                true
         );
         addressDAO.createAddress(newAddress);
 
         response.sendRedirect("ViewShippingAddress");
-        System.out.println("taokhongga");
+
     }
 }
+

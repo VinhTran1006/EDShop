@@ -44,7 +44,8 @@ public class DeleteAddressServlet extends HttpServlet {
 
         AddressDAO dao = new AddressDAO();
         Address address = dao.getAddressById(addressId);
-        if (address == null || address.getCustomerId() != cus.getId()) {
+
+        if (address == null || address.getCustomerId() != cus.getCustomerID()) {
             out.print("{\"success\":false,\"message\":\"Address not found or unauthorized.\"}");
             return;
         }
@@ -57,3 +58,4 @@ public class DeleteAddressServlet extends HttpServlet {
         }
     }
 }
+

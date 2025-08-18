@@ -15,7 +15,10 @@ public class AddressDAO extends DBContext {
     // Lấy tất cả địa chỉ của 1 khách hàng
     public List<Address> getAllAddressesByCustomerId(int customerId) {
         List<Address> list = new ArrayList<>();
-        String sql = "SELECT * FROM Addresses WHERE CustomerID = ? ORDER BY IsDefault DESC, AddressID DESC";
+
+        String sql = "SELECT * FROM Addresses " +
+                 "WHERE CustomerID = ? AND IsActive = 1 " +
+                 "ORDER BY IsDefault DESC, AddressID DESC";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, customerId);
@@ -28,7 +31,9 @@ public class AddressDAO extends DBContext {
                         rs.getString("DistrictName"),
                         rs.getString("WardName"),
                         rs.getString("AddressDetails"),
-                        rs.getBoolean("IsDefault")
+
+                        rs.getBoolean("IsDefault"),
+                        rs.getBoolean("IsActive")
                 );
                 list.add(address);
             }
@@ -73,7 +78,9 @@ public class AddressDAO extends DBContext {
                         rs.getString("DistrictName"),
                         rs.getString("WardName"),
                         rs.getString("AddressDetails"),
-                        rs.getBoolean("IsDefault")
+
+                        rs.getBoolean("IsDefault"),
+                        rs.getBoolean("IsActive")
                 );
             }
         } catch (Exception e) {
@@ -129,7 +136,9 @@ public class AddressDAO extends DBContext {
                         rs.getString("DistrictName"),
                         rs.getString("WardName"),
                         rs.getString("AddressDetails"),
-                        rs.getBoolean("IsDefault")
+
+                        rs.getBoolean("IsDefault"),
+                        rs.getBoolean("IsActive")
                 );
             }
         } catch (Exception e) {
@@ -243,3 +252,4 @@ public class AddressDAO extends DBContext {
         return addresses;
     }
 }
+
