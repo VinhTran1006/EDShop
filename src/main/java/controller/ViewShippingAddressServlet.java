@@ -33,3 +33,4 @@ public class ViewShippingAddressServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/View/customer/shippingAddress/ViewShippingAddress.jsp").forward(request, response);
     }
 }
+

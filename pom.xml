@@ -22,11 +22,7 @@
         </dependency>
 
         <!-- Google OAuth2 API Client -->
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-oauth2</artifactId>
-            <version>v2-rev202-1.25.0</version> <!-- Hoặc giữ nguyên v2-rev157-1.25.0 nếu bạn muốn -->
-        </dependency>
+       
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
@@ -58,12 +54,7 @@
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>7.0</version>
-            <scope>provided</scope>
-        </dependency>
+       
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
@@ -104,11 +95,6 @@
             <version>5.2.5</version>
         </dependency>
         
-        <dependency>
-            <groupId>com.cloudinary</groupId>
-            <artifactId>cloudinary-http44</artifactId>
-            <version>1.29.0</version>
-        </dependency>
     </dependencies>
 
     <build>

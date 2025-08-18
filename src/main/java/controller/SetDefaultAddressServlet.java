@@ -58,3 +58,4 @@ public class SetDefaultAddressServlet extends HttpServlet {
         return "Set an address as default for the current customer";
     }
 }
+

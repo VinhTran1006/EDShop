@@ -248,3 +248,4 @@ public class AddressDAO extends DBContext {
         return addresses;
     }
 }
+
