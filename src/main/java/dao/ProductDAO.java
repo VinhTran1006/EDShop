@@ -16,20 +16,19 @@
 //import java.util.HashMap;
 //import java.util.List;
 //import java.util.Map;
-//import model.Brand;
+//
 //
 //import model.CartItem;
-//import model.Category;
 //import model.Product;
 //import model.ProductDetail;
-//import model.ProductVariant;
 //
-//import model.Suppliers;
+//
+//
 //import utils.DBContext;
 //
 ///**
 // *
-// * @author HP - Gia Khiêm
+// *
 // */
 //public class ProductDAO extends DBContext {
 //
