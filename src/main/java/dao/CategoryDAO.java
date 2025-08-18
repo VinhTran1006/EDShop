@@ -264,7 +264,6 @@ public class CategoryDAO extends DBContext {
     }
           
     public static void main(String[] args) {
-        // Code thực thi sẽ viết ở đây
        // ArrayList<Category> result = new ArrayList<>();
        Category result;
     CategoryDAO dao = new CategoryDAO();
