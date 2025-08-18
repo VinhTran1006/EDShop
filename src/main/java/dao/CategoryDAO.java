@@ -18,7 +18,7 @@ import utils.DBContext;
 
 /**
  *
- * @author HP - Gia Khiêm
+ * 
  */
 public class CategoryDAO extends DBContext {
 
@@ -26,22 +26,19 @@ public class CategoryDAO extends DBContext {
         super();
     }
 
-    public List<Category> getAllCategory() {
-        List<Category> categoryList = new ArrayList<>();
-        String sql = "SELECT CategoryID, CategoryName, Description, CreatedAt, ImgURLLogo, isActive FROM Categories";
-
+    public ArrayList<Category> getAllCategory() {
+        ArrayList<Category> categoryList = new ArrayList<>();
+        String sql = "SELECT CategoryID, CategoryName, ImgURLLogo, isActive FROM Categories";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int categoryId = rs.getInt("CategoryID");
                 String categoryName = rs.getString("CategoryName");
-                String descriptionCategory = rs.getString("Description");
-                Timestamp createdAt = rs.getTimestamp("CreatedAt");
                 String imgUrlLogo = rs.getString("ImgURLLogo");
-                boolean isActive = rs.getBoolean("isActive");
+                boolean isActive = rs.getBoolean("IsActive");
 
-                categoryList.add(new Category(categoryId, categoryName, descriptionCategory, createdAt, imgUrlLogo, isActive));
+                categoryList.add(new Category(categoryId, categoryName, imgUrlLogo, isActive));
             }
             return categoryList;
         } catch (Exception e) {
@@ -50,9 +47,9 @@ public class CategoryDAO extends DBContext {
         return categoryList;
     }
 
-    public List<CategoryDetailGroup> getCategoryDetailGroupById(int categoryId) {
-        List<CategoryDetailGroup> categoryDetailGroupList = new ArrayList<>();
-        String sql = "SELECT CategoryDetailsGroupID, NameCategoryDetailsGroup, CategoryID from CategoryDetailsGroup where CategoryID = ?";
+    public ArrayList<CategoryDetailGroup> getCategoryDetailGroupById(int categoryId) {
+        ArrayList<CategoryDetailGroup> categoryDetailGroupList = new ArrayList<>();
+        String sql = "SELECT * from CategoryDetailsGroup where CategoryID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, categoryId);
@@ -61,8 +58,9 @@ public class CategoryDAO extends DBContext {
                 int categoryDetailsGroupID = rs.getInt("CategoryDetailsGroupID");
                 String nameCategoryDetailsGroup = rs.getString("NameCategoryDetailsGroup");
                 int categoryID = rs.getInt("CategoryID");
+                boolean isActive = rs.getBoolean("IsActive");
 
-                categoryDetailGroupList.add(new CategoryDetailGroup(categoryDetailsGroupID, nameCategoryDetailsGroup, categoryID));
+                categoryDetailGroupList.add(new CategoryDetailGroup(categoryDetailsGroupID, nameCategoryDetailsGroup,categoryID,isActive));
 
             }
         } catch (SQLException e) {
@@ -71,20 +69,21 @@ public class CategoryDAO extends DBContext {
         return categoryDetailGroupList;
     }
 
-    public List<CategoryDetail> getCategoryDetailById(int categoryId) {
-        List<CategoryDetail> categoryDetailList = new ArrayList<>();
-        String sql = "SELECT CategoryDetailID, CategoryID, AttributeName, CategoryDetailsGroupID from CategoryDetails where CategoryID = ?";
+    public ArrayList<CategoryDetail> getCategoryDetailById(int categoryId) {
+        ArrayList<CategoryDetail> categoryDetailList = new ArrayList<>();
+        String sql = "SELECT CategoryDetailID, AttributeName, CategoryDetailsGroupID, IsActive from CategoryDetails where CategoryDetailsGroupID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, categoryId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int categoryDetailID = rs.getInt("CategoryDetailID");
-                int categoryID = rs.getInt("CategoryID");
+           
                 String attributeName = rs.getString("AttributeName");
                 int categoryDetailsGroupID = rs.getInt("CategoryDetailsGroupID");
+                boolean isActive = rs.getBoolean("IsActive");
 
-                categoryDetailList.add(new CategoryDetail(categoryDetailID, categoryID, attributeName, categoryDetailsGroupID));
+                categoryDetailList.add(new CategoryDetail(categoryDetailID, attributeName, categoryDetailsGroupID, isActive));
 
             }
         } catch (SQLException e) {
@@ -117,7 +116,7 @@ public class CategoryDAO extends DBContext {
 //    }
     public Category getCategoryById(int categoryID) {
         Category category = null;
-        String sql = "SELECT CategoryID, CategoryName, Description, CreatedAt, ImgURLLogo, isActive FROM Categories where categoryID = ?";
+        String sql = "SELECT CategoryID, CategoryName, ImgURLLogo, isActive FROM Categories where categoryID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, categoryID);
@@ -125,19 +124,20 @@ public class CategoryDAO extends DBContext {
             if (rs.next()) {
                 int categoryId = rs.getInt("CategoryID");
                 String categoryName = rs.getString("CategoryName");
-                String descriptionCategory = rs.getString("Description");
-                Timestamp createdAt = rs.getTimestamp("CreatedAt");
+             
+               
                 String imgUrlLogo = rs.getString("ImgURLLogo");
                 boolean isActive = rs.getBoolean("isActive");
 
-                category = new Category(categoryId, categoryName, descriptionCategory, createdAt, imgUrlLogo, isActive);
+                category = new Category(categoryId, categoryName, imgUrlLogo, isActive);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return category;
     }
-
+    
+   
     public boolean updateCategporyDetailGroup(int categoryDetailsGroupID, String nameCategoryDetailsGroup) {
         String sql = "UPDATE CategoryDetailsGroup SET NameCategoryDetailsGroup = ? WHERE CategoryDetailsGroupID = ?";
         try ( PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -164,11 +164,12 @@ public class CategoryDAO extends DBContext {
         return false;
     }
 
-    public boolean updateCategory(int categoryId, String categoryName, String description) {
-        String sql = "UPDATE Categories SET CategoryName = ? WHERE CategoryID = ?";
+    public boolean updateCategory(int categoryId, String categoryName, String imageUML) {
+        String sql = "UPDATE Categories SET CategoryName = ?, imgURLogo =? WHERE CategoryID = ?";
         try ( PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, categoryName);
-            pstmt.setInt(2, categoryId);
+            pstmt.setString(2, imageUML);
+            pstmt.setInt(3, categoryId);
             return pstmt.executeUpdate() >= 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -260,5 +261,17 @@ public class CategoryDAO extends DBContext {
             e.printStackTrace();
         }
         return categoryDetailID; // Trả về -1 nếu lỗi
+    }
+          
+    public static void main(String[] args) {
+        // Code thực thi sẽ viết ở đây
+       // ArrayList<Category> result = new ArrayList<>();
+       Category result;
+    CategoryDAO dao = new CategoryDAO();
+    result = dao.getCategoryById(1);
+        System.out.println(result);
+//       for (Category a : result) {
+//           System.out.println(a.toString());
+//       }
     }
 }
