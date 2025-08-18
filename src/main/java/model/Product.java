@@ -47,6 +47,7 @@ public class Product {
         this.imageUrl3 = imageUrl3;
         this.imageUrl4 = imageUrl4;
     }
+    
 
     public int getProductID() {
         return productID;
