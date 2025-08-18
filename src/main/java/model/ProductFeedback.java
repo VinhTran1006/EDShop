@@ -4,6 +4,7 @@
  */
 package model;
 
+import com.google.api.client.util.DateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -15,9 +16,9 @@ import java.util.List;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-public class ProductRating {
+public class ProductFeedback {
 
-    private int rateID;
+    private int feedbackID;
     private int customerID;
     private int productID;
     private int orderID;
@@ -26,12 +27,15 @@ public class ProductRating {
     private String comment;
     private boolean isActive;
     private boolean isRead;
+    private String reply;
+    private int staffID;
+    private DateTime replyDate;
     
-    public ProductRating() {
+    public ProductFeedback() {
     }
 
-    public ProductRating(int rateID, int customerID, int productID, int orderID, Date createdDate, int star, String comment, boolean isActive, boolean isRead) {
-        this.rateID = rateID;
+    public ProductFeedback(int feedbackID, int customerID, int productID, int orderID, Date createdDate, int star, String comment, boolean isActive, boolean isRead, String reply, int staffID, DateTime replyDate) {
+        this.feedbackID = feedbackID;
         this.customerID = customerID;
         this.productID = productID;
         this.orderID = orderID;
@@ -40,14 +44,17 @@ public class ProductRating {
         this.comment = comment;
         this.isActive = isActive;
         this.isRead = isRead;
+        this.reply = reply;
+        this.staffID = staffID;
+        this.replyDate = replyDate;
     }
 
-    public int getRateID() {
-        return rateID;
+    public int getFeedbackID() {
+        return feedbackID;
     }
 
-    public void setRateID(int rateID) {
-        this.rateID = rateID;
+    public void setFeedbackID(int feedbackID) {
+        this.feedbackID = feedbackID;
     }
 
     public int getCustomerID() {
@@ -114,6 +121,31 @@ public class ProductRating {
         this.isRead = isRead;
     }
 
+    public String getReply() {
+        return reply;
+    }
+
+    public void setReply(String reply) {
+        this.reply = reply;
+    }
+
+    public int getStaffID() {
+        return staffID;
+    }
+
+    public void setStaffID(int staffID) {
+        this.staffID = staffID;
+    }
+
+    public DateTime getReplyDate() {
+        return replyDate;
+    }
+
+    public void setReplyDate(DateTime replyDate) {
+        this.replyDate = replyDate;
+    }
+
+    
     
    
 }

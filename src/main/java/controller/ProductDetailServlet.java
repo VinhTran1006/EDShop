@@ -20,7 +20,7 @@ import model.Product;
 import model.ProductDetail;
 import dao.ProductRatingDAO;
 import dao.CustomerDAO;
-import model.ProductRating;
+import model.ProductFeedback;
 import model.Customer;
 import dao.RatingRepliesDAO;
 import java.util.ArrayList;
@@ -93,11 +93,11 @@ public class ProductDetailServlet extends HttpServlet {
             ProductRatingDAO ratingDAO = new ProductRatingDAO();
             CustomerDAO customerDAO = new CustomerDAO();
             RatingRepliesDAO repliesDAO = new RatingRepliesDAO();
-            List<ProductRating> productRatings = ratingDAO.getProductRatingsByProductId(productId);
+            List<ProductFeedback> productRatings = ratingDAO.getProductRatingsByProductId(productId);
             double totalStars = 0;
             int visibleRatingCount = 0;
 
-            for (ProductRating rating : productRatings) {
+            for (ProductFeedback rating : productRatings) {
                 if (!rating.isIsDeleted()) {  // <-- chỉ tính đánh giá chưa bị ẩn
                     totalStars += rating.getStar();
                     visibleRatingCount++;
@@ -124,8 +124,8 @@ public class ProductDetailServlet extends HttpServlet {
             request.setAttribute("cateGroupList", cateGroupList);
             request.setAttribute("cateDetailList", cateDetailList);
             request.setAttribute("productDetailList", productDetailList);
-            List<ProductRating> visibleRatings = new ArrayList<>();
-            for (ProductRating rating : productRatings) {
+            List<ProductFeedback> visibleRatings = new ArrayList<>();
+            for (ProductFeedback rating : productRatings) {
                 if (!rating.isIsDeleted()) {
                     visibleRatings.add(rating);
                 }

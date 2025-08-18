@@ -15,6 +15,7 @@ public class Product {
 
     private int productID;
     private String productName;
+    private String description;
     private Date AddedAt;
     private BigDecimal price;
     private int supplierID;
@@ -31,9 +32,10 @@ public class Product {
     public Product() {
     }
 
-    public Product(int productID, String productName, Date AddedAt, BigDecimal price, int supplierID, int categoryID, int brandID, int warrantyPeriod, boolean isActive, int quantity, String imageUrl1, String imageUrl2, String imageUrl3, String imageUrl4) {
+    public Product(int productID, String productName, String description, Date AddedAt, BigDecimal price, int supplierID, int categoryID, int brandID, int warrantyPeriod, boolean isActive, int quantity, String imageUrl1, String imageUrl2, String imageUrl3, String imageUrl4) {
         this.productID = productID;
         this.productName = productName;
+        this.description = description;
         this.AddedAt = AddedAt;
         this.price = price;
         this.supplierID = supplierID;
@@ -47,7 +49,6 @@ public class Product {
         this.imageUrl3 = imageUrl3;
         this.imageUrl4 = imageUrl4;
     }
-    
 
     public int getProductID() {
         return productID;
@@ -63,6 +64,14 @@ public class Product {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Date getAddedAt() {
@@ -161,11 +170,5 @@ public class Product {
         this.imageUrl4 = imageUrl4;
     }
 
-    @Override
-    public String toString() {
-        return "Product{" + "productID=" + productID + ", productName=" + productName + ", AddedAt=" + AddedAt + ", price=" + price + ", supplierID=" + supplierID + ", categoryID=" + categoryID + ", brandID=" + brandID + ", warrantyPeriod=" + warrantyPeriod + ", isActive=" + isActive + ", quantity=" + quantity + ", imageUrl1=" + imageUrl1 + ", imageUrl2=" + imageUrl2 + ", imageUrl3=" + imageUrl3 + ", imageUrl4=" + imageUrl4 + '}';
-    }
-
-    
-     
+   
 }

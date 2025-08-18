@@ -6,7 +6,7 @@ package dao;
 
 import utils.DBContext;
 import model.Product;
-import model.ProductRating;
+import model.ProductFeedback;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class ProductRatingDAO extends DBContext {
 
-    public List<ProductRating> getAllProductRating(int productID) {
-        List<ProductRating> list = new ArrayList<>();
+    public List<ProductFeedback> getAllProductRating(int productID) {
+        List<ProductFeedback> list = new ArrayList<>();
         String query = "SELECT P.* ,C.FullName FROM ProductRatings AS P\n"
                 + "JOIN Customers AS C ON C.CustomerID = P.CustomerID \n"
                 + "WHERE ProductID = ?  ORDER BY P.CreatedDate DESC";
@@ -29,7 +29,7 @@ public class ProductRatingDAO extends DBContext {
             pre.setInt(1, productID);
             ResultSet rs = pre.executeQuery();
             while (rs.next()) {
-                ProductRating p = new ProductRating(
+                ProductFeedback p = new ProductFeedback(
                         rs.getInt("RateID"),
                         rs.getInt("CustomerID"),
                         rs.getInt("ProductID"),
@@ -67,9 +67,9 @@ public class ProductRatingDAO extends DBContext {
         return star;
     }
 
-    public ProductRating getStarAVG(int productId) {
+    public ProductFeedback getStarAVG(int productId) {
         int star = 0;
-        ProductRating p = new ProductRating();
+        ProductFeedback p = new ProductFeedback();
         String query = "SELECT COALESCE(ROUND(SUM(Star) * 1.0 / COUNT(Star), 0), 0) AS avs\n"
                 + "FROM ProductRatings as p  \n"
                 + "WHERE p.ProductID = ?";
@@ -87,8 +87,8 @@ public class ProductRatingDAO extends DBContext {
         return p;
     }
 
-    public ProductRating getProductRating(int rateID) {
-        ProductRating pro = new ProductRating();
+    public ProductFeedback getProductRating(int rateID) {
+        ProductFeedback pro = new ProductFeedback();
         String query = "select * from ProductRatings WHERE RateID =?";
         try {
             PreparedStatement pre = conn.prepareStatement(query);
@@ -113,14 +113,14 @@ public class ProductRatingDAO extends DBContext {
         return pro;
     }
 
-    public List<ProductRating> getNewFeedback() {
-        List<ProductRating> list = new ArrayList<>();
+    public List<ProductFeedback> getNewFeedback() {
+        List<ProductFeedback> list = new ArrayList<>();
         String query = "SELECT P.* ,C.FullName FROM ProductRatings AS P JOIN Customers AS C ON C.CustomerID = P.CustomerID  ORDER BY P.IsRead ASC";
         try {
             PreparedStatement pre = conn.prepareStatement(query);
             ResultSet rs = pre.executeQuery();
             while (rs.next()) {
-                ProductRating p = new ProductRating(
+                ProductFeedback p = new ProductFeedback(
                         rs.getInt("RateID"),
                         rs.getInt("CustomerID"),
                         rs.getInt("ProductID"),
@@ -212,8 +212,8 @@ public class ProductRatingDAO extends DBContext {
 
     }
 
-    public List<ProductRating> getProductRatingsByProductId(int productId) {
-        List<ProductRating> list = new ArrayList<>();
+    public List<ProductFeedback> getProductRatingsByProductId(int productId) {
+        List<ProductFeedback> list = new ArrayList<>();
 
         // ✅ JOIN để lấy thêm FullName từ bảng Customers
         String sql = "SELECT P.*, C.FullName "
@@ -226,7 +226,7 @@ public class ProductRatingDAO extends DBContext {
             ps.setInt(1, productId);
             try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    ProductRating rating = new ProductRating();
+                    ProductFeedback rating = new ProductFeedback();
                     rating.setRateID(rs.getInt("RateID"));
                     rating.setCustomerID(rs.getInt("CustomerID"));
                     rating.setProductID(rs.getInt("ProductID"));

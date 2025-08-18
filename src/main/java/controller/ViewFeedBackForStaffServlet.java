@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import model.Customer;
 import model.Product;
-import model.ProductRating;
+import model.ProductFeedback;
 import model.RatingReplies;
 
 /**
@@ -67,7 +67,7 @@ public class ViewFeedBackForStaffServlet extends HttpServlet {
           String isOK = request.getParameter("isOk");
            
         ProductRatingDAO pDAO = new ProductRatingDAO();
-        ProductRating productRating = pDAO.getProductRating(rateID);
+        ProductFeedback productRating = pDAO.getProductRating(rateID);
         
         int productID = productRating.getProductID();
         

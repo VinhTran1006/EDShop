@@ -7,7 +7,7 @@ package controller;
 
 
 import dao.ProductRatingDAO;
-import model.ProductRating;
+import model.ProductFeedback;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -61,7 +61,7 @@ public class ViewListNewFeedbackServlet extends HttpServlet {
     throws ServletException, IOException {
         
         ProductRatingDAO prDAO = new ProductRatingDAO();
-        List<ProductRating> list = prDAO.getNewFeedback();
+        List<ProductFeedback> list = prDAO.getNewFeedback();
         
         if(list != null){
         request.setAttribute("ProductRating", list);
