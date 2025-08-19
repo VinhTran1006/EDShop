@@ -52,7 +52,7 @@
                                         String statusClass;
                                         String statusText;
 
-                                        if (s.getActivate() == 1) {
+                                        if (s.getIsActive()== true) {
                                             statusClass = "status-active";
                                             statusText = "Active";
                                         } else {
@@ -62,7 +62,7 @@
 
                             %>
                             <tr>
-                                <td><%= s.getTaxId()%></td>
+                                <td><%= s.getTaxID()%></td>
                                 <td><%= s.getName()%></td>
                                 <td><%= s.getPhoneNumber()%></td>
                                 <td><%= s.getEmail()%></td>
@@ -72,10 +72,10 @@
                                     <a href="UpdateSupplier?id=<%= s.getSupplierID()%>" class="btn btn-warning">Edit</a>
                                     <form class="delete-form" action="DeleteSupplier" method="post" style="display:inline;">
                                         <input type="hidden" name="supplierID" value="<%= s.getSupplierID()%>"/>
-                                        <input type="hidden" name="taxId" value="<%= s.getTaxId()%>"/>
+                                        <input type="hidden" name="taxId" value="<%= s.getTaxID()%>"/>
                                         <button type="button" class="btn btn-danger delete-btn"
                                                 data-supplier-id="<%= s.getSupplierID()%>"
-                                                data-tax-id="<%= s.getTaxId()%>"
+                                                data-tax-id="<%= s.getTaxID()%>"
                                                 data-supplier-name="<%= s.getName()%>">
                                             Delete
                                         </button>

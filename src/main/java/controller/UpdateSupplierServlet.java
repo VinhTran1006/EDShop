@@ -103,11 +103,8 @@ public class UpdateSupplierServlet extends HttpServlet {
             String phoneNumber = request.getParameter("phoneNumber");
             String address = request.getParameter("address");
             String contactPerson = request.getParameter("contactPerson");
-            String[] supplyGroup = request.getParameterValues("supplyGroup");
-            String supplyGroupStr = (supplyGroup != null) ? String.join(",", supplyGroup) : "";
             String description = request.getParameter("description");
-            int activate = Integer.parseInt(request.getParameter("activate"));
-
+            
             SupplierDAO dao = new SupplierDAO();
             Suppliers supplier = dao.getSupplierById(supplierID);
 
@@ -123,8 +120,6 @@ public class UpdateSupplierServlet extends HttpServlet {
                 errorMsg = "Invalid email address.";
             } else if (phoneNumber == null || !phoneNumber.matches("^\\+?[0-9\\s\\-()]{8,20}$")) {
                 errorMsg = "Invalid phone number (must be 8-20 digits, may include +, -, ()).";
-            } else if (supplyGroup == null || supplyGroup.length == 0) {
-                errorMsg = "Please select at least one Supply Group!";
             } else if (!name.equalsIgnoreCase(supplier.getName()) && dao.isSupplierNameExist(name)) {
                 errorMsg = "Company name already exists!";
             }
@@ -135,9 +130,8 @@ public class UpdateSupplierServlet extends HttpServlet {
                 supplier.setPhoneNumber(phoneNumber);
                 supplier.setAddress(address);
                 supplier.setContactPerson(contactPerson);
-                supplier.setSupplyGroup(supplyGroupStr);
+
                 supplier.setDescription(description);
-                supplier.setActivate(activate);
 
                 request.setAttribute("errorMessage", errorMsg);
                 request.setAttribute("supplier", supplier);
@@ -150,10 +144,8 @@ public class UpdateSupplierServlet extends HttpServlet {
             supplier.setPhoneNumber(phoneNumber);
             supplier.setAddress(address);
             supplier.setContactPerson(contactPerson);
-            supplier.setSupplyGroup(supplyGroupStr);
+
             supplier.setDescription(description);
-            supplier.setActivate(activate);
-            supplier.setLastModify(LocalDateTime.now());
 
             boolean success = dao.updateSupplier(supplier);
             if (success) {
@@ -163,6 +155,7 @@ public class UpdateSupplierServlet extends HttpServlet {
                 request.setAttribute("supplier", supplier);
                 request.getRequestDispatcher("/WEB-INF/View/admin/supplierManagement/updateSupplier.jsp").forward(request, response);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "An error occurred: " + e.getMessage());
