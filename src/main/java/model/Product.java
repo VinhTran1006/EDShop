@@ -1,10 +1,11 @@
-/*
+    /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package model;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  *
@@ -15,6 +16,7 @@ public class Product {
     private int productID;
     private String productName;
     private String description;
+    private Date AddedAt;
     private BigDecimal price;
     private int supplierID;
     private int categoryID;
@@ -26,15 +28,15 @@ public class Product {
     private String imageUrl2;
     private String imageUrl3;
     private String imageUrl4;
-    private BigDecimal ImportPrice;
 
     public Product() {
     }
 
-    public Product(int productID, String productName, String description, BigDecimal price, int supplierID, int categoryID, int brandID, int warrantyPeriod, boolean isActive, int quantity, String imageUrl1, String imageUrl2, String imageUrl3, String imageUrl4, BigDecimal ImportPrice) {
+    public Product(int productID, String productName, String description, Date AddedAt, BigDecimal price, int supplierID, int categoryID, int brandID, int warrantyPeriod, boolean isActive, int quantity, String imageUrl1, String imageUrl2, String imageUrl3, String imageUrl4) {
         this.productID = productID;
         this.productName = productName;
         this.description = description;
+        this.AddedAt = AddedAt;
         this.price = price;
         this.supplierID = supplierID;
         this.categoryID = categoryID;
@@ -46,7 +48,6 @@ public class Product {
         this.imageUrl2 = imageUrl2;
         this.imageUrl3 = imageUrl3;
         this.imageUrl4 = imageUrl4;
-        this.ImportPrice = ImportPrice;
     }
 
     public int getProductID() {
@@ -71,6 +72,14 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Date getAddedAt() {
+        return AddedAt;
+    }
+
+    public void setAddedAt(Date AddedAt) {
+        this.AddedAt = AddedAt;
     }
 
     public BigDecimal getPrice() {
@@ -161,14 +170,5 @@ public class Product {
         this.imageUrl4 = imageUrl4;
     }
 
-    public BigDecimal getImportPrice() {
-        return ImportPrice;
-    }
-
-    public void setImportPrice(BigDecimal ImportPrice) {
-        this.ImportPrice = ImportPrice;
-    }
-
-    
-     
+   
 }
