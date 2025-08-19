@@ -45,7 +45,7 @@ public class AddAddressServlet extends HttpServlet {
         if (province == null || district == null || ward == null || addressDetails == null
                 || province.trim().isEmpty() || district.trim().isEmpty()
                 || ward.trim().isEmpty() || addressDetails.trim().isEmpty()) {
-            request.setAttribute("error", "Please fill in all required fields.");
+            request.setAttribute("error", "Please fill in all required fields!");
             AddressDAO addressDAO = new AddressDAO();
             boolean hasDefault = addressDAO.hasDefaultAddress(cus.getCustomerID());
             request.setAttribute("hasDefault", hasDefault);
