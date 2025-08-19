@@ -17,7 +17,7 @@ public class Order {
     private String orderDate;
     private String deliveredDate;
     private int status;
-    private int voucherID;
+    private int discount;
     private String addressSnapshot;
     private int addressID;
     private String updatedAt;
@@ -25,7 +25,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(int orderID, int customerID, int staffID, long totalAmount, String orderDate, String deliveredDate, int status, int voucherID, String addressSnapshot, int addressID, String updatedAt) {
+    public Order(int orderID, int customerID, int staffID, long totalAmount, String orderDate, String deliveredDate, int status, int discount, String addressSnapshot, int addressID, String updatedAt) {
         this.orderID = orderID;
         this.customerID = customerID;
         this.staffID = staffID;
@@ -33,7 +33,7 @@ public class Order {
         this.orderDate = orderDate;
         this.deliveredDate = deliveredDate;
         this.status = status;
-        this.voucherID = voucherID;
+        this.discount = discount;
         this.addressSnapshot = addressSnapshot;
         this.addressID = addressID;
         this.updatedAt = updatedAt;
@@ -95,12 +95,12 @@ public class Order {
         this.status = status;
     }
 
-    public int getVoucherID() {
-        return voucherID;
+    public int getDiscount() {
+        return discount;
     }
 
-    public void setVoucherID(int voucherID) {
-        this.voucherID = voucherID;
+    public void setDiscount(int discount) {
+        this.discount = discount;
     }
 
     public String getAddressSnapshot() {
@@ -127,6 +127,6 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
-   
+  
 
 }

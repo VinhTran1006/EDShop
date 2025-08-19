@@ -19,7 +19,7 @@ public class Staff {
     private String phoneNumber;
     private Date birthDate;
     private String gender;
-    private String role; // "Admin" hoặc "Staff"
+    private String role; 
     private Date hiredDate;
     private boolean isActive;
     private Date createdAt;

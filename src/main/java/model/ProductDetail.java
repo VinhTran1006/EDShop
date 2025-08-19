@@ -11,17 +11,17 @@ package model;
 public class ProductDetail {
     private int productDetailID;
     private int productID;
-    private int categoryDetailID;
+    private int attibuteID;
     private String attributeValue;
     private Boolean isActive;
 
     public ProductDetail() {
     }
 
-    public ProductDetail(int productDetailID, int productID, int categoryDetailID, String attributeValue, Boolean isActive) {
+    public ProductDetail(int productDetailID, int productID, int attibuteID, String attributeValue, Boolean isActive) {
         this.productDetailID = productDetailID;
         this.productID = productID;
-        this.categoryDetailID = categoryDetailID;
+        this.attibuteID = attibuteID;
         this.attributeValue = attributeValue;
         this.isActive = isActive;
     }
@@ -42,12 +42,12 @@ public class ProductDetail {
         this.productID = productID;
     }
 
-    public int getCategoryDetailID() {
-        return categoryDetailID;
+    public int getAttibuteID() {
+        return attibuteID;
     }
 
-    public void setCategoryDetailID(int categoryDetailID) {
-        this.categoryDetailID = categoryDetailID;
+    public void setAttibuteID(int attibuteID) {
+        this.attibuteID = attibuteID;
     }
 
     public String getAttributeValue() {
@@ -65,7 +65,6 @@ public class ProductDetail {
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
-
 
    
 }
