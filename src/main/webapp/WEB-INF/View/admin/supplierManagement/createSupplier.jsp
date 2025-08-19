@@ -42,32 +42,7 @@
                             <tr>
                                 <th class="supplier-label">Contact Person:</th>
                                 <td><input type="text" name="contactPerson" class="form-control supplier-input"></td>
-                            </tr>
-                            <tr>
-                                <th class="supplier-label">Supply Group:</th>
-                                <td>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="supplyGroup" value="Air Conditioners" id="sgAC">
-                                        <label class="form-check-label" for="sgAC">Air Conditioners</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="supplyGroup" value="Washing Machines" id="sgWM">
-                                        <label class="form-check-label" for="sgWM">Washing Machines</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="supplyGroup" value="Rice Cookers" id="sgRC">
-                                        <label class="form-check-label" for="sgRC">Rice Cookers</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="supplyGroup" value="Refrigerators" id="sgRF">
-                                        <label class="form-check-label" for="sgRF">Refrigerators</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="supplyGroup" value="TVs" id="sgTV">
-                                        <label class="form-check-label" for="sgTV">TVs</label>
-                                    </div>
-                                </td>
-                            </tr>
+                            </tr>                          
                             <tr>
                                 <th class="supplier-label">Description:</th>
                                 <td>

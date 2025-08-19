@@ -71,68 +71,61 @@ public class CreateSupplierServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+    @Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    request.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding("UTF-8");
 
-        String taxId = request.getParameter("taxId");
-        String name = request.getParameter("name");
-        String email = request.getParameter("email");
-        String phoneNumber = request.getParameter("phoneNumber");
-        String address = request.getParameter("address");
-        String contactPerson = request.getParameter("contactPerson");
-        String[] supplyGroupArr = request.getParameterValues("supplyGroup");
-        String description = request.getParameter("description");
-        int active = Integer.parseInt(request.getParameter("activate"));
-        int deleted = 0;
+    String taxId = request.getParameter("taxId");
+    String name = request.getParameter("name");
+    String email = request.getParameter("email");
+    String phoneNumber = request.getParameter("phoneNumber");
+    String address = request.getParameter("address");
+    String contactPerson = request.getParameter("contactPerson");
+    String description = request.getParameter("description");
+    boolean active = "1".equals(request.getParameter("activate"));
 
-        String supplyGroup = (supplyGroupArr != null) ? String.join(",", supplyGroupArr) : "";
+    String errorMsg = null;
+    SupplierDAO dao = new SupplierDAO();
 
-        String errorMsg = null;
-        SupplierDAO dao = new SupplierDAO();
-
-        // Kiểm tra trùng dữ liệu
-        if (dao.isSupplierExist(taxId, email)) {
-            errorMsg = "Tax ID or Email already exists!";
-        } else if (dao.isSupplierNameExist(name)) {
-            errorMsg = "Company name already exists!";
-        }
-
-        if (errorMsg != null) {
-            request.setAttribute("errorMsg", errorMsg);
-            // Lưu lại dữ liệu đã nhập để hiển thị lại form
-            request.setAttribute("oldTaxId", taxId);
-            request.setAttribute("oldName", name);
-            request.setAttribute("oldEmail", email);
-            request.setAttribute("oldPhone", phoneNumber);
-            request.setAttribute("oldAddress", address);
-            request.setAttribute("oldContact", contactPerson);
-            request.setAttribute("oldSupplyGroup", supplyGroupArr);
-            request.setAttribute("oldDescription", description);
-            request.setAttribute("oldActive", active);
-            request.getRequestDispatcher("/WEB-INF/View/admin/supplierManagement/createSupplier.jsp").forward(request, response);
-            return;
-        }
-
-        // Tạo supplier mới
-        LocalDateTime now = LocalDateTime.now();
-        Suppliers supplier = new Suppliers(
-                0, taxId, name, email, phoneNumber, address,
-                now, now, active,
-                contactPerson, supplyGroup, description
-        );
-
-        int result = dao.createSupplier(supplier);
-
-        if (result > 0) {
-            response.sendRedirect("ViewSupplier?success=create");
-        } else {
-            request.setAttribute("errorMsg", "Failed to add supplier!");
-            request.getRequestDispatcher("/WEB-INF/View/admin/supplierManagement/createSupplier.jsp").forward(request, response);
-        }
+    // Kiểm tra trùng dữ liệu
+    if (dao.isSupplierExist(taxId, email)) {
+        errorMsg = "Tax ID or Email already exists!";
+    } else if (dao.isSupplierNameExist(name)) {
+        errorMsg = "Company name already exists!";
     }
+
+    if (errorMsg != null) {
+        request.setAttribute("errorMsg", errorMsg);
+        request.setAttribute("oldTaxId", taxId);
+        request.setAttribute("oldName", name);
+        request.setAttribute("oldEmail", email);
+        request.setAttribute("oldPhone", phoneNumber);
+        request.setAttribute("oldAddress", address);
+        request.setAttribute("oldContact", contactPerson);
+        request.setAttribute("oldDescription", description);
+        request.setAttribute("oldActive", active);
+        request.getRequestDispatcher("/WEB-INF/View/admin/supplierManagement/createSupplier.jsp").forward(request, response);
+        return;
+    }
+
+    // Tạo supplier mới theo model
+    Suppliers supplier = new Suppliers(
+            0, taxId, name, email, phoneNumber, address,
+            contactPerson, description, active
+    );
+
+    int result = dao.insertSupplier(supplier);
+
+    if (result > 0) {
+        response.sendRedirect("ViewSupplier?success=create");
+    } else {
+        request.setAttribute("errorMsg", "Failed to add supplier!");
+        request.getRequestDispatcher("/WEB-INF/View/admin/supplierManagement/createSupplier.jsp").forward(request, response);
+    }
+}
+
 
 
     /**
