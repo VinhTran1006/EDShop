@@ -1,8 +1,4 @@
-<%-- 
-    Document   : banner
-    Created on : Jun 16, 2025, 11:48:37 AM
-    Author     : HP - Gia Khiêm
---%>
+
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>

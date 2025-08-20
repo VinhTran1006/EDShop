@@ -1,8 +1,3 @@
-<%-- 
-    Document   : newProduct
-    Created on : Jun 16, 2025, 12:58:19 PM
-    Author     : HP - Gia Khiêm
---%>
 
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
@@ -133,53 +128,16 @@
                     <div id="product-scroll-featured" style = "gap: 0.25%">
                         <% if (productList != null) {
                                 for (Product pro : productList) {
-                                    if (pro.isIsActive() == true) {
-                                        if (pro.getDiscount() != 0) {
-                                            oldPrice = pro.getPrice();
-                                            BigDecimal price = pro.getPrice();
-                                            int discount = pro.getDiscount();
-
-                                            BigDecimal discountRate = BigDecimal.valueOf(discount).divide(BigDecimal.valueOf(100));
-                                            newPrice = price.multiply(BigDecimal.ONE.subtract(discountRate));
-
-                                            BigDecimal giaCu = oldPrice;
-                                            BigDecimal giaMoi = newPrice;
-                                            BigDecimal giaDaGiam = giaCu.subtract(giaMoi);
-
-                                            Locale localeVN = new Locale("vi", "VN");
-                                            NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
-
-                                            String giaCuFormatted = currencyVN.format(oldPrice);
-                                            String giaMoiFormatted = currencyVN.format(giaMoi);
-                                            String giamFormatted = currencyVN.format(giaDaGiam);
-                        %>
-                        <div class="sanPhamMoi">
-                            <a href="<%= request.getContextPath()%>/ProductDetail?productId=<%= pro.getProductId()%>&categoryId=<%= pro.getCategoryId()%>" style="text-decoration: none; color: inherit; display: block;">
-                                <div class="divHinh">
-                                    <img style="width: 98%" src="<%= pro.getImageUrl()%>" alt="anhDienThoai" class="anhDienThoaiDocQuyen">
-                                </div>
-                                <div class="divTraGop">
-                                    <p class="traGop">Trả góp 0%</p>
-                                </div>
-                                <p class="productName"><%= pro.getProductName()%></p>
-                                <p class="giaCu">
-                                    <s><%= giaCuFormatted%></s> 
-                                    <span style="color: red">-<%= discount%>%</span>
-                                </p>
-                                <p class="giaMoi"><%= giaMoiFormatted%> đ</p>
-                                <p class="giam">Giảm <%= giamFormatted%> đ</p>
-                            </a>
-                        </div>
-                        <% } else {
+                                    if (pro.isIsActive() == true) {   
                             oldPrice = pro.getPrice();
                             Locale localeVN = new Locale("vi", "VN");
                             NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
                             String giaCuFormatted = currencyVN.format(oldPrice);
                         %>
                         <div class="sanPhamMoi">
-                            <a href="<%= request.getContextPath()%>/ProductDetail?productId=<%= pro.getProductId()%>&categoryId=<%= pro.getCategoryId()%>" style="text-decoration: none; color: inherit; display: block;">
+                            <a href="<%= request.getContextPath()%>/ProductDetail?productId=<%= pro.getProductID()%>&categoryId=<%= pro.getCategoryID()%>" style="text-decoration: none; color: inherit; display: block;">
                                 <div class="divHinh">
-                                    <img style="width: 98%" src="<%= pro.getImageUrl()%>" alt="anhDienThoai" class="anhDienThoaiDocQuyen">
+                                    <img style="width: 98%" src="<%= pro.getImageUrl1()%>" alt="anhDienThoai" class="anhDienThoaiDocQuyen">
                                 </div>
                                 <div class="divTraGop">
                                     <p class="traGop">Trả góp 0%</p>
@@ -188,7 +146,7 @@
                                 <p class="giaMoi"><%= giaCuFormatted%> đ</p>
                             </a>
                         </div>
-                        <% } // end if discount
+                        <%
                                 } // end for
                             }
                         } else { %>

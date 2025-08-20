@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import model.Attribute;
 import model.CategoryDetail;
 import model.CategoryDetailGroup;
 import model.Product;
@@ -29,7 +30,7 @@ import model.ProductDetail;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 @MultipartConfig
 
@@ -90,16 +91,13 @@ public class AdminAddProductDetailServlet extends HttpServlet {
         ProductDAO proDAO = new ProductDAO();
         int productId = Integer.parseInt(request.getParameter("productId"));
         int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-        Product product = proDAO.getProductById(productId);
+        Product product = proDAO.getProductByID(productId);
         request.setAttribute("product", product);
 
         CategoryDAO cateDAO = new CategoryDAO();
-        List<CategoryDetailGroup> cateDetailGroup = cateDAO.getCategoryDetailGroupById(categoryId);
-        List<CategoryDetail> cateDetail = cateDAO.getCategoryDetailById(categoryId);
-        request.setAttribute("categoryGroupList", cateDetailGroup);
-        request.setAttribute("categoryDetailList", cateDetail);
+        List<Attribute> attributes = cateDAO.getAttributeByCategoryID(categoryId);
+        request.setAttribute("attributes", attributes);
         request.setAttribute("categoryId", categoryId);
-
         request.getRequestDispatcher("/WEB-INF/View/admin/productManagement/addProduct/addProductDetail/adminAddProductDetail.jsp").forward(request, response);
     }
 
@@ -114,89 +112,35 @@ public class AdminAddProductDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //        <====================================== Xử lý ảnh ===========================================>
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
         boolean checkInsertValue = false;
         String categoryIdStr = request.getParameter("categoryId");
-
         String productIdStr = request.getParameter("productId");
         if (categoryIdStr != null && productIdStr != null) {
             int categoryId = Integer.parseInt(categoryIdStr);
             int productId = Integer.parseInt(productIdStr);
             ProductDAO proDAO = new ProductDAO();
             CategoryDAO cateDAO = new CategoryDAO();
+            List<Attribute> AttributeList = cateDAO.getAttributeByCategoryID(categoryId);
 
-            ProductDetail productDetail = proDAO.getOneProductDetailById(productId);
-            Product product = proDAO.getProductByID(productId);
-            Map<String, String> imageUrlMap = new LinkedHashMap<>();
-//            imageUrlMap.put("fileMain", product.getImageUrl());
-            imageUrlMap.put("file1", null);
-            imageUrlMap.put("file2", null);
-            imageUrlMap.put("file3", null);
-            imageUrlMap.put("file4", null);
+            for (Attribute a : AttributeList) {
+                String paramName = "attribute_" + a.getAttributeID();
 
-            for (String key : imageUrlMap.keySet()) {
-                Part part = request.getPart(key);
-                if (part != null && part.getSize() > 0) {
-                    InputStream is = part.getInputStream();
-                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                    byte[] data = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = is.read(data, 0, data.length)) != -1) {
-                        buffer.write(data, 0, bytesRead);
-                    }
-                    byte[] fileBytes = buffer.toByteArray();
+                String value = request.getParameter(paramName);
 
-                    Map uploadResult = cloudinary.uploader().upload(fileBytes,
-                            ObjectUtils.asMap("resource_type", "auto"));
-
-                    String url = (String) uploadResult.get("secure_url");
-                    if (url != null) {
-                        imageUrlMap.put(key, url); // ⚡ Update lại value
-                    } else {
-                        imageUrlMap.put(key, "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
-                    }
-                } else {
-                    imageUrlMap.put(key, "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
+                if (value != null && !value.trim().isEmpty()) {
+                    // Cập nhật lại DB
+                    checkInsertValue = proDAO.insertProductDetail(productId, a.getAttributeID(), value);
                 }
+
             }
+            if (checkInsertValue) {
+                response.sendRedirect("AdminCreateProduct?success=1");
+            } else {
+                response.sendRedirect("AdminCreateProduct?error=1");
 
-            boolean checkInsertImg = proDAO.insertImageProductDetail(imageUrlMap.get("file1"), imageUrlMap.get("file2"), imageUrlMap.get("file3"), imageUrlMap.get("file4"), productId);
-            if (checkInsertImg) {
-                List<CategoryDetail> categoryDetailList = cateDAO.getCategoryDetailById(categoryId);
-
-                for (CategoryDetail cateDetail : categoryDetailList) {
-                    String paramName = "attribute_" + cateDetail.getCategoryDetailID();
-
-                    String value = request.getParameter(paramName);
-
-                    if (value != null && !value.trim().isEmpty()) {
-                        // Cập nhật lại DB
-                        checkInsertValue = proDAO.insertProductDetail(productId, cateDetail.getCategoryDetailID(), value);
-                    } 
-
-                }
-                if (checkInsertImg && checkInsertValue) {
-                    response.sendRedirect("AdminCreateProduct?success=1");
-                } else {
-                    response.sendRedirect("AdminCreateProduct?error=1");
-
-                }
             }
-            //        <====================================== Xử lý ảnh ===========================================>
         }
-//        response.sendRedirect("AdminCreateProduct?error=1");
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

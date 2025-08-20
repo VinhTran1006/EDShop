@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author HP - Gia Khiêm
+ * 
  */
 @WebServlet(name = "CreateCategoryServlet", urlPatterns = {"/CreateCategory"})
 public class CreateCategoryServlet extends HttpServlet {

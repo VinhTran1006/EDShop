@@ -68,23 +68,21 @@ public class AdminDashboard extends HttpServlet {
         SupplierDAO supplierDAO = new SupplierDAO();
         RevenueStatisticDAO revenueDAO = new RevenueStatisticDAO();
 
-//        int totalStaff = staffDAO.getTotalStaff();
-//        int totalProduct = productDAO.getTotalProducts();
-//        int totalSupplier = supplierDAO.getTotalSuppliers();
 
-        int totalStaff = 5;
-        int totalProduct = 5;
-        int totalSupplier = 5;
+        //int totalStaff = staffDAO.getTotalStaff();
+        int totalProduct = productDAO.getTotalProducts();
+       // int totalSupplier = supplierDAO.getTotalSuppliers();
+
 
         Calendar now = Calendar.getInstance();
         int month = now.get(Calendar.MONTH) + 1;
         int year = now.get(Calendar.YEAR);
-        long monthlyRevenue = revenueDAO.getMonthlyRevenue(month, year);
+      //  long monthlyRevenue = revenueDAO.getMonthlyRevenue(month, year);
 
-        request.setAttribute("totalStaff", totalStaff);
+       // request.setAttribute("totalStaff", totalStaff);
         request.setAttribute("totalProduct", totalProduct);
-        request.setAttribute("totalSupplier", totalSupplier);
-        request.setAttribute("monthlyRevenue", monthlyRevenue);
+      //  request.setAttribute("totalSupplier", totalSupplier);
+       // request.setAttribute("monthlyRevenue", monthlyRevenue);
 
         request.getRequestDispatcher("/WEB-INF/View/admin/adminDashboard.jsp").forward(request, response);
     }

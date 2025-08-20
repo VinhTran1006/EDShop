@@ -1,20 +1,21 @@
-<%@page import="model.Account"%>
+
+<%@page import="model.Staff"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.text.NumberFormat, java.util.Locale"%>
 <% 
-    Account acc = (Account) session.getAttribute("admin");
-    if (acc == null || acc.getRoleID() != 1) {
+    Staff acc = (Staff) session.getAttribute("admin");
+    if (acc == null || acc.getRole() != "Admin") {
         response.sendRedirect("LoginAdmin");
         return;
     }
-    Integer totalStaff = (Integer) request.getAttribute("totalStaff");
+   // Integer totalStaff = (Integer) request.getAttribute("totalStaff");
     Integer totalProduct = (Integer) request.getAttribute("totalProduct");
-    Integer totalSupplier = (Integer) request.getAttribute("totalSupplier");
-    Long monthlyRevenue = (Long) request.getAttribute("monthlyRevenue");
-    if (totalStaff == null) totalStaff = 0;
+   // Integer totalSupplier = (Integer) request.getAttribute("totalSupplier");
+  //  Long monthlyRevenue = (Long) request.getAttribute("monthlyRevenue");
+  //  if (totalStaff == null) totalStaff = 0;
     if (totalProduct == null) totalProduct = 0;
-    if (totalSupplier == null) totalSupplier = 0;
-    if (monthlyRevenue == null) monthlyRevenue = 0L;
+   // if (totalSupplier == null) totalSupplier = 0;
+   // if (monthlyRevenue == null) monthlyRevenue = 0L;
     NumberFormat nf = NumberFormat.getInstance(new Locale("vi", "VN"));
 %>
 
@@ -70,7 +71,6 @@
                             Total Staff
                             <span class="stat-icon ms-2"><i class="fas fa-user-tie"></i></span>
                         </div>
-                        <div class="stat-value"><%= totalStaff %></div>
                     </div>
                     <div class="stat-card p-4 shadow rounded bg-white text-center">
                         <div class="stat-header mb-2">
@@ -84,14 +84,12 @@
                             Total Suppliers
                             <span class="stat-icon ms-2"><i class="fas fa-users"></i></span>
                         </div>
-                        <div class="stat-value"><%= totalSupplier %></div>
                     </div>
                     <div class="stat-card p-4 shadow rounded bg-white text-center">
                         <div class="stat-header mb-2">
                             Monthly Revenue
                             <span class="stat-icon ms-2"><i class="fas fa-chart-line"></i></span>
                         </div>
-                        <div class="stat-value text-success"><%= nf.format(monthlyRevenue) %> ₫</div>
                     </div>
                 </div>
             </main>
