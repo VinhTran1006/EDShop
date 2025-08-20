@@ -1,8 +1,3 @@
-<%-- 
-    Document   : header
-    Created on : Jun 13, 2025, 3:27:43 PM
-    Author     : HP - Gia Khiêm
---%>
 
 <%@page import="model.Customer"%>
 <%@page import="model.Brand"%>

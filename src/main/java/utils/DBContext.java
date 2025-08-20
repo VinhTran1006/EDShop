@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author TaiNHCE181569
+ *
  */
 public class DBContext {
 

@@ -42,7 +42,7 @@
                 <a href="#">Điều khoản sử dụng</a>
             </div>
             <div class="copyright">
-                &copy; 2025 Bản quyền thuộc về <strong>HP - Gia Khiêm</strong>. All rights reserved.
+                &copy; 2025 Bản quyền thuộc về <strong>Group 2</strong>. All rights reserved.
             </div>
         </div>
     </body>

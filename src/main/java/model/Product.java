@@ -170,5 +170,10 @@ public class Product {
         this.imageUrl4 = imageUrl4;
     }
 
+    @Override
+    public String toString() {
+        return "Product{" + "productID=" + productID + ", productName=" + productName + ", description=" + description + ", AddedAt=" + AddedAt + ", price=" + price + ", supplierID=" + supplierID + ", categoryID=" + categoryID + ", brandID=" + brandID + ", warrantyPeriod=" + warrantyPeriod + ", isActive=" + isActive + ", quantity=" + quantity + ", imageUrl1=" + imageUrl1 + ", imageUrl2=" + imageUrl2 + ", imageUrl3=" + imageUrl3 + ", imageUrl4=" + imageUrl4 + '}';
+    }
+
    
 }
