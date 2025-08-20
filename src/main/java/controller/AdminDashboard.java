@@ -68,9 +68,11 @@ public class AdminDashboard extends HttpServlet {
         SupplierDAO supplierDAO = new SupplierDAO();
         RevenueStatisticDAO revenueDAO = new RevenueStatisticDAO();
 
+
         //int totalStaff = staffDAO.getTotalStaff();
         int totalProduct = productDAO.getTotalProducts();
        // int totalSupplier = supplierDAO.getTotalSuppliers();
+
 
         Calendar now = Calendar.getInstance();
         int month = now.get(Calendar.MONTH) + 1;

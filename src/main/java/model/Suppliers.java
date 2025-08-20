@@ -1,7 +1,5 @@
 package model;
 
-import java.time.LocalDateTime;
-
 public class Suppliers {
 
     private int supplierID;
@@ -93,7 +91,7 @@ public class Suppliers {
         this.description = description;
     }
 
-    public boolean isIsActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 
