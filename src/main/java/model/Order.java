@@ -16,7 +16,7 @@ public class Order {
     private long totalAmount;
     private String orderDate;
     private String deliveredDate;
-    private int status;
+    private String status;
     private int discount;
     private String addressSnapshot;
     private int addressID;
@@ -25,7 +25,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(int orderID, int customerID, int staffID, long totalAmount, String orderDate, String deliveredDate, int status, int discount, String addressSnapshot, int addressID, String updatedAt) {
+    public Order(int orderID, int customerID, int staffID, long totalAmount, String orderDate, String deliveredDate, String status, int discount, String addressSnapshot, int addressID, String updatedAt) {
         this.orderID = orderID;
         this.customerID = customerID;
         this.staffID = staffID;
@@ -87,11 +87,11 @@ public class Order {
         this.deliveredDate = deliveredDate;
     }
 
-    public int getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

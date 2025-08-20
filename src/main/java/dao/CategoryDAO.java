@@ -46,7 +46,7 @@ public class CategoryDAO extends DBContext {
         return categoryList;
     }
 
-    public ArrayList<Attribute> getAttributeById(int categoryId) {
+    public ArrayList<Attribute> getAttributeByCategoryID(int categoryId) {
         ArrayList<Attribute> categoryDetailGroupList = new ArrayList<>();
         String sql = "SELECT * from Attibutes where AttributeID = ?";
         try {

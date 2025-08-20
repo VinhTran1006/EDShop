@@ -21,7 +21,7 @@ import model.Product;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *~
  */
 @WebServlet(name = "HomeServlet", urlPatterns = {"/Home"})
 public class HomeServlet extends HttpServlet {
@@ -75,15 +75,14 @@ public class HomeServlet extends HttpServlet {
         List<Product> productListFeatured = productDAO.getProductIsFeatured();
         
         List<Product> productListBestSeller = productDAO.getProductIsBestSeller();
-        
-        List<Product> productListDiscount = productDAO.getDiscountedProducts();
+        List<Product> productList = productDAO.getProductListCustomer();
         
         request.setAttribute("categoryList", categoryList);
         request.setAttribute("brandList", brandList);
-        request.setAttribute("productList", productListNew);
+        request.setAttribute("productListNew", productListNew);
         request.setAttribute("productListFeatured", productListFeatured);
         request.setAttribute("productListBestSeller", productListBestSeller);
-        request.setAttribute("productListDiscount", productListDiscount);
+        request.setAttribute("productList", productList);
         
         request.getRequestDispatcher("/WEB-INF/View/customer/homePage/homePage.jsp").forward(request, response);
 
