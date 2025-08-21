@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Account;
 import model.Address;
 import model.Customer;
 
@@ -23,10 +22,9 @@ public class AddressListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
         Customer customer = (Customer) session.getAttribute("cus");
-
-        if (user == null || customer == null) {
+        Integer customerId = (Integer) session.getAttribute("customerId");
+        if ( customer == null) {
            
             response.sendRedirect("Login");
             return;
@@ -34,7 +32,7 @@ public class AddressListServlet extends HttpServlet {
 
         // Lấy danh sách địa chỉ
         AddressDAO addressDAO = new AddressDAO();
-        List<Address> addresses = addressDAO.getAddressesByCustomerId(customer.getId());
+        List<Address> addresses = addressDAO.getAddressesByCustomerId(customerId);
         request.setAttribute("addresses", addresses);
         request.setAttribute("fromCheckout", request.getParameter("fromCheckout"));
         request.setAttribute("selectedCartItemIds", request.getParameter("selectedCartItemIds"));
@@ -50,10 +48,9 @@ public class AddressListServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
         Customer customer = (Customer) session.getAttribute("cus");
 
-        if (user == null || customer == null) {
+        if ( customer == null) {
            
             response.sendRedirect("Login");
             return;

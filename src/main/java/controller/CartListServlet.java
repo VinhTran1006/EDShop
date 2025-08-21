@@ -10,8 +10,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Account;
 import model.CartItem;
+import model.Customer;
 
 @WebServlet(name = "CartListServlet", urlPatterns = {"/CartList"})
 public class CartListServlet extends HttpServlet {
@@ -22,8 +22,8 @@ public class CartListServlet extends HttpServlet {
         CartDAO dao = new CartDAO();
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) {
+        Customer cus = (Customer) session.getAttribute("cus");
+        if (cus == null) {
             response.sendRedirect("Login");
             return;
         }
@@ -33,10 +33,10 @@ public class CartListServlet extends HttpServlet {
         }
 
         try {
-            int accountId = user.getAccountID();
+            int customerId = cus.getCustomerID();
 
             if (action.equalsIgnoreCase("list")) {
-                List<CartItem> cartItems = dao.getCartItemsByAccountId(accountId);
+                List<CartItem> cartItems = dao.getCartItemsByAccountId(customerId);
                 request.setAttribute("cartItems", cartItems);
 
                 if (cartItems.isEmpty()) {
@@ -59,15 +59,15 @@ public class CartListServlet extends HttpServlet {
             throws ServletException, IOException {
         CartDAO cartDAO = new CartDAO();
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
+        Customer cus = (Customer) session.getAttribute("cus");
         String action = request.getParameter("action");
 
-        if (user == null) {
+        if (cus == null) {
             response.sendRedirect("Login");
             return;
         }
 
-        int accountId = user.getAccountID();
+        int customerId = cus.getCustomerID();
 
         try {
             if ("saveSelectedItems".equals(action)) {
@@ -83,7 +83,7 @@ public class CartListServlet extends HttpServlet {
                 // Kiểm tra số lượng hợp lệ
                 if (newQuantity <= 0) {
                     session.setAttribute("message", "Quantity must be greater than 0!");
-                    response.sendRedirect("CartList?action=list&accountId=" + accountId);
+                    response.sendRedirect("CartList?action=list&customerId=" + customerId);
                     return;
                 }
 
@@ -91,7 +91,7 @@ public class CartListServlet extends HttpServlet {
                 CartItem cartItem = cartDAO.getCartItemById(cartItemId);
                 if (cartItem == null) {
                     session.setAttribute("message", "Cart item not found!");
-                    response.sendRedirect("CartList?action=list&accountId=" + accountId);
+                    response.sendRedirect("CartList?action=list&customerId=" + customerId);
                     return;
                 }
 
@@ -104,7 +104,7 @@ public class CartListServlet extends HttpServlet {
 //                    session.setAttribute("message", "Failed to update quantity!");
 //                }
 //
-//                response.sendRedirect("CartList?action=list&accountId=" + accountId);
+//                response.sendRedirect("CartList?action=list&customerId=" + customerId);
 //                return;
             }
 
@@ -116,7 +116,7 @@ public class CartListServlet extends HttpServlet {
             session.setAttribute("message", "An error occurred while updating cart.");
         }
 
-        response.sendRedirect("CartList?action=list&accountId=" + accountId);
+        response.sendRedirect("CartList?action=list&customerId=" + customerId);
     }
 
     @Override

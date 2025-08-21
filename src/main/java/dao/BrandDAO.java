@@ -15,7 +15,7 @@ import utils.DBContext;
  *
  * @author HP - Gia Khiêm
  */
-public class BrandDAO extends DBContext{
+public class BrandDAO extends DBContext {
     
     public BrandDAO() {
         super();
@@ -23,7 +23,7 @@ public class BrandDAO extends DBContext{
     
     public List<Brand> getAllBrand() {
         List<Brand> brandList = new ArrayList<>();
-        String sql = "SELECT BrandID, BrandName, Description, CategoryID, ImgURLLogo FROM Brands";
+        String sql = "SELECT BrandID, BrandName, ImgURLLogo, IsActive FROM Brands";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -31,13 +31,12 @@ public class BrandDAO extends DBContext{
             while (rs.next()) {
                 int brandId = rs.getInt("BrandID");
                 String brandName = rs.getString("BrandName");
-                String descriptionBrand = rs.getString("Description");
-                int categoryID = rs.getInt("CategoryID");
                 String imgUrlLogo = rs.getString("ImgURLLogo");
+                boolean isActive = rs.getBoolean("IsActive");
 
-                brandList.add(new Brand(brandId, brandName, descriptionBrand, categoryID, imgUrlLogo));
+                Brand brand = new Brand(brandId, brandName, imgUrlLogo, isActive);
+                brandList.add(brand);
             }
-            return brandList;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -46,7 +45,9 @@ public class BrandDAO extends DBContext{
     
     public List<Brand> getBrandByCategoryId(int categoryId) {
         List<Brand> brandList = new ArrayList<>();
-        String sql = "SELECT BrandID, BrandName, Description, CategoryID, ImgURLLogo FROM Brands where CategoryID = ?";
+        
+
+        String sql = "SELECT BrandID, BrandName, ImgURLLogo, IsActive FROM Brands WHERE CategoryID = ?";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -55,17 +56,15 @@ public class BrandDAO extends DBContext{
             while (rs.next()) {
                 int brandId = rs.getInt("BrandID");
                 String brandName = rs.getString("BrandName");
-                String descriptionBrand = rs.getString("Description");
-                int categoryIDDB = categoryId;
                 String imgUrlLogo = rs.getString("ImgURLLogo");
+                boolean isActive = rs.getBoolean("IsActive");
 
-                brandList.add(new Brand(brandId, brandName, descriptionBrand, categoryIDDB, imgUrlLogo));
+                Brand brand = new Brand(brandId, brandName, imgUrlLogo, isActive);
+                brandList.add(brand);
             }
-            return brandList;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return brandList;
     }
-    
 }
