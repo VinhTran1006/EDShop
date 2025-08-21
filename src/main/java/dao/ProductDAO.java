@@ -24,6 +24,7 @@ import utils.DBContext;
  */
 public class ProductDAO extends DBContext {
 
+
     public List<Product> getProductIsNew() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT TOP 30 * \n"
@@ -249,11 +250,12 @@ public class ProductDAO extends DBContext {
         String sql = "SELECT *"
                 + "FROM Products p "
                 + "WHERE p.ProductID = ?";
-
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+      
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, productID);
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
+
                     int productId = rs.getInt("ProductID");
                     String productName = rs.getString("ProductName");
                     String description = rs.getString("Description");
@@ -292,24 +294,7 @@ public class ProductDAO extends DBContext {
         }
     }
 
-//    public boolean saveNotification(String title, String message, int productId) {
-//        String sql = "INSERT INTO Notifications (Title, Message, Type, IsRead, CreatedAt, RelatedEntityID, RelatedEntityType) "
-//                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-//        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-//            ps.setString(1, title);
-//            ps.setString(2, message);
-//            ps.setString(3, "ProductUpdate");
-//            ps.setBoolean(4, false);
-//            ps.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
-//            ps.setInt(6, productId);
-//            ps.setString(7, "Product");
-//            int rowsAffected = ps.executeUpdate();
-//            return rowsAffected > 0;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//    }
+
     public List<ProductDetail> getProductDetailByProductId(int productId) {
         List<ProductDetail> productDetailList = new ArrayList<>();
         String sql = "SELECT *"

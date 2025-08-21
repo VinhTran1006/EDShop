@@ -1,6 +1,6 @@
 package controller;
 
-import dao.CartDAO;
+import dao.CartItemDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -32,7 +32,7 @@ public class UpdateCartServlet extends HttpServlet {
             }
 
             // Update quantity in database
-            CartDAO cartDAO = new CartDAO();
+            CartItemDAO cartDAO = new CartItemDAO();
             boolean updated = cartDAO.updateCartItemQuantity(cartItemId, quantity);
 
             // Log update result

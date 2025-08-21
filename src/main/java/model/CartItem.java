@@ -7,6 +7,15 @@ public class CartItem {
     private int productID;
     private int quantity;
     private int customerID;
+    private Product product;
+    
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
     // Default constructor
     public CartItem() {
     }

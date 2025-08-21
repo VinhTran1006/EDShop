@@ -1,9 +1,9 @@
+<%@page import="model.Customer"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="model.CartItem"%>
 <%@page import="model.Product"%>
-<%@page import="model.Account"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -296,7 +296,7 @@
                 if (message != null) {
             %>
             <div class="alert alert-info text-center">
-
+                <%= message%>
             </div>
             <%
                     session.removeAttribute("message");
@@ -308,16 +308,20 @@
                 List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems");
                 if (cartItems != null && !cartItems.isEmpty()) {
             %>
-            <form id="deleteForm" action="${pageContext.request.contextPath}/RemoveCartItem" method="post">
-                <input type="hidden" name="action" value="deleteMultiple">
-                <input type="hidden" name="accountId" value="<%= session.getAttribute("user") != null ? ((Account) session.getAttribute("user")).getAccountID() : 0%>">
-                <input type="hidden" name="selectedItems" id="product_id">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/CartItem" method="post">
+                <input type="hidden" name="action" value="removeMultiple">
+                <input type="hidden" name="selectedItems" id="selectedItems">
+                <input type="hidden" name="customerId" value="<%= session.getAttribute("cus") != null ? ((Customer) session.getAttribute("cus")).getCustomerID() : 0%>">
                 <div class="table-header-actions">
                     <div>
                         <input type="checkbox" id="selectAll" onclick="toggleSelectAll()">
                         <label for="selectAll" class="ms-2 fw-bold">Select All</label>
                     </div>
-                    <a href="javascript:void(0);" class="delete-selected-icon" onclick="confirmDeleteMultiple()"><i class="fas fa-trash"></i></a>
+                    <div>
+                        <a href="javascript:void(0);" class="btn btn-danger btn-sm" onclick="confirmClearAll()">
+                            <i class="fas fa-trash-alt"></i> Clear All
+                        </a>
+                    </div>
                 </div>
                 <table class="table cart-table">
                     <thead>
@@ -348,12 +352,15 @@
                                     itemTotal = BigDecimal.ZERO;
                                 }
                         %>
-                        <tr data-unit-price="<%= discountedPrice.setScale(0, BigDecimal.ROUND_HALF_UP).toString()%>" data-cart-item-id="<%= item.getCartItemID()%>" data-item-total="<%= itemTotal.setScale(0, BigDecimal.ROUND_HALF_UP).toString()%>">
+                        <tr data-unit-price="<%= discountedPrice.setScale(0, BigDecimal.ROUND_HALF_UP).toString()%>" 
+                            data-cart-item-id="<%= item.getCartItemID()%>" 
+                            data-item-total="<%= itemTotal.setScale(0, BigDecimal.ROUND_HALF_UP).toString()%>"
+                            data-max-quantity="<%= product.getQuantity()%>">    
                             <td><input type="checkbox" class="selectItem" data-item-total="<%= itemTotal.setScale(0, BigDecimal.ROUND_HALF_UP).toString()%>" onclick="updateCartTotal(); saveSelectedItems();"></td>
                             <td>
-                                <a href="${pageContext.request.contextPath}/ProductDetail?productId=<%= product.getProductId()%>&categoryId=<%= product.getCategoryId()%>" class="product-link">
+                                <a href="${pageContext.request.contextPath}/ProductDetail?productId=<%= product.getProductID()%>&categoryId=<%= product.getCategoryID()%>" class="product-link">
                                     <div class="product-details">
-                                        <img src="<%= product.getImageUrl() != null ? product.getImageUrl() : "https://via.placeholder.com/80"%>" alt="<%= product.getProductName()%>">
+                                        <img src="<%= product.getImageUrl1() != null ? product.getImageUrl1() : "https://via.placeholder.com/80"%>" alt="<%= product.getProductName()%>">
                                         <div class="product-name"><%= product.getProductName()%></div>
                                     </div>
                                 </a>
@@ -365,16 +372,19 @@
                                 <% }%>
                             </td>
                             <td>
-                                <form class="action-buttons" id="quantityForm-<%= item.getCartItemID()%>">
-                                    <input type="hidden" name="action" value="update">
-                                    <input type="hidden" name="cartItemId" value="<%= item.getCartItemID()%>">
-                                    <input type="hidden" name="accountId" value="<%= session.getAttribute("user") != null ? ((Account) session.getAttribute("user")).getAccountID() : 0%>">
-                                    <div class="quantity-container">
-                                        <button type="button" class="quantity-btn" onclick="decreaseQuantity(<%= item.getCartItemID()%>)">-</button>
-                                        <input type="number" name="quantity" value="<%= item.getQuantity()%>" class="form-control quantity-value" id="quantity-<%= item.getCartItemID()%>" min="1" onchange="submitQuantityForm(<%= item.getCartItemID()%>)">
-                                        <button type="button" class="quantity-btn" onclick="increaseQuantity(<%= item.getCartItemID()%>)">+</button>
-                                    </div>
-                                </form>
+                                <div class="quantity-container">
+                                    <button type="button" class="quantity-btn" onclick="decreaseQuantity(<%= item.getCartItemID()%>)">-</button>
+                                    <input type="number" 
+                                           value="<%= item.getQuantity()%>" 
+                                           class="form-control quantity-value" 
+                                           id="quantity-<%= item.getCartItemID()%>" 
+                                           min="1" 
+                                           max="<%= product.getQuantity()%>"
+                                           data-original-value="<%= item.getQuantity()%>"
+                                           onchange="onQuantityChange(<%= item.getCartItemID()%>)"
+                                           onblur="onQuantityChange(<%= item.getCartItemID()%>)">
+                                    <button type="button" class="quantity-btn" onclick="increaseQuantity(<%= item.getCartItemID()%>)">+</button>
+                                </div>
                             </td>
                             <td class="price" id="total-<%= item.getCartItemID()%>"><%= String.format("%,d", itemTotal.setScale(0, BigDecimal.ROUND_HALF_UP).longValue())%> VND</td>
                             <td class="action-buttons">
@@ -413,65 +423,115 @@
                 }
             %>
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
-                                const ACCOUNT_ID = '<%= session.getAttribute("user") != null ? ((Account) session.getAttribute("user")).getAccountID() : 0%>';
-                                let updateTimeouts = {};
+                                const CUSTOMER_ID = '<%= session.getAttribute("cus") != null ? ((Customer) session.getAttribute("cus")).getCustomerID() : 0%>';
 
+// Confirm delete single cart item
                                 function confirmDeleteCart(cartItemId) {
                                     Swal.fire({
-                                        title: 'Are you sure?',
-                                        text: "This cart item will be deleted.",
+                                        title: 'Xác nhận xóa',
+                                        text: "Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?",
                                         icon: 'warning',
                                         showCancelButton: true,
                                         confirmButtonColor: '#d33',
                                         cancelButtonColor: '#3085d6',
-                                        confirmButtonText: 'Delete',
-                                        cancelButtonText: 'Cancel'
+                                        confirmButtonText: 'Xóa',
+                                        cancelButtonText: 'Hủy'
                                     }).then((result) => {
                                         if (result.isConfirmed) {
-                                            window.location.href = '${pageContext.request.contextPath}/RemoveCartItem?action=remove&id=' + cartItemId + '&accountId=' + ACCOUNT_ID;
+                                            const form = document.createElement('form');
+                                            form.method = 'POST';
+                                            form.action = '${pageContext.request.contextPath}/CartItem';
+
+                                            const actionInput = document.createElement('input');
+                                            actionInput.type = 'hidden';
+                                            actionInput.name = 'action';
+                                            actionInput.value = 'removeItem';
+
+                                            const itemIdInput = document.createElement('input');
+                                            itemIdInput.type = 'hidden';
+                                            itemIdInput.name = 'cartItemId';
+                                            itemIdInput.value = cartItemId;
+
+                                            form.appendChild(actionInput);
+                                            form.appendChild(itemIdInput);
+                                            document.body.appendChild(form);
+                                            form.submit();
                                         }
                                     });
                                 }
 
+// Confirm delete multiple items
                                 function confirmDeleteMultiple() {
-                                    const selected = Array.from(document.querySelectorAll('.selectItem:checked')).map(item => item.closest('tr').getAttribute('data-cart-item-id'));
+                                    const selected = Array.from(document.querySelectorAll('.selectItem:checked'))
+                                            .map(item => item.closest('tr').getAttribute('data-cart-item-id'));
+
                                     if (selected.length === 0) {
                                         Swal.fire({
                                             icon: 'warning',
-                                            title: 'No items selected',
-                                            text: 'Please select at least one item to delete.',
+                                            title: 'Không có sản phẩm nào được chọn',
+                                            text: 'Vui lòng chọn ít nhất một sản phẩm để xóa.',
                                             showConfirmButton: true
                                         });
                                         return;
                                     }
+
                                     Swal.fire({
-                                        title: 'Are you sure?',
-                                        text: `You are about to delete ${selected.length} item(s).`,
+                                        title: 'Xác nhận xóa',
+                                        text: `Bạn có chắc chắn muốn xóa ${selected.length} sản phẩm?`,
                                         icon: 'warning',
                                         showCancelButton: true,
                                         confirmButtonColor: '#d33',
                                         cancelButtonColor: '#3085d6',
-                                        confirmButtonText: 'Delete',
-                                        cancelButtonText: 'Cancel'
+                                        confirmButtonText: 'Xóa',
+                                        cancelButtonText: 'Hủy'
                                     }).then((result) => {
                                         if (result.isConfirmed) {
-                                            document.getElementById('product_id').value = selected.join(',');
+                                            document.getElementById('selectedItems').value = selected.join(',');
                                             document.getElementById('deleteForm').submit();
                                         }
                                     });
                                 }
 
+// Clear all cart items
+                                function confirmClearAll() {
+                                    Swal.fire({
+                                        title: 'Xác nhận xóa tất cả',
+                                        text: "Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?",
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#d33',
+                                        cancelButtonColor: '#3085d6',
+                                        confirmButtonText: 'Xóa tất cả',
+                                        cancelButtonText: 'Hủy'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            const form = document.createElement('form');
+                                            form.method = 'POST';
+                                            form.action = '${pageContext.request.contextPath}/CartItem';
+
+                                            const actionInput = document.createElement('input');
+                                            actionInput.type = 'hidden';
+                                            actionInput.name = 'action';
+                                            actionInput.value = 'clearAll';
+
+                                            form.appendChild(actionInput);
+                                            document.body.appendChild(form);
+                                            form.submit();
+                                        }
+                                    });
+                                }
+
+// Format number with commas
                                 function formatNumber(number) {
                                     if (isNaN(number) || number === null || number === undefined) {
-                                        console.warn("Invalid number to format:", number);
                                         return "0";
                                     }
                                     return Math.round(number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                                 }
 
+// Update cart total
                                 function updateCartTotal() {
                                     let total = 0;
                                     document.querySelectorAll('.selectItem:checked').forEach(item => {
@@ -481,40 +541,20 @@
                                     document.getElementById('cartTotal').textContent = formatNumber(total) + ' VND';
                                 }
 
-                                function updateItemTotal(cartItemId) {
-                                    const row = document.querySelector(`tr[data-cart-item-id="${cartItemId}"]`);
-                                    if (!row) {
-                                        console.error("Row not found for cartItemId:", cartItemId);
-                                        return;
-                                    }
-                                    const unitPrice = parseFloat(row.getAttribute('data-unit-price')) || 0;
-                                    const quantityInput = document.getElementById(`quantity-${cartItemId}`);
-                                    const quantity = parseInt(quantityInput.value) || 0;
-                                    const newTotal = unitPrice * quantity;
-                                    const totalCell = document.getElementById(`total-${cartItemId}`);
-                                    if (totalCell) {
-                                        totalCell.textContent = formatNumber(newTotal) + ' VND';
-                                    }
-                                    row.setAttribute('data-item-total', newTotal.toString());
-                                    const checkbox = row.querySelector('.selectItem');
-                                    if (checkbox) {
-                                        checkbox.setAttribute('data-item-total', newTotal.toString());
-                                    }
-                                    updateCartTotal();
-                                }
-
+// Save selected items to session
                                 function saveSelectedItems() {
                                     const selected = Array.from(document.querySelectorAll('.selectItem:checked'))
                                             .map(item => item.closest('tr').getAttribute('data-cart-item-id'));
+
                                     $.ajax({
-                                        url: '${pageContext.request.contextPath}/CartList',
+                                        url: '${pageContext.request.contextPath}/CartItem',
                                         type: 'POST',
                                         data: {
                                             action: 'saveSelectedItems',
                                             selectedCartItemIds: selected.join(',')
                                         },
                                         success: function (response) {
-                                            console.log('Selected items saved to session:', selected);
+                                            console.log('Selected items saved to session');
                                         },
                                         error: function (xhr, status, error) {
                                             console.error('Error saving selected items:', error);
@@ -522,6 +562,7 @@
                                     });
                                 }
 
+// Toggle select all checkbox
                                 function toggleSelectAll() {
                                     const selectAll = document.getElementById('selectAll');
                                     document.querySelectorAll('.selectItem').forEach(item => {
@@ -531,132 +572,254 @@
                                     saveSelectedItems();
                                 }
 
-                                function prepareCheckout() {
-                                    const selected = Array.from(document.querySelectorAll('.selectItem:checked'))
-                                            .map(item => item.closest('tr').getAttribute('data-cart-item-id'));
-                                    if (selected.length === 0) {
+// Increase quantity
+                                function increaseQuantity(cartItemId) {
+                                    const quantityInput = document.getElementById(`quantity-${cartItemId}`);
+                                    if (!quantityInput) {
+                                        console.error('Quantity input not found for cartItemId:', cartItemId);
+                                        return;
+                                    }
+
+                                    const originalQuantity = parseInt(quantityInput.value) || 1;
+                                    const row = document.querySelector(`tr[data-cart-item-id="${cartItemId}"]`);
+                                    const maxQuantity = parseInt(row.getAttribute('data-max-quantity')) || 1000;
+                                    const newQuantity = originalQuantity + 1;
+
+                                    if (newQuantity <= maxQuantity) {
+                                        // Update UI immediately
+                                        quantityInput.value = newQuantity;
+                                        updateItemTotal(cartItemId);
+
+                                        // Send AJAX request to update database
+                                        updateQuantityAjax(cartItemId, newQuantity, originalQuantity);
+                                    } else {
                                         Swal.fire({
                                             icon: 'warning',
-                                            title: 'No items selected',
-                                            text: 'Please select at least one item to proceed to checkout.',
+                                            title: 'Vượt quá số lượng',
+                                            text: `Số lượng tối đa cho sản phẩm này là ${maxQuantity}`,
                                             showConfirmButton: true
                                         });
-                                        event.preventDefault();
-                                        return false;
-                                    }
-                                    document.getElementById('selectedCartItemIds').value = selected.join(',');
-                                    return true;
-                                }
-                                function increaseQuantity(cartItemId) {
-
-
-                                    const quantityInput = document.getElementById(`quantity-${cartItemId}`);
-                                    if (!quantityInput) {
-
-                                        console.error('Quantity input not found for cartItemId:', cartItemId);
-                                        return;
-                                    }
-                                    let currentQuantity = parseInt(quantityInput.value) || 1;
-                                    if (currentQuantity < 1000) {
-                                        currentQuantity++;
-                                        quantityInput.value = currentQuantity;
-
-                                        console.log('Quantity increased to:', currentQuantity);
-                                        submitQuantityForm(cartItemId);
-                                    } else {
-
-                                        console.log('Maximum quantity reached:', currentQuantity);
                                     }
                                 }
 
+// Decrease quantity
                                 function decreaseQuantity(cartItemId) {
-
-
                                     const quantityInput = document.getElementById(`quantity-${cartItemId}`);
                                     if (!quantityInput) {
-
                                         console.error('Quantity input not found for cartItemId:', cartItemId);
                                         return;
                                     }
-                                    let currentQuantity = parseInt(quantityInput.value) || 1;
-                                    if (currentQuantity > 1) {
-                                        currentQuantity--;
-                                        quantityInput.value = currentQuantity;
 
-                                        console.log('Quantity decreased to:', currentQuantity);
-                                        submitQuantityForm(cartItemId);
-                                    } else {
-                                        
-                                        console.log('Minimum quantity reached:', currentQuantity);
+                                    const originalQuantity = parseInt(quantityInput.value) || 1;
+                                    const newQuantity = originalQuantity - 1;
+
+                                    if (newQuantity >= 1) {
+                                        // Update UI immediately
+                                        quantityInput.value = newQuantity;
+                                        updateItemTotal(cartItemId);
+
+                                        // Send AJAX request to update database
+                                        updateQuantityAjax(cartItemId, newQuantity, originalQuantity);
                                     }
                                 }
 
-                                function submitQuantityForm(cartItemId) {
-
-                                    console.log('Submit triggered for cartItemId:', cartItemId);
-                                    const quantityInput = document.getElementById(`quantity-${cartItemId}`);
-                                    const form = document.getElementById(`quantityForm-${cartItemId}`);
-                                    if (!quantityInput || !form) {
-
-                                        console.error('Form or input not found for cartItemId:', cartItemId);
-                                        return;
-                                    }
-                                    let currentQuantity = parseInt(quantityInput.value) || 1;
-                                    if (currentQuantity < 1) {
-                                        quantityInput.value = 1;
-                                        currentQuantity = 1;
-
-                                        console.log('Quantity set to minimum:', currentQuantity);
-                                    }
-                                    const formData = new FormData(form);
-                                    // Debug dữ liệu gửi đi
-                                    for (let pair of formData.entries()) {
-                                        console.log(pair[0] + ': ' + pair[1]);
-                                    }
+                                function updateQuantityAjax(cartItemId, newQuantity, originalQuantity) {
                                     $.ajax({
-                                        url: '${pageContext.request.contextPath}/UpdateCart?t=' + new Date().getTime(),
+                                        url: '${pageContext.request.contextPath}/CartItem',
                                         type: 'POST',
-                                        data: formData,
-                                        processData: false,
-                                        contentType: false,
+                                        data: {
+                                            action: 'updateQuantity',
+                                            cartItemId: cartItemId,
+                                            quantity: newQuantity
+                                        },
                                         success: function (response) {
-                                            console.log('Update response:', response);
+                                            console.log("AJAX response:", response);
+
                                             if (response.trim() === "success") {
-
-                                                console.log('Quantity updated successfully:', cartItemId);
+                                                console.log('Quantity updated successfully in database');
+                                                // Không cần cập nhật UI ở đây vì đã cập nhật trước đó
+                                            } else if (response.startsWith("error:insufficient_stock:")) {
+                                                const maxStock = response.split(":")[2];
+                                                // Rollback quantity input
+                                                const quantityInput = document.getElementById(`quantity-${cartItemId}`);
+                                                quantityInput.value = originalQuantity;
                                                 updateItemTotal(cartItemId);
-                                            } else {
-                                                console.error('Update failed:', response);
 
-                                                quantityInput.value = parseInt(quantityInput.getAttribute('data-previous-value')) || 1;
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Không đủ hàng',
+                                                    text: `Sản phẩm này chỉ còn ${maxStock} trong kho`,
+                                                    showConfirmButton: true
+                                                });
+                                            } else if (response.includes("error:")) {
+                                                // Rollback quantity input
+                                                const quantityInput = document.getElementById(`quantity-${cartItemId}`);
+                                                quantityInput.value = originalQuantity;
                                                 updateItemTotal(cartItemId);
+
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Lỗi',
+                                                    text: 'Có lỗi xảy ra khi cập nhật số lượng',
+                                                    showConfirmButton: true
+                                                });
                                             }
                                         },
                                         error: function (xhr, status, error) {
-                                            console.error('AJAX error:', error, xhr.status, xhr.responseText);
-
-                                            quantityInput.value = parseInt(quantityInput.getAttribute('data-previous-value')) || 1;
+                                            console.error('AJAX error:', error);
+                                            // Rollback quantity input
+                                            const quantityInput = document.getElementById(`quantity-${cartItemId}`);
+                                            quantityInput.value = originalQuantity;
                                             updateItemTotal(cartItemId);
-                                        },
-                                        beforeSend: function () {
-                                            quantityInput.setAttribute('data-previous-value', quantityInput.value);
+
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Lỗi kết nối',
+                                                text: 'Không thể cập nhật số lượng, vui lòng thử lại',
+                                                showConfirmButton: true
+                                            });
                                         }
                                     });
                                 }
-                                const lastAddedCartItemId = '<%= session.getAttribute("lastAddedCartItemId") != null ? session.getAttribute("lastAddedCartItemId") : "null"%>';
-                                if (lastAddedCartItemId !== "null") {
-                                    const checkbox = document.querySelector(`tr[data-cart-item-id="${lastAddedCartItemId}"] .selectItem`);
-                                    if (checkbox) {
-                                        checkbox.checked = true;
-                                        updateCartTotal(); // Cập nhật tổng khi check
-                                        saveSelectedItems(); // Lưu trạng thái chọn
-                                    }
-                                    // Xóa session attribute sau khi sử dụng
-                                    fetch('${pageContext.request.contextPath}/ClearLastAddedCartItem', {
-                                        method: 'POST'
-                                    }).then(() => console.log('Cleared lastAddedCartItemId from session'));
+
+// Update quantity via AJAX
+                                function updateQuantity(cartItemId, newQuantity) {
+                                    updateQuantityAjax(cartItemId, newQuantity);
                                 }
 
+// Handle manual quantity input change
+                                function onQuantityChange(cartItemId) {
+                                    const quantityInput = document.getElementById(`quantity-${cartItemId}`);
+                                    const originalQuantity = parseInt(quantityInput.getAttribute('data-original-value')) || parseInt(quantityInput.defaultValue) || 1;
+                                    let newQuantity = parseInt(quantityInput.value) || 1;
+
+                                    const row = document.querySelector(`tr[data-cart-item-id="${cartItemId}"]`);
+                                    const maxQuantity = parseInt(row.getAttribute('data-max-quantity')) || 1000;
+
+                                    // Validate quantity
+                                    if (newQuantity < 1) {
+                                        newQuantity = 1;
+                                        quantityInput.value = newQuantity;
+                                    }
+
+                                    if (newQuantity > maxQuantity) {
+                                        Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Vượt quá số lượng',
+                                            text: `Số lượng tối đa cho sản phẩm này là ${maxQuantity}`,
+                                            showConfirmButton: true
+                                        });
+                                        quantityInput.value = Math.min(originalQuantity, maxQuantity);
+                                        newQuantity = parseInt(quantityInput.value);
+                                    }
+
+                                    // Only update if quantity actually changed
+                                    if (newQuantity !== originalQuantity) {
+                                        // Update UI immediately
+                                        updateItemTotal(cartItemId);
+
+                                        // Send AJAX request
+                                        updateQuantityAjax(cartItemId, newQuantity, originalQuantity);
+
+                                        // Update the original value for next comparison
+                                        quantityInput.setAttribute('data-original-value', newQuantity.toString());
+                                    }
+                                }
+
+// Update item total when quantity changes
+                                function updateItemTotal(cartItemId) {
+                                    const row = document.querySelector(`tr[data-cart-item-id="${cartItemId}"]`);
+                                    if (!row) {
+                                        console.error("Row not found for cartItemId:", cartItemId);
+                                        return;
+                                    }
+
+                                    const unitPrice = parseFloat(row.getAttribute('data-unit-price')) || 0;
+                                    const quantityInput = document.getElementById(`quantity-${cartItemId}`);
+                                    const quantity = parseInt(quantityInput.value) || 1;
+                                    const newTotal = unitPrice * quantity;
+
+                                    const totalCell = document.getElementById(`total-${cartItemId}`);
+                                    if (totalCell) {
+                                        totalCell.textContent = formatNumber(newTotal) + ' VND';
+                                    }
+
+                                    // Update row data attributes
+                                    row.setAttribute('data-item-total', Math.round(newTotal).toString());
+
+                                    const checkbox = row.querySelector('.selectItem');
+                                    if (checkbox) {
+                                        checkbox.setAttribute('data-item-total', Math.round(newTotal).toString());
+                                    }
+
+                                    // Update cart total if item is selected
+                                    if (checkbox && checkbox.checked) {
+                                        updateCartTotal();
+                                    }
+                                }
+
+// Prepare checkout
+                                function prepareCheckout() {
+                                    const selected = Array.from(document.querySelectorAll('.selectItem:checked'))
+                                            .map(item => item.closest('tr').getAttribute('data-cart-item-id'));
+
+                                    if (selected.length === 0) {
+                                        Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Không có sản phẩm nào được chọn',
+                                            text: 'Vui lòng chọn ít nhất một sản phẩm để thanh toán.',
+                                            showConfirmButton: true
+                                        });
+                                        return false;
+                                    }
+
+                                    document.getElementById('selectedCartItemIds').value = selected.join(',');
+                                    return true;
+                                }
+
+// Initialize on page load
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    // Store original quantities for rollback
+                                    document.querySelectorAll('.quantity-value').forEach(input => {
+                                        input.setAttribute('data-original-value', input.value);
+                                    });
+
+                                    // Update cart total on page load
+                                    updateCartTotal();
+
+                                    // Add event listeners for quantity inputs
+                                    document.querySelectorAll('.quantity-value').forEach(input => {
+                                        input.addEventListener('change', function () {
+                                            const cartItemId = this.id.replace('quantity-', '');
+                                            onQuantityChange(cartItemId);
+                                        });
+
+                                        // Prevent negative values and non-numeric input
+                                        input.addEventListener('keypress', function (e) {
+                                            // Allow: backspace, delete, tab, escape, enter
+                                            if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
+                                                    // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                                                            (e.keyCode === 65 && e.ctrlKey === true) ||
+                                                            (e.keyCode === 67 && e.ctrlKey === true) ||
+                                                            (e.keyCode === 86 && e.ctrlKey === true) ||
+                                                            (e.keyCode === 88 && e.ctrlKey === true)) {
+                                                return;
+                                            }
+                                            // Ensure that it is a number and stop the keypress
+                                            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                                                e.preventDefault();
+                                            }
+                                        });
+                                    });
+
+                                    // Add event listeners for checkboxes
+                                    document.querySelectorAll('.selectItem').forEach(checkbox => {
+                                        checkbox.addEventListener('change', function () {
+                                            updateCartTotal();
+                                            saveSelectedItems();
+                                        });
+                                    });
+                                });
             </script>
         </div>
         <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />

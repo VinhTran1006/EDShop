@@ -168,11 +168,11 @@ public class AdminUpdateProductServlet extends HttpServlet {
         ProductDetail productDetail = proDAO.getOneProductDetailById(id);
         Product product = proDAO.getProductByID(id);
         Map<String, String> imageUrlMap = new LinkedHashMap<>();
-        imageUrlMap.put("fileMain", product.getImageUrl());
-        imageUrlMap.put("file1", productDetail.getImageUrl1());
-        imageUrlMap.put("file2", productDetail.getImageUrl2());
-        imageUrlMap.put("file3", productDetail.getImageUrl3());
-        imageUrlMap.put("file4", productDetail.getImageUrl4());
+//        imageUrlMap.put("fileMain", product.getImageUrl());
+//        imageUrlMap.put("file1", productDetail.getImageUrl1());
+//        imageUrlMap.put("file2", productDetail.getImageUrl2());
+//        imageUrlMap.put("file3", productDetail.getImageUrl3());
+//        imageUrlMap.put("file4", productDetail.getImageUrl4());
 
         for (String key : imageUrlMap.keySet()) {
             Part part = request.getPart(key);

@@ -1,6 +1,6 @@
 package controller;
 
-import dao.CartDAO;
+import dao.CartItemDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,7 +20,7 @@ public class AddCartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        CartDAO cartDAO = new CartDAO();
+        CartItemDAO cartDAO = new CartItemDAO();
         // Lấy thông tin từ request
         int productId = Integer.parseInt(request.getParameter("productId"));
         int categoryId = (request.getParameter("categoryId") != null) ? Integer.parseInt(request.getParameter("categoryId")) : -1;
