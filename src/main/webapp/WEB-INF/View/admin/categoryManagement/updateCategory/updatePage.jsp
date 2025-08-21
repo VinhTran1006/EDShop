@@ -1,19 +1,10 @@
-<%-- 
-    Document   : categoryDetail
-    Created on : Jun 14, 2025, 9:52:22 PM
-    Author     : HP - Gia Khiêm
---%>
 
-<%@page import="model.CategoryDetailGroup"%>
-<%@page import="model.CategoryDetail"%>
+<%@page import="model.Attribute"%>
 <%@page import="java.util.List"%>
 <%@page import="model.Category"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    List<CategoryDetail> categoryDetailList = (List<CategoryDetail>) request.getAttribute("categoryDetailList");
-    List<Category> categoryList = (List<Category>) request.getAttribute("categoryList");
-    List<CategoryDetailGroup> categoryDetailGroup = (List<CategoryDetailGroup>) request.getAttribute("categoryDetaiGrouplList");
-    int categoryId = (int) request.getAttribute("categoryId");
+    List<Attribute> attributeList = (List<Attribute>) request.getAttribute("attributeList");
     Category category = (Category) request.getAttribute("category");
 %>
 <!DOCTYPE html>
@@ -47,20 +38,15 @@
                 </div>
 
                 <div class="form-row">
-                    <label for="description_<%= category.getCategoryId()%>">Description:</label>
+                    <label for="ImgURLLogo<%= category.getCategoryId()%>">ImgURLLogo:</label>
                     <input type="text"
-                           id="description"
-                           name="description"
-                           value="<%= category.getDescription()%>"
+                           id="ImgURLLogo:"
+                           name="ImgURLLogo:"
+                           value="<%= category.getImgUrlLogo()%>"
                            class="input-category" required/>
                 </div>
             </div>
             <% } %>
-
-            <!--            <== Category name==>-->
-
-            <!--            <== Category detail==>-->
-            <!-- Vùng hiển thị tổng -->
 
 
             <div class="category-container" style = "width: 75%; margin-top: 1%">
@@ -68,43 +54,21 @@
                 <hr>
                 <%
                     int groupIndex = -1;
-                    if (categoryDetailGroup != null && !categoryDetailGroup.isEmpty()) {
+                    if (attributeList != null && !attributeList.isEmpty()) {
                         groupIndex = 0;
-                        for (CategoryDetailGroup cateGroup : categoryDetailGroup) {
+                        for (Attribute a : attributeList) {
                 %>
 
-                <!-- Nhóm tiêu đề -->
-                <div class="group-header" onclick="toggleDetails(<%= groupIndex%>)">
+                <div class="group-header" id="group<%= groupIndex%>">
                     <!-- ID ẩn để gửi về Servlet -->
-                    <input type="hidden" name="groupId" value="<%= cateGroup.getCategoryDetailsGroupID()%>" />
+                    <input type="hidden" name="attributeID" value="<%= a.getAttributeID()%>" />
 
                     <!-- Tên nhóm có thể chỉnh sửa -->
                     <input type="text"
-                           name="groupName"
-                           value="<%= cateGroup.getNameCategoryDetailsGroup()%>"
+                           name="attributeName"
+                           value="<%= a.getAtrributeName()%>"
                            class="group-name-input" required/>
-                </div>
-
-                <!-- Chi tiết, ẩn ban đầu -->
-                <div class="group-details" id="detailGroup<%= groupIndex%>">
-                    <%
-                        if (categoryDetailList != null && !categoryDetailList.isEmpty()) {
-                            for (CategoryDetail cateList : categoryDetailList) {
-                                if (cateList.getCategoryDetailsGroupID() == cateGroup.getCategoryDetailsGroupID()) {
-                    %>
-                    <div class="detail-item">
-                        <input type="hidden" name="detailId" value="<%= cateList.getCategoryDetailID()%>" />
-                        <input type="text"
-                               name="detailName"
-                               value="<%= cateList.getCategoryDatailName()%>"
-                               class="detail-input" required/>
-                    </div>
-
-                    <%
-                                }
-                            }
-                        }
-                    %>
+                    <button class="btn btn-danger" onclick="confirmDelete(<%= a.getAttributeID()%>)">Delete</button>
                 </div>
                 <%
                         groupIndex++;
@@ -120,7 +84,7 @@
 
                 %>
             </div>
-            <%            if (groupIndex > -1) {
+            <%  if (groupIndex > -1) {
             %>
             <a style = "margin-left: 81%;" href="CategoryView" class="btn btn-secondary" id="back"><i class="bi bi-arrow-return-left"></i> Back</a>
             <button type="submit" class="btn btn-primary" id="submit">
@@ -136,21 +100,11 @@
             %>
         </form>
 
-        <!--            <== Category detail==>-->
+
 
     </body>
 </html>
 
-<script>
-    function toggleDetails(index) {
-        var detailDiv = document.getElementById("detailGroup" + index);
-        if (detailDiv.style.display === "none") {
-            detailDiv.style.display = "block";
-        } else {
-            detailDiv.style.display = "none";
-        }
-    }
-</script>
 
 <%
     String success = request.getParameter("success");
@@ -158,7 +112,7 @@
 %>
 <script>
     window.onload = function () {
-        <% if ("1".equals(success)) { %>
+    <% if ("1".equals(success)) { %>
         Swal.fire({
             icon: 'success',
             title: 'Update Successful!',
@@ -167,7 +121,7 @@
             confirmButtonText: 'OK',
             timer: 3000
         });
-        <% } else if ("1".equals(error)) { %>
+    <% } else if ("1".equals(error)) { %>
         Swal.fire({
             icon: 'error',
             title: 'Error Occurred!',
@@ -176,7 +130,7 @@
             confirmButtonText: 'Try Again',
             timer: 3000
         });
-        <% } %>
+    <% }%>
     };
 </script>
 

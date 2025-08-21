@@ -14,13 +14,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import model.Attribute;
 import model.Category;
 import model.CategoryDetail;
 import model.CategoryDetailGroup;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 @WebServlet(name = "CategoryDetailServlet", urlPatterns = {"/CategoryDetail"})
 public class CategoryDetailServlet extends HttpServlet {
@@ -68,17 +69,10 @@ public class CategoryDetailServlet extends HttpServlet {
         if (categoryId != -1) {
 
             CategoryDAO categoryDAO = new CategoryDAO();
-            
-            List<CategoryDetailGroup> categoryDetaiGrouplList = categoryDAO.getCategoryDetailGroupById(categoryId);
-            request.setAttribute("categoryDetaiGrouplList", categoryDetaiGrouplList);
-            
-            List<CategoryDetail> categoryDetailList = categoryDAO.getCategoryDetailById(categoryId);
-            request.setAttribute("categoryDetailList", categoryDetailList);
-
-            List<Category> categoryList = categoryDAO.getAllCategory(); // hoặc getAllCategory()
-            request.setAttribute("categoryList", categoryList);
-            
-            request.setAttribute("categoryId", categoryId);
+            List<Attribute> attibuteList = categoryDAO.getAttributeByCategoryID(categoryId);
+            request.setAttribute("attributeList", attibuteList);
+            Category cate = categoryDAO.getCategoryById(categoryId);
+            request.setAttribute("category", cate);
 
             request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/viewCategoryDetail/categoryDetailPage.jsp").forward(request, response);
         }

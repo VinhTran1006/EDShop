@@ -92,7 +92,6 @@ public class LoginAdminServlet extends HttpServlet {
             if ("Admin".equalsIgnoreCase(staff.getRole())) {
                 session.setAttribute("admin", staff);
                 session.setAttribute("role", staff.getRole());
-
                 System.out.println("========== [ADMIN LOGIN SUCCESS] ==========");
                 System.out.println("Time: " + loginTime);
                 System.out.println("IP: " + clientIp);
@@ -100,7 +99,6 @@ public class LoginAdminServlet extends HttpServlet {
                 System.out.println("Role: " + staff.getRole());
                 System.out.println("SessionID: " + session.getId());
                 System.out.println("===========================================");
-
                 response.sendRedirect("AdminDashboard");
             } else {
                 System.out.println("========== [ACCESS DENIED - NOT ADMIN] ==========");

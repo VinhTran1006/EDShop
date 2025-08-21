@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  *
- * 
+ *
  */
 @WebServlet(name = "CreateCategoryServlet", urlPatterns = {"/CreateCategory"})
 public class CreateCategoryServlet extends HttpServlet {
@@ -77,40 +77,39 @@ public class CreateCategoryServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         String categoryName = request.getParameter("categoryName");
-        String description = request.getParameter("description");
+        String ImgURLLogo = request.getParameter("ImgURLLogo");
 
         CategoryDAO dao = new CategoryDAO();
-        int categoryId = dao.addCategory(categoryName, description);  // Trả về ID Category
+        int categoryId = dao.addCategory(categoryName, ImgURLLogo);
 
         if (categoryId == -1) {
             request.setAttribute("createError", "1");
-            request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/createCategory/create.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/createCategory/createCategory.jsp").forward(request, response);
             return;
         }
 
-        // Lặp qua các nhóm group được gửi lên
-        int i = 0;
-        while (true) {
+        for (int i = 1;; i++) {
             String groupName = request.getParameter("groups[" + i + "][name]");
             if (groupName == null) {
                 break;
             }
 
-            int groupId = dao.addCategoryDetailsGroup(groupName, categoryId);  // Trả về ID Group
-
-            // Lấy tất cả các chi tiết thuộc group này
-            String[] details = request.getParameterValues("groups[" + i + "][details][]");
-            if (details != null) {
-                for (String detail : details) {
-                    dao.addCategoryDetails(categoryId, detail, groupId);
-                }
+            int attributeID = dao.addAttribute(groupName, categoryId);
+            if (attributeID == -1) {
+                request.setAttribute("createError", "1");
+                request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/createCategory/createCategory.jsp").forward(request, response);
+                return;
             }
-            i++;
+
         }
+           System.out.println("categoryName = " + categoryId);
+           System.out.println("categoryID = " + categoryName);
+    System.out.println("ImgURLLogo = " + ImgURLLogo);
+    System.out.println("group[][name] = " + request.getParameter("groups[1][name]"));
 
         // Thành công
         request.setAttribute("createSuccess", "1");
-        request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/createCategory/create.jsp").forward(request, response);
+        response.sendRedirect("CategoryView");
 
     }
 

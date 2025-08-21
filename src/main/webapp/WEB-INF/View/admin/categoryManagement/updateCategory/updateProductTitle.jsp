@@ -1,8 +1,4 @@
-<%-- 
-    Document   : updateProductTitle
-    Created on : Jun 22, 2025, 4:51:42 PM
-    Author     : HP - Gia Khiêm
---%>
+
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>

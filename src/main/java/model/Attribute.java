@@ -56,6 +56,11 @@ public class Attribute {
         this.isActive = isActive;
     }
 
+    @Override
+    public String toString() {
+        return "Attribute{" + "attributeID=" + attributeID + ", atrributeName=" + atrributeName + ", categoryID=" + categoryID + ", isActive=" + isActive + '}';
+    }
+
     
     
 }

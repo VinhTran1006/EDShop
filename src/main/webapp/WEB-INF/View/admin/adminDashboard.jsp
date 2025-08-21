@@ -4,10 +4,10 @@
 <%@page import="java.text.NumberFormat, java.util.Locale"%>
 <% 
     Staff acc = (Staff) session.getAttribute("admin");
-    if (acc == null || acc.getRole() != "Admin") {
+   if (acc == null || !acc.getRole().equalsIgnoreCase("Admin")){
         response.sendRedirect("LoginAdmin");
         return;
-    }
+   }
    // Integer totalStaff = (Integer) request.getAttribute("totalStaff");
     Integer totalProduct = (Integer) request.getAttribute("totalProduct");
    // Integer totalSupplier = (Integer) request.getAttribute("totalSupplier");

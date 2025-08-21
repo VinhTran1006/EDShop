@@ -1,8 +1,4 @@
-<%-- 
-    Document   : viewCategoryList
-    Created on : Jun 13, 2025, 11:27:19 PM
-    Author     : HP - Gia Khiêm
---%>
+
 
 <%@page import="java.util.List"%>
 <%@page import="model.Category"%>
@@ -27,7 +23,6 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Chuyển sang servlet xử lý
                 window.location.href = 'DeleteCategory?categoryId=' + categoryId;
             }
         });
