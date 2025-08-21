@@ -1,5 +1,6 @@
 package controller;
 
+import dao.AccountDAO;
 import dao.StaffDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -7,7 +8,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Account;
 import model.Staff;
 
 @WebServlet(name = "CreateStaffServlet", urlPatterns = {"/CreateStaffServlet"})
@@ -26,13 +26,12 @@ public class CreateStaffServlet extends HttpServlet {
         try {
             // Lấy dữ liệu từ form
             String email = request.getParameter("email");
-            String password = request.getParameter("password");
-            
+            String password = request.getParameter("password"); // TODO: hash nếu cần
             String fullName = request.getParameter("fullName");
             String phone = request.getParameter("phoneNumber");
             String birthDateStr = request.getParameter("birthDate");
             String gender = request.getParameter("gender");
-            String position = request.getParameter("position");
+            String role = request.getParameter("role");
             String hiredDateStr = request.getParameter("hiredDate");
 
             // Chuyển đổi ngày tháng sang java.util.Date
@@ -44,33 +43,32 @@ public class CreateStaffServlet extends HttpServlet {
             if (hiredDateStr != null && !hiredDateStr.isEmpty()) {
                 hiredDate = java.sql.Date.valueOf(hiredDateStr);
             }
-
-            // Tạo đối tượng Account
-            Account account = new Account();
-            account.setEmail(email);
-            account.setPasswordHash(password); // Hash password nếu cần
-//            account.setRoleID(roleID);
-           
-
+            AccountDAO accDao = new AccountDAO();
+            String hashPass = accDao.hashMD5(password);
             // Tạo đối tượng Staff
             Staff staff = new Staff();
+            staff.setEmail(email);
+            staff.setPasswordHash(hashPass); // Hash nếu cần
             staff.setFullName(fullName);
-            staff.setPhone(phone);
-            staff.setBirthDay(birthDate);
+            staff.setPhoneNumber(phone);
+            staff.setBirthDate(birthDate);
             staff.setGender(gender);
-            staff.setPosition(position);
+            staff.setRole(role);
             staff.setHiredDate(hiredDate);
+            staff.setActive(true); // mặc định active khi tạo mới
+            staff.setCreatedAt(new java.util.Date());
 
             // Gọi DAO để thêm vào DB
             StaffDAO dao = new StaffDAO();
-            boolean success = dao.createStaffWithAccount(account, staff);
+            boolean success = dao.createStaff(staff);
 
             if (success) {
                 response.sendRedirect("StaffList?successcreate=1");
             } else {
                 response.sendRedirect("StaffList?errorcreate=1");
             }
-} catch (Exception e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Error: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);

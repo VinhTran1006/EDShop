@@ -19,7 +19,7 @@ public class DeleteStaffServlet extends HttpServlet {
             try {
                 int staffId = Integer.parseInt(request.getParameter("id"));
                 StaffDAO staffDAO = new StaffDAO();
-                boolean isSuccess = staffDAO.deleteStaffById(staffId); // Đảm bảo phương thức này đúng
+                boolean isSuccess = staffDAO.deleteStaff(staffId); // Đảm bảo phương thức này đúng
                 if (isSuccess) {
                     response.sendRedirect("StaffList?successdelete=1");
                 } else {

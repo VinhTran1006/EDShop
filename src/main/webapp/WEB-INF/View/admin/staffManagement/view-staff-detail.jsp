@@ -20,7 +20,7 @@
     </head>
     <body>
         <% if (sta == null) {
-                out.print("<p>There is no customer with that id</p>");
+                out.print("<p>There is no staff with that id</p>");
             } else {
         %>
         <div class="container mt-5">
@@ -28,54 +28,45 @@
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">Staff Detail</h4>
                 </div>
-                <form method="post" action="CustomerList?action=detail">
+                <form method="post" action="StaffList?action=detail">
                     <div class="card-body">
                         <table class="table table-borderless">
                             <tr>
                                 <th>Staff ID:</th>
-                                <td>
-                                    <%= sta.getStaffID()%>
-                                </td>
+                                <td><%= sta.getStaffID()%></td>
                             </tr>
                             <tr>
                                 <th>Full Name:</th>
-                                <td>
-                                    <%= sta.getFullName()%>
-                                </td>
+                                <td><%= sta.getFullName()%></td>
                             </tr>
                             <tr>
                                 <th>Phone Number:</th>
-                                <td>
-                                    <%= sta.getPhone()%>
-                                </td>
+                                <td><%= sta.getPhoneNumber()%></td>
                             </tr>
-                            
                             <tr>
                                 <th>Email:</th>
-                                <td>
-                                    <%= sta.getEmail()%>
-                                </td>
+                                <td><%= sta.getEmail()%></td>
                             </tr>
-
                             <tr>
                                 <th>Position:</th>
-                                <td>
-                                    <%= sta.getPosition()%>
-                                </td>
+                                <td><%= sta.getRole()%></td>
                             </tr>
                             <tr>
                                 <th>Date of Birth:</th>
                                 <td>
-                                    <%= sta.getBirthDay()%>
+                                    <%= (sta.getBirthDate() != null
+                                        ? new java.text.SimpleDateFormat("dd/MM/yyyy").format(sta.getBirthDate())
+                                        : "")%>
                                 </td>
                             </tr>
                             <tr>
                                 <th>Hired Date:</th>
                                 <td>
-                                    <%= sta.getHiredDate()%>
+                                    <%= (sta.getHiredDate() != null
+                                        ? new java.text.SimpleDateFormat("dd/MM/yyyy").format(sta.getHiredDate())
+                                        : "")%>
                                 </td>
                             </tr>
-
                             <tr>
                                 <th>Sex:</th>
                                 <td>
@@ -88,17 +79,15 @@
                         </table>
                         <div class="d-flex justify-content-between mt-4">
                             <div>
-                                <a href="ChangePasswordStaff" class="btn btn-secondary" ><i class="bi bi-tools"></i> Reset Password</a>
+                                <a href="ChangePasswordStaff" class="btn btn-secondary"><i class="bi bi-tools"></i> Reset Password</a>
                                 <a href="StaffList" class="btn btn-outline-primary" id="back"><i class="bi bi-arrow-return-left"></i> Back to list</a>
                             </div>
-                            <div>      
+                            <div>
                                 <a href="UpdateStaffServlet?action=update&id=<%= sta.getStaffID()%>" class="btn btn-warning">Update</a>
                                 <a href="DeleteStaffServlet?action=delete&id=<%= sta.getStaffID()%>" class="btn btn-danger">Delete</a>
                             </div>
                         </div>
                 </form>
-                <%
-                    }
-                %>
+                <% }%>
                 </body>
                 </html>
