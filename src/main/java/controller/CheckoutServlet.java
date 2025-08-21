@@ -1,7 +1,7 @@
 package controller;
 
 import dao.AddressDAO;
-import dao.CartDAO;
+import dao.CartItemDAO;
 import dao.ImportStockDetailDAO;
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
@@ -52,7 +52,7 @@ public class CheckoutServlet extends HttpServlet {
 
             if (selectedIdsParam != null && !selectedIdsParam.trim().isEmpty()) {
                 String[] idArray = selectedIdsParam.split(",");
-                CartDAO cartDAO = new CartDAO();
+                CartItemDAO cartDAO = new CartItemDAO();
 
                 for (String idStr : idArray) {
                     try {
@@ -160,7 +160,7 @@ public class CheckoutServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Account user = (Account) session.getAttribute("user");
         Customer customer = (Customer) session.getAttribute("cus");
-        CartDAO cartDAO = new CartDAO();
+        CartItemDAO cartDAO = new CartItemDAO();
         OrderDAO orderDAO = new OrderDAO();
         VoucherDAO voucherDAO = new VoucherDAO();
         OrderDetailDAO orderDetailsDAO = new OrderDetailDAO();

@@ -1,6 +1,6 @@
 package controller;
 
-import dao.CartDAO;
+import dao.CartItemDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -31,7 +31,7 @@ public class RemoveCartItemServlet extends HttpServlet {
                 }
 
                 List<String> itemIds = Arrays.asList(selectedItems.split(","));
-                CartDAO cartDAO = new CartDAO();
+                CartItemDAO cartDAO = new CartItemDAO();
                 boolean isSuccess = cartDAO.deleteMultipleCartItems(itemIds);
 
                 if (isSuccess) {
@@ -59,7 +59,7 @@ public class RemoveCartItemServlet extends HttpServlet {
         if ("remove".equals(action)) {
             try {
                 int cartItemId = Integer.parseInt(request.getParameter("id"));
-                CartDAO cartDAO = new CartDAO();
+                CartItemDAO cartDAO = new CartItemDAO();
                 boolean isSuccess = cartDAO.deleteCartItem(cartItemId);
 
                 if (isSuccess) {
