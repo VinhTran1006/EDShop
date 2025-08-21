@@ -115,11 +115,11 @@ public class LoginServlet extends HttpServlet {
         } else {
             System.out.println("[LOGIN] Login successful: " + email);
             session.setAttribute("cus", cus);
-            session.setAttribute("accountId", cus.getCustomerID());
+            session.setAttribute("customerId", cus.getCustomerID());
             session.setAttribute("role", "Customer");
             session.setAttribute("user", cus);
             System.out.println("[LOGIN] Session 'cus': " + session.getAttribute("cus"));
-            System.out.println("[LOGIN] Session 'accountId': " + session.getAttribute("accountId"));
+            System.out.println("[LOGIN] Session 'customerId': " + session.getAttribute("customerId"));
             System.out.println("[LOGIN] Session 'role': " + session.getAttribute("role"));
             System.out.println("[LOGIN] Session 'user': " + session.getAttribute("user"));
 

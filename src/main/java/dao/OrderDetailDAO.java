@@ -59,7 +59,7 @@ public class OrderDetailDAO extends DBContext {
             pre.setInt(1, orderID);
             ResultSet rs = pre.executeQuery();
             if (rs.next()) {
-                od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getLong(4), rs.getString(5), rs.getString(6));
+//                od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getLong(4), rs.getString(5), rs.getString(6));
             }
         } catch (SQLException e) {
         }

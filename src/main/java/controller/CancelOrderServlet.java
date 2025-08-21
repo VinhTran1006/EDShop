@@ -77,10 +77,9 @@ public class CancelOrderServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
         Customer customer = (Customer) session.getAttribute("cus");
 
-        if (user == null || customer == null) {
+        if ( customer == null) {
 
             response.sendRedirect("Login");
             return;
