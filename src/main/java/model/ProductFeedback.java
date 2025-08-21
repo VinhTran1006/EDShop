@@ -29,12 +29,12 @@ public class ProductFeedback {
     private boolean isRead;
     private String reply;
     private int staffID;
-    private DateTime replyDate;
-    
+    private java.util.Date replyDate;
+     private String fullName;
     public ProductFeedback() {
     }
 
-    public ProductFeedback(int feedbackID, int customerID, int productID, int orderID, Date createdDate, int star, String comment, boolean isActive, boolean isRead, String reply, int staffID, DateTime replyDate) {
+    public ProductFeedback(int feedbackID, int customerID, int productID, int orderID, Date createdDate, int star, String comment, boolean isActive, boolean isRead, String reply, int staffID, Date replyDate) {
         this.feedbackID = feedbackID;
         this.customerID = customerID;
         this.productID = productID;
@@ -137,15 +137,20 @@ public class ProductFeedback {
         this.staffID = staffID;
     }
 
-    public DateTime getReplyDate() {
+    public Date getReplyDate() {
         return replyDate;
     }
 
-    public void setReplyDate(DateTime replyDate) {
+    public void setReplyDate(Date replyDate) {
         this.replyDate = replyDate;
     }
 
-    
-    
-   
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
 }

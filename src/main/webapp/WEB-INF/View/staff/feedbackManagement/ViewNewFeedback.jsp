@@ -191,12 +191,15 @@
                     <div class="banner">
                         <h1>Customer Reviews</h1>              
                     </div>
-                    <%--<c:forEach var="rate" items="${dataRating}">--%>
+
                     <div class="review-card">
-                        <h3>[Product ID: ${Product.productId}] "${Product.productName}" - 
-                            <fmt:formatNumber value="${Product.price}" type="number" groupingUsed="true" />đ</h3>
+                        <h3>[Product ID: ${Product.productID}] "${Product.productName}" - 
+                            <fmt:formatNumber value="${Product.price}" type="number" groupingUsed="true" />đ
+                        </h3>
 
                         <p class="text-muted">Reviewed by: <strong>${cus.fullName}</strong></p>
+
+                        <!-- Stars -->
                         <div class="star-rating">
                             <c:forEach var="i" begin="1" end="5">
                                 <c:choose>
@@ -210,51 +213,58 @@
                             </c:forEach>
                         </div>
 
-                        <!-- Comment -->
-                        <p id="comment-${rate.rateID}" data-original="${rate.comment}" class="${rate.isDeleted ? 'hidden-feedback' : ''}">
-                            ${rate.isDeleted ? "This feedback was hidden for some reason." : rate.comment}
+                        <!-- Customer Comment -->
+                        <p id="comment-${rate.feedbackID}" data-original="${rate.comment}" 
+                           class="${rate.isActive ? 'hidden-feedback' : ''}">
+                            ${rate.isActive ? "This feedback was hidden for some reason." : rate.comment}
                         </p>
 
-                        <!-- Toggle Ẩn/Hiện -->
-                        <button id="toggle-btn-${rate.rateID}" class="btn btn-toggle ${rate.isDeleted ? 'btn-warning' : 'btn-success'} btn-sm" onclick="toggleVisibility(${rate.rateID}, ${rate.isDeleted ? 1 : 0})">
-                            <i class="fa ${rate.isDeleted ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                            ${rate.isDeleted ? "Show" : "Hidden"}
+                        <!-- Toggle -->
+                        <button id="toggle-btn-${rate.feedbackID}" 
+                                class="btn btn-toggle ${rate.isActive ? 'btn-warning' : 'btn-success'} btn-sm"
+                                onclick="toggleVisibility(${rate.feedbackID}, ${rate.isActive ? 1 : 0})">
+                            <i class="fa ${rate.isActive ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                            ${rate.isActive ? "Show" : "Hidden"}
                         </button>
+                        <c:if test="${empty rate.reply}">
+                            <button class="reply-btn btn btn-primary btn-sm mt-2"
+                                    onclick="toggleReplyForm(${rate.feedbackID})">
+                                <i class="fa fa-reply"></i> Reply
+                            </button>
+                        </c:if>
+                        <!-- Reply -->
+                        <c:if test="${not empty rate.reply}">
+                            <div class="reply-container mt-2">
+                                <strong>Staff reply:</strong>
+                                <p>${rate.reply}</p>
+                                <small class="text-muted">
+                                    by StaffID: ${rate.staffID}, 
+                                    at <fmt:formatDate value="${rate.replyDate}" pattern="dd/MM/yyyy HH:mm"/>
+                                </small>
 
-                        <!-- Reply Button -->
-                        <button class="reply-btn btn-sm" onclick="toggleReplyForm(${rate.rateID})">
-                            <i class="fa fa-reply"></i> Reply
-                        </button>
+                                <button class="update-btn btn btn-primary btn-sm" 
+                                        onclick="openUpdateModal(${rate.feedbackID}, '${rate.reply}')">
+                                    <i class="fa fa-edit"></i> Update
+                                </button>
 
-                        <!-- Reply List -->
-                        <c:forEach var="reply" items="${dataReplies}">
-                            <c:if test="${reply.rateID == rate.rateID}">
-                                <div id="reply-container-${reply.replyID}" class="reply-container">
-                                    <strong>Staff</strong>
-                                    <p>${reply.answer}</p>
-
-                                    <button class="update-btn btn btn-primary btn-sm" onclick="openUpdateModal(${reply.replyID}, '${reply.answer}', ${rate.rateID})">
-                                        <i class="fa fa-edit"></i> Update
-                                    </button>
-
-                                    <button class="delete-btn btn btn-danger btn-sm" onclick="openDeleteModal(${reply.replyID})">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </div>
-                            </c:if>
-                        </c:forEach>
-
+                                <button class="delete-btn btn btn-danger btn-sm" 
+                                        onclick="openDeleteModal(${rate.feedbackID})">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </div>
+                        </c:if>
 
                         <!-- Reply Form -->
-                        <div id="replyForm-${rate.rateID}" class="reply-form">
+                        <div id="replyForm-${rate.feedbackID}" class="reply-form mt-2">
                             <form method="POST" action="ReplyFeedback">
-                                <input type="hidden" name="rateID" value="${rate.rateID}">
+                                <input type="hidden" name="rateID" value="${rate.feedbackID}">
                                 <textarea required="true" name="Answer" class="form-control" placeholder="Write your reply..."></textarea>
                                 <button type="submit" class="btn btn-primary btn-sm mt-2">Submit Reply</button>
                             </form>
                         </div>
                     </div>
-                    <%--</c:forEach>--%>
+
+
             </div>
 
 

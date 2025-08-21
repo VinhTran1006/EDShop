@@ -6,17 +6,15 @@ package controller;
 
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
-import dao.OrderStatusDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-
 import model.Order;
 import model.OrderDetail;
-import model.OrderStatus;
+
 
 /**
  *
@@ -68,7 +66,7 @@ public class UpdateOrderStatusServlet extends HttpServlet {
 
         OrderDetailDAO odDAO = new OrderDetailDAO();
         List<OrderDetail> list = odDAO.getOrderDetail(orderID);
-        if (o.getFullName() != "") {
+        if (o != null) {
             request.setAttribute("dataDetail", list);
             request.setAttribute("data", o);
             request.getRequestDispatcher("/WEB-INF/View/staff/orderManagement/orderDetailsView.jsp").forward(request, response);
@@ -96,7 +94,7 @@ public class UpdateOrderStatusServlet extends HttpServlet {
             OrderDAO oDAO = new OrderDAO();
 
             if (status != null && orderID != null) {
-                int count = oDAO.updateOrder(Integer.parseInt(orderID), Integer.parseInt(status));
+                int count = oDAO.updateOrder(Integer.parseInt(orderID), status);
 
                 if (count > 0) {
                     // ✅ Update thành công → quay về danh sách và show thông báo

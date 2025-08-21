@@ -6,8 +6,8 @@ package controller;
  */
 
 
-import dao.ProductRatingDAO;
-import model.ProductRating;
+import dao.ProductFeedbackDAO;
+import model.ProductFeedback;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -59,12 +59,10 @@ public class ViewListNewFeedbackServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        
-        ProductRatingDAO prDAO = new ProductRatingDAO();
-        List<ProductRating> list = prDAO.getNewFeedback();
-        
+        ProductFeedbackDAO prDAO = new ProductFeedbackDAO();
+        List<ProductFeedback> list = prDAO.getNewFeedback();
         if(list != null){
-        request.setAttribute("ProductRating", list);
+        request.setAttribute("ProductFeedback", list);
         request.getRequestDispatcher("/WEB-INF/View/staff/feedbackManagement/ViewListOfNewFeedback.jsp").forward(request, response);
         }
     } 

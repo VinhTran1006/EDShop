@@ -21,6 +21,7 @@ public class Order {
     private String addressSnapshot;
     private int addressID;
     private String updatedAt;
+    private Customer customer;
 
     public Order() {
     }
@@ -126,6 +127,15 @@ public class Order {
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
 
   
 

@@ -24,8 +24,7 @@ public class OrderDetailDAO extends DBContext {
     public List<OrderDetail> getAllByOrderId(int orderId) {
         List<OrderDetail> list = new ArrayList<>();
         String query = "SELECT od.OrderID, od.ProductID, od.Quantity, od.Price, "
-                + "p.ProductName "
-                + "FROM OrderItems od "
+                + "FROM OrderDetails od "
                 + "JOIN Products p ON od.ProductID = p.ProductID "
                 + "WHERE od.OrderID = ?";
         try {
@@ -39,7 +38,6 @@ public class OrderDetailDAO extends DBContext {
                 detail.setProductID(rs.getInt("ProductID"));
                 detail.setQuantity(rs.getInt("Quantity"));
                 detail.setPrice(rs.getLong("Price"));
-                detail.setProductName(rs.getString("ProductName"));
                 list.add(detail);
             }
 
@@ -59,40 +57,43 @@ public class OrderDetailDAO extends DBContext {
             pre.setInt(1, orderID);
             ResultSet rs = pre.executeQuery();
             if (rs.next()) {
-//                od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getLong(4), rs.getString(5), rs.getString(6));
+                od = new  OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),rs.getInt(5));
+               
             }
         } catch (SQLException e) {
         }
         return od;
     }
 
-    public List<OrderDetail> getOrderDetail(String orderid) {
-        List<OrderDetail> list = new ArrayList<>();
-        String query = "SELECT od.OrderID, od.ProductID, od.Quantity, od.Price, p.CategoryID, p.ProductName "
-                + "FROM OrderDetails od "
-                + "JOIN Products p ON p.ProductID = od.ProductID "
-                + "WHERE od.OrderID = ?";
+   public List<OrderDetail> getOrderDetail(String orderid) {
+    List<OrderDetail> list = new ArrayList<>();
+    String query = "SELECT od.OrderDetailsID, od.OrderID, od.ProductID, od.Quantity, od.Price, "
+                 + "p.CategoryID, p.ProductName "
+                 + "FROM OrderDetails od "
+                 + "JOIN Products p ON p.ProductID = od.ProductID "
+                 + "WHERE od.OrderID = ?";
 
-        try {
-            PreparedStatement pre = conn.prepareStatement(query);
-            pre.setString(1, orderid);
-            ResultSet rs = pre.executeQuery();
-            while (rs.next()) {
-                OrderDetail od = new OrderDetail(
-                        rs.getInt("OrderID"),
-                        rs.getInt("ProductID"),
-                        rs.getInt("Quantity"),
-                        rs.getLong("Price"),
-                        rs.getString("CategoryID"),
-                        rs.getString("ProductName")
-                );
-                list.add(od);
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); // để hiện lỗi nếu có
+    try {
+        PreparedStatement pre = conn.prepareStatement(query);
+        pre.setString(1, orderid);
+        ResultSet rs = pre.executeQuery();
+        while (rs.next()) {
+            OrderDetail od = new OrderDetail(
+                    rs.getInt("OrderDetailsID"),
+                    rs.getInt("OrderID"),
+                    rs.getInt("ProductID"),
+                    rs.getInt("Quantity"),
+                    rs.getLong("Price")        
+            );
+              od.setProductName(rs.getString("ProductName"));             
+            list.add(od);
         }
-        return list;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return list;
+}
+
 
     public boolean getCustomerByProductID(int customerId, int productId) {
         boolean isOk = false;
@@ -143,13 +144,11 @@ public class OrderDetailDAO extends DBContext {
 
             while (rs.next()) {
                 OrderDetail detail = new OrderDetail();
+                detail.setOrderDetailsID(rs.getInt("OrderDetailsID"));
                 detail.setOrderID(rs.getInt("OrderID"));
                 detail.setProductID(rs.getInt("ProductID"));
                 detail.setQuantity(rs.getInt("Quantity"));
-                detail.setPrice(rs.getLong("Price"));
-                detail.setProductName(rs.getString("ProductName"));
-                detail.setCategory(rs.getString("CategoryName"));
-
+                detail.setPrice(rs.getLong("Price"));               
                 list.add(detail);
             }
         } catch (Exception e) {
@@ -159,37 +158,37 @@ public class OrderDetailDAO extends DBContext {
         return list;
     }
 
-    public boolean addOrderDetails(int orderId, List<CartItem> cartItems) {
-        String sql = "INSERT INTO OrderDetails (OrderID, ProductID, Quantity, Price) VALUES (?, ?, ?, ?)";
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-            conn.setAutoCommit(false);
-            try {
-                for (CartItem item : cartItems) {
-                    Product product = item.getProduct();
-                    BigDecimal unitPrice = product.getPrice();
-                    BigDecimal discount = BigDecimal.valueOf(product.getDiscount());
-                    BigDecimal discountFactor = BigDecimal.ONE.subtract(discount.divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP));
-                    BigDecimal discountedPrice = unitPrice.multiply(discountFactor);
-
-                    ps.setInt(1, orderId);
-                    ps.setInt(2, item.getProductID());
-                    ps.setInt(3, item.getQuantity());
-                    ps.setBigDecimal(4, discountedPrice);
-                    ps.addBatch();
-                }
-                ps.executeBatch();
-                conn.commit();
-                return true;
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-                return false;
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+//    public boolean addOrderDetails(int orderId, List<CartItem> cartItems) {
+//        String sql = "INSERT INTO OrderDetails (OrderID, ProductID, Quantity, Price) VALUES (?, ?, ?, ?)";
+//        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+//            conn.setAutoCommit(false);
+//            try {
+//                for (CartItem item : cartItems) {
+//                    Product product = item.getProduct();
+//                    BigDecimal unitPrice = product.getPrice();
+//                    BigDecimal discount = BigDecimal.valueOf(product.getDiscount());
+//                    BigDecimal discountFactor = BigDecimal.ONE.subtract(discount.divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP));
+//                    BigDecimal discountedPrice = unitPrice.multiply(discountFactor);
+//
+//                    ps.setInt(1, orderId);
+//                    ps.setInt(2, item.getProductID());
+//                    ps.setInt(3, item.getQuantity());
+//                    ps.setBigDecimal(4, discountedPrice);
+//                    ps.addBatch();
+//                }
+//                ps.executeBatch();
+//                conn.commit();
+//                return true;
+//            } catch (SQLException e) {
+//                conn.rollback();
+//                e.printStackTrace();
+//                return false;
+//            } finally {
+//                conn.setAutoCommit(true);
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
 }
