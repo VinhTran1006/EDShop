@@ -68,17 +68,17 @@ public class StaffListServlet extends HttpServlet {
             action = "list";
         }
         if (action.equalsIgnoreCase("list")) {
-            List<Staff> staff = dao.getStaffList();
+            List<Staff> staff = dao.getAllStaff();
             request.setAttribute("staff", staff);
             request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/staffList.jsp").forward(request, response);
         }
         if (action.equalsIgnoreCase("search")) {
             String keyword = request.getParameter("keyword");
-            List<Staff> list = dao.searchStaffByName(keyword);
+            List<Staff> list = dao.searchStaff(keyword);
             if (keyword != null && !keyword.trim().isEmpty()) {
-                list = dao.searchStaffByName(keyword);
+                list = dao.searchStaff(keyword);
             } else {
-                list = dao.getStaffList();
+                list = dao.getAllStaff();
             }
             request.setAttribute("staff", list);
             if (list.isEmpty()) {
@@ -88,24 +88,26 @@ public class StaffListServlet extends HttpServlet {
             return;
         }
         if (action.equalsIgnoreCase("detail")) {
-            String idRaw = request.getParameter("id");
+    String idRaw = request.getParameter("id");
 
-            int id = 0;
-            try {
-                id = Integer.parseInt(idRaw);
-                Staff sta = dao.getStaffByID(id);
-                int accountId = dao.getAccountIdByStaffId(id);
-                session.setAttribute("accountId", accountId); // để ChangePassword lấy được
-                request.setAttribute("data", sta);
-                request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/view-staff-detail.jsp").forward(request, response);
-                System.out.println("Session ID: " + session.getId());
-                System.out.println("accountId: " + session.getAttribute("accountId"));
-            } catch (Exception e) {
-                PrintWriter out = response.getWriter();
-                out.print(e.getMessage());
-            }
+    int id = 0;
+    try {
+        id = Integer.parseInt(idRaw);
+        Staff sta = dao.getStaffById(id);
 
-        }
+
+
+        request.setAttribute("data", sta);
+        request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/view-staff-detail.jsp").forward(request, response);
+
+        System.out.println("Session ID: " + session.getId());
+        // System.out.println("accountId: " + session.getAttribute("accountId"));
+    } catch (Exception e) {
+        PrintWriter out = response.getWriter();
+        out.print(e.getMessage());
+    }
+}
+
     }
 
     /**
