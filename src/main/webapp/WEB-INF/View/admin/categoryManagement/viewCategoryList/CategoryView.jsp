@@ -1,8 +1,3 @@
-<%-- 
-    Document   : viewCategoryList
-    Created on : Jun 13, 2025, 11:27:19 PM
-    Author     : HP - Gia Khiêm
---%>
 
 <%@page import="java.util.List"%>
 <%@page import="model.Category"%>
@@ -38,8 +33,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Category Name</th>
-                            <th>Description</th>
-                            <th>Created Date</th>
+                            <th>ImgURLLogo</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -51,10 +45,7 @@
                         <tr>
                             <td><%= cate.getCategoryId()%></td>
                             <td><%= cate.getCategoryName()%></td>
-                            <td><%= cate.getDescriptionCategory()%></td>
-                            <td><%= cate.getCreatedAt()%></td>
-
-
+                            <td><%= cate.getImgUrlLogo()%></td>
                             <td>
                                 <a href="CategoryDetail?categoryId=<%= cate.getCategoryId()%>" class="btn btn-primary" style="color: white;"><i class="bi bi-tools"></i> Detail</a>
                                 <a href="UpdateCategory?categoryId=<%= cate.getCategoryId()%>" class="btn btn-warning" ><i class="bi bi-tools"></i> Edit</a>

@@ -48,7 +48,7 @@ public class CategoryDAO extends DBContext {
 
     public ArrayList<Attribute> getAttributeByCategoryID(int categoryId) {
         ArrayList<Attribute> categoryDetailGroupList = new ArrayList<>();
-        String sql = "SELECT * from Attibutes where AttributeID = ?";
+        String sql = "SELECT * from Attributes where CategoryID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, categoryId);
@@ -63,7 +63,6 @@ public class CategoryDAO extends DBContext {
 
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         }
         return categoryDetailGroupList;
     }
@@ -134,13 +133,13 @@ public class CategoryDAO extends DBContext {
         }
     }
     
-    public int addCategory(String categoryName, String descriptionCategory) {
+    public int addCategory(String categoryName , String ImgURLLogo) {
         int categoryId = -1;
-        String sql = "INSERT INTO Categories (CategoryName, Description) VALUES (?, ?)";
+        String sql = "INSERT INTO Categories (CategoryName, ImgURLLogo, IsActive) VALUES (?, ?, 1)";
 
         try ( PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, categoryName);
-            stmt.setString(2, descriptionCategory);
+            stmt.setString(2, ImgURLLogo);
 
             int rowInserted = stmt.executeUpdate();
 
@@ -152,42 +151,40 @@ public class CategoryDAO extends DBContext {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         }
         return categoryId; // Trả về -1 nếu lỗi
     }
 
-    public int addAttribute(String attributename, int categoryID, int atrributeID) {
-        int categoryDetailsGroupID = -1;
-        String sql = "INSERT INTO Attributes (AttributeID, AttributeName, CategoryID, IsActive) VALUES (?, ?, ?, ?)";
+    public int addAttribute(String attributename, int categoryID) {
+        int attributeID = -1;
+        String sql = "INSERT INTO Attributes ( AttributeName, CategoryID, IsActive) VALUES ( ?, ?, 1)";
 
         try ( PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setInt(1, atrributeID);
-            stmt.setString(2, attributename);
-            stmt.setInt(3, categoryID);
-            stmt.setBoolean(4, true);
+         
+            stmt.setString(1, attributename);
+            stmt.setInt(2, categoryID);
             int rowInserted = stmt.executeUpdate();
             if (rowInserted > 0) {
                 try ( ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
-                        categoryDetailsGroupID = rs.getInt(1);
+                        attributeID = rs.getInt(1);
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return categoryDetailsGroupID; // Trả về -1 nếu lỗi
+        return attributeID; // Trả về -1 nếu lỗi
     }
           
     public static void main(String[] args) {
-       // ArrayList<Category> result = new ArrayList<>();
-       Category result;
+//       Category result;
+//       ArrayList<Attribute> r = new ArrayList<>();
     CategoryDAO dao = new CategoryDAO();
-    result = dao.getCategoryById(1);
-        System.out.println(result);
-//       for (Category a : result) {
-//           System.out.println(a.toString());
-//       }
+//     r = dao.getAttributeByCategoryID(1);
+//        for (Attribute s : r) {
+//            System.out.println(s.toString());
+//        }
+    dao.addAttribute("dayladulieuinsert", 1);
     }
 }

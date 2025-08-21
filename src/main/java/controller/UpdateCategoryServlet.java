@@ -12,14 +12,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import model.Category;
+import model.Attribute;
 import model.CategoryDetail;
-import model.CategoryDetailGroup;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 @WebServlet(name = "UpdateCategoryServlet", urlPatterns = {"/UpdateCategory"})
 public class UpdateCategoryServlet extends HttpServlet {
@@ -68,19 +69,10 @@ public class UpdateCategoryServlet extends HttpServlet {
 
             CategoryDAO categoryDAO = new CategoryDAO();
 
-            List<CategoryDetailGroup> categoryDetaiGrouplList = categoryDAO.getCategoryDetailGroupById(categoryId);
-            request.setAttribute("categoryDetaiGrouplList", categoryDetaiGrouplList);
-
-            List<CategoryDetail> categoryDetailList = categoryDAO.getCategoryDetailById(categoryId);
-            request.setAttribute("categoryDetailList", categoryDetailList);
-
-            List<Category> categoryList = categoryDAO.getAllCategory(); // hoặc getAllCategory()
-            request.setAttribute("categoryList", categoryList);
-
+            ArrayList<Attribute> attributeList = categoryDAO.getAttributeByCategoryID(categoryId);
+            request.setAttribute("attributeList", attributeList);
             Category category = categoryDAO.getCategoryById(categoryId);
             request.setAttribute("category", category);
-
-            request.setAttribute("categoryId", categoryId);
             request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/updateCategory/updateCategory.jsp").forward(request, response);
 
         }
@@ -104,41 +96,21 @@ public class UpdateCategoryServlet extends HttpServlet {
             categoryId = Integer.parseInt(rawCategoryId);
 
             String categoryName = request.getParameter("categoryName");
-            String description = request.getParameter("description");
-            dao.updateCategory(categoryId, categoryName, description);
-
-            //        <== update category 
-            String[] groupIds = request.getParameterValues("groupId");
-            String[] groupNames = request.getParameterValues("groupName");
+            String ImgURLLogo = request.getParameter("ImgURLLogo");
+            dao.updateCategory(categoryId, categoryName, ImgURLLogo);
+  
+            String[] attributeIDs = request.getParameterValues("attributeID");
+            String[] attibuteNames = request.getParameterValues("attributeName");
             boolean checkUpdateCategoryDetail = true;
-            if (groupIds != null && groupNames != null && groupIds.length == groupNames.length) {
-                for (int i = 0; i < groupIds.length; i++) {
-                    int groupId = Integer.parseInt(groupIds[i]);
-                    String groupName = groupNames[i];
-
-                    // Gọi DAO để cập nhật tên nhóm
-                    checkUpdateCategoryDetail &= dao.updateCategporyDetailGroup(groupId, groupName);
+            if (attributeIDs != null && attibuteNames != null && attributeIDs.length == attibuteNames.length) {
+                for (int i = 0; i < attributeIDs.length; i++) {
+                    int groupId = Integer.parseInt(attributeIDs[i]);
+                    String groupName = attibuteNames[i];
+                    checkUpdateCategoryDetail &= dao.updateAtrribute(groupId, groupName);
                 }
             }
-            //        <== update category 
-
-            //        <== update category detail ==>
-            String[] detailIds = request.getParameterValues("detailId");
-            String[] detailNames = request.getParameterValues("detailName");
-            boolean checkUpdateCategoryDetailGroup = true;
-            if (detailIds != null && detailNames != null && detailIds.length == detailNames.length) {
-                for (int i = 0; i < detailIds.length; i++) {
-                    int detailId = Integer.parseInt(detailIds[i]);
-                    String detailName = detailNames[i];
-
-                    // Gọi DAO để update từng chi tiết
-                    checkUpdateCategoryDetailGroup &= dao.updateCategporyDetail(detailId, detailName);
-                }
-            }
-            //        <== update category detail ==>
-            
-            if (checkUpdateCategoryDetail == true && checkUpdateCategoryDetailGroup == true) {
-                response.sendRedirect("UpdateCategory?categoryId=" + categoryId + "&success=1");
+            if (checkUpdateCategoryDetail == true) {
+                response.sendRedirect("CategoryView");
             } else {
                 response.sendRedirect("UpdateCategory?categoryId=" + categoryId + "&error=1");
             }
