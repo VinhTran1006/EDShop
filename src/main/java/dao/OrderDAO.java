@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Customer;
 import model.Order;
 
 import utils.DBContext;
@@ -13,25 +14,39 @@ public class OrderDAO extends DBContext {
 
     public List<Order> getOrderList() {
         List<Order> list = new ArrayList<>();
-        String sql = "SELECT * FROM Orders WHERE Status != 6 ORDER BY Status ASC";
-        try ( PreparedStatement pre = conn.prepareStatement(sql)) {
-            ResultSet rs = pre.executeQuery();
+        String sql = "SELECT o.*, c.FullName, c.PhoneNumber "
+                + "FROM Orders o "
+                + "JOIN Customers c ON o.CustomerID = c.CustomerID "
+                + "ORDER BY CASE o.Status "
+                + "    WHEN 'Waiting' THEN 1 "
+                + "    WHEN 'Packing' THEN 2 "
+                + "    WHEN 'Waiting for Delivery' THEN 3 "
+                + "    WHEN 'Delivered' THEN 4 "
+                + "    WHEN 'Cancelled' THEN 5 "
+                + "    ELSE 6 END";
+
+        try ( PreparedStatement pre = conn.prepareStatement(sql);  ResultSet rs = pre.executeQuery()) {
+
             while (rs.next()) {
+
+                Customer cus = new Customer();
+                cus.setFullName(rs.getString("FullName"));
+                cus.setPhoneNumber(rs.getString("PhoneNumber"));
+
                 Order o = new Order(
                         rs.getInt("OrderID"),
                         rs.getInt("CustomerID"),
-                        rs.getString("FullName"),
-                        rs.getString("PhoneNumber"),
+                        rs.getInt("StaffID"),
                         rs.getLong("TotalAmount"),
                         rs.getString("OrderedDate"),
                         rs.getString("DeliveredDate"),
-                        rs.getInt("Status"),
+                        rs.getString("Status"),
                         rs.getInt("Discount"),
                         rs.getString("AddressSnapshot"),
                         rs.getInt("AddressID"),
                         rs.getString("UpdatedAt")
                 );
-
+                o.setCustomer(cus);
                 list.add(o);
             }
         } catch (Exception e) {
@@ -42,25 +57,31 @@ public class OrderDAO extends DBContext {
 
     public Order getOrderByID(String orderID) {
         Order o = null;
-        String query = "SELECT * FROM Orders WHERE OrderID = ?";
+        String query = "SELECT o.*, c.FullName, c.PhoneNumber "
+                + "FROM Orders o "
+                + "JOIN Customers c ON o.CustomerID = c.CustomerID "
+                + "WHERE o.OrderID = ?";
         try ( PreparedStatement pre = conn.prepareStatement(query)) {
             pre.setString(1, orderID);
             ResultSet rs = pre.executeQuery();
             if (rs.next()) {
+                Customer cus = new Customer();
+                cus.setFullName(rs.getString("FullName"));
+                cus.setPhoneNumber(rs.getString("PhoneNumber"));
                 o = new Order(
                         rs.getInt("OrderID"),
                         rs.getInt("CustomerID"),
-                        rs.getString("FullName"),
-                        rs.getString("PhoneNumber"),
+                        rs.getInt("StaffID"),
                         rs.getLong("TotalAmount"),
                         rs.getString("OrderedDate"),
                         rs.getString("DeliveredDate"),
-                        rs.getInt("Status"),
+                        rs.getString("Status"),
                         rs.getInt("Discount"),
                         rs.getString("AddressSnapshot"),
                         rs.getInt("AddressID"),
                         rs.getString("UpdatedAt")
                 );
+                o.setCustomer(cus);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,11 +89,10 @@ public class OrderDAO extends DBContext {
         return o;
     }
 
-    public boolean updateStatus(int orderId, int newStatus) {
+    public boolean updateStatus(int orderId, String newStatus) {
         String query = "UPDATE Orders SET Status = ? WHERE OrderID = ?";
-        try {
-            PreparedStatement pre = conn.prepareStatement(query);
-            pre.setInt(1, newStatus);
+        try ( PreparedStatement pre = conn.prepareStatement(query)) {
+            pre.setString(1, newStatus); // set chuỗi
             pre.setInt(2, orderId);
             return pre.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -81,28 +101,81 @@ public class OrderDAO extends DBContext {
         }
     }
 
-    public List<Order> searchOrders(String searchQuery) {
+    public List<Order> searchOrders(String keyword) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT o.*, c.FullName, c.PhoneNumber "
+                + "FROM Orders o "
+                + "JOIN Customers c ON o.CustomerID = c.CustomerID "
+                + "WHERE c.FullName LIKE ? OR c.PhoneNumber LIKE ? "
+                + "ORDER BY o.OrderedDate DESC";
+
+        try ( PreparedStatement pre = conn.prepareStatement(sql)) {
+            String searchKey = "%" + keyword + "%";
+            pre.setString(1, searchKey);
+            pre.setString(2, searchKey);
+
+            try ( ResultSet rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    Customer cus = new Customer();
+                    cus.setFullName(rs.getString("FullName"));
+                    cus.setPhoneNumber(rs.getString("PhoneNumber"));
+
+                    Order order = new Order();
+                    order.setOrderID(rs.getInt("OrderID"));
+                    order.setCustomerID(rs.getInt("CustomerID"));
+                    order.setStaffID(rs.getInt("StaffID"));
+                    order.setTotalAmount(rs.getLong("TotalAmount"));
+                    order.setOrderDate(rs.getString("OrderedDate"));
+                    order.setDeliveredDate(rs.getString("DeliveredDate"));
+                    order.setStatus(rs.getString("Status"));
+                    order.setDiscount(rs.getInt("Discount"));
+                    order.setAddressSnapshot(rs.getString("AddressSnapshot"));
+                    order.setAddressID(rs.getInt("AddressID"));
+                    order.setUpdatedAt(rs.getString("UpdatedAt"));
+
+                    // Thêm thông tin khách hàng
+                    order.setCustomer(cus);
+
+                    orders.add(order);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    public List<Order> getOrdersByCustomerID(int customerID) {
         List<Order> list = new ArrayList<>();
-        String query = "SELECT * FROM Orders WHERE FullName LIKE ? OR PhoneNumber LIKE ? ORDER BY Status ASC";
-        try ( PreparedStatement pre = conn.prepareStatement(query)) {
-            pre.setString(1, "%" + searchQuery + "%");
-            pre.setString(2, "%" + searchQuery + "%");
+        String sql = "SELECT o.*, c.FullName, c.PhoneNumber "
+                + "FROM Orders o "
+                + "JOIN Customers c ON o.CustomerID = c.CustomerID "
+                + "WHERE o.CustomerID = ? "
+                + "ORDER BY o.OrderedDate DESC";
+
+        try ( PreparedStatement pre = conn.prepareStatement(sql)) {
+            pre.setInt(1, customerID);
             ResultSet rs = pre.executeQuery();
             while (rs.next()) {
+                Customer cus = new Customer();
+                cus.setFullName(rs.getString("FullName"));
+                cus.setPhoneNumber(rs.getString("PhoneNumber"));
+                
                 Order o = new Order(
                         rs.getInt("OrderID"),
                         rs.getInt("CustomerID"),
-                        rs.getString("FullName"),
-                        rs.getString("PhoneNumber"),
+                        rs.getInt("StaffID"),
                         rs.getLong("TotalAmount"),
                         rs.getString("OrderedDate"),
                         rs.getString("DeliveredDate"),
-                        rs.getInt("Status"),
+                        rs.getString("Status"),
                         rs.getInt("Discount"),
                         rs.getString("AddressSnapshot"),
                         rs.getInt("AddressID"),
                         rs.getString("UpdatedAt")
                 );
+                // set thêm thông tin khách hàng
+                o.setCustomer(cus);
                 list.add(o);
             }
         } catch (Exception e) {
@@ -111,19 +184,16 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
-    public int updateOrder(int orderID, int status) {
+    public int updateOrder(int orderID, String status) {
         int count = 0;
         String query = "UPDATE Orders SET Status = ?, UpdatedAt = DATEADD(HOUR, 7, GETUTCDATE()) WHERE OrderID = ?";
-        String queryWithDeliveredDate = "UPDATE Orders SET Status = ?, DeliveredDate = DATEADD(HOUR, 7, GETUTCDATE()), UpdatedAt = DATEADD(HOUR, 7, GETUTCDATE()) WHERE OrderID = ?";
+        String queryWithDeliveredDate = "UPDATE Orders SET Status = ?, DeliveredDate = DATEADD(HOUR, 7, GETUTCDATE()), "
+                + "UpdatedAt = DATEADD(HOUR, 7, GETUTCDATE()) WHERE OrderID = ?";
 
-        try {
-            PreparedStatement pre;
-            if (status == 4) {
-                pre = conn.prepareStatement(queryWithDeliveredDate);
-            } else {
-                pre = conn.prepareStatement(query);
-            }
-            pre.setInt(1, status);
+        try ( PreparedStatement pre = conn.prepareStatement(
+                "Delivered".equalsIgnoreCase(status) ? queryWithDeliveredDate : query)) {
+
+            pre.setString(1, status);
             pre.setInt(2, orderID);
 
             count = pre.executeUpdate();
@@ -132,117 +202,77 @@ public class OrderDAO extends DBContext {
         }
         return count;
     }
+// Ai làm thanh toán Sửa nha
 
-    public List<Order> getOrdersByCustomerID(int customerID) {
-        List<Order> list = new ArrayList<>();
-        String sql = "SELECT * FROM Orders WHERE CustomerID = ? ORDER BY OrderedDate DESC";
-        try {
-            PreparedStatement pre = conn.prepareStatement(sql);
-            pre.setInt(1, customerID);
-            ResultSet rs = pre.executeQuery();
-            while (rs.next()) {
-                Order o = new Order(
-                        rs.getInt("OrderID"),
-                        rs.getInt("CustomerID"),
-                        rs.getString("FullName"),
-                        rs.getString("PhoneNumber"),
-                        rs.getLong("TotalAmount"),
-                        rs.getString("OrderedDate"),
-                        rs.getString("DeliveredDate"),
-                        rs.getInt("Status"),
-                        rs.getInt("Discount"),
-                        rs.getString("AddressSnapshot"),
-                        rs.getInt("AddressID"),
-                        rs.getString("UpdatedAt")
-                );
-                list.add(o);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    public int createOrder(int customerId, String fullName, String addressSnapshot,
-            String phoneNumber, String orderedDate, String deliveredDate, int status,
-            long totalAmount, int discount, int addressId) {
-
-        String sql = "INSERT INTO Orders (CustomerID, FullName, AddressSnapshot, PhoneNumber, OrderedDate, DeliveredDate, Status, TotalAmount, Discount, AddressID) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public int createOrder(Order order) {
+        String sql = "INSERT INTO Orders (CustomerID, StaffID, AddressSnapshot, OrderedDate, DeliveredDate, Status, TotalAmount, Discount, AddressID, UpdatedAt) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, DATEADD(HOUR, 7, GETUTCDATE()))";
 
         try ( PreparedStatement pre = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pre.setInt(1, customerId);
-            pre.setString(2, fullName);
-            pre.setString(3, addressSnapshot);
-            pre.setString(4, phoneNumber);
+            pre.setInt(1, order.getCustomerID());
+            pre.setInt(2, order.getStaffID());
+            pre.setString(3, order.getAddressSnapshot());
 
-            Timestamp orderedTimestamp = null;
-            if (orderedDate != null && !orderedDate.trim().isEmpty()) {
+            // OrderedDate
+            if (order.getOrderDate() != null && !order.getOrderDate().trim().isEmpty()) {
                 try {
-                    orderedTimestamp = Timestamp.valueOf(orderedDate);
+                    pre.setTimestamp(4, Timestamp.valueOf(order.getOrderDate()));
                 } catch (IllegalArgumentException e) {
                     Logger.getLogger(OrderDAO.class.getName()).log(Level.SEVERE,
-                            "Invalid OrderedDate format: {0}", orderedDate);
+                            "Invalid OrderedDate format: {0}", order.getOrderDate());
                     return -1;
                 }
             } else {
-                Logger.getLogger(OrderDAO.class.getName()).log(Level.SEVERE, "OrderedDate is null or empty");
-                return -1;
+                pre.setNull(4, java.sql.Types.TIMESTAMP);
             }
-            pre.setTimestamp(5, orderedTimestamp);
 
-            Timestamp deliveredTimestamp = null;
-            if (deliveredDate != null && !deliveredDate.trim().isEmpty()) {
+            // DeliveredDate
+            if (order.getDeliveredDate() != null && !order.getDeliveredDate().trim().isEmpty()) {
                 try {
-                    deliveredTimestamp = Timestamp.valueOf(deliveredDate);
+                    pre.setTimestamp(5, Timestamp.valueOf(order.getDeliveredDate()));
                 } catch (IllegalArgumentException e) {
                     Logger.getLogger(OrderDAO.class.getName()).log(Level.SEVERE,
-                            "Invalid DeliveredDate format: {0}", deliveredDate);
+                            "Invalid DeliveredDate format: {0}", order.getDeliveredDate());
                     return -1;
                 }
+            } else {
+                pre.setNull(5, java.sql.Types.TIMESTAMP);
             }
-            pre.setTimestamp(6, deliveredTimestamp);
 
-            pre.setInt(7, status);
-            pre.setLong(8, totalAmount);
-            pre.setInt(9, discount);
-            pre.setInt(10, addressId);
+            pre.setString(6, order.getStatus());
+            pre.setLong(7, order.getTotalAmount());
+            pre.setInt(8, order.getDiscount());
+            pre.setInt(9, order.getAddressID());
 
             int affectedRows = pre.executeUpdate();
-
-            Logger.getLogger(OrderDAO.class.getName()).log(Level.INFO,
-                    "SQL execution completed. Affected rows: {0}", affectedRows);
 
             if (affectedRows > 0) {
                 try ( ResultSet rs = pre.getGeneratedKeys()) {
                     if (rs.next()) {
-                        int orderId = rs.getInt(1);
-                        Logger.getLogger(OrderDAO.class.getName()).log(Level.INFO,
-                                "Order created successfully with OrderID: {0}", orderId);
-                        return orderId;
+                        return rs.getInt(1); // Trả về OrderID vừa insert
                     }
                 }
             }
-            Logger.getLogger(OrderDAO.class.getName()).log(Level.WARNING, "No rows affected when inserting order");
             return -1;
         } catch (SQLException e) {
             Logger.getLogger(OrderDAO.class.getName()).log(Level.SEVERE,
                     "SQL Error creating order: Message={0}, SQLState={1}, ErrorCode={2}",
                     new Object[]{e.getMessage(), e.getSQLState(), e.getErrorCode()});
-            e.printStackTrace();
             return -1;
         }
     }
+
     ////-------------Tai------///
     public int countTodayOrders() {
-    String sql = "SELECT COUNT(*) FROM Orders WHERE CAST(OrderedDate AS DATE) = CAST(GETDATE() AS DATE)";
-    try (PreparedStatement ps = conn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-        if (rs.next()) return rs.getInt(1);
-    } catch (Exception e) {
-        e.printStackTrace();
+        String sql = "SELECT COUNT(*) FROM Orders WHERE CAST(OrderedDate AS DATE) = CAST(GETDATE() AS DATE)";
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
-    return 0;
-}
 
 }

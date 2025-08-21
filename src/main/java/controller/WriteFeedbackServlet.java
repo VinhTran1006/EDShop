@@ -34,10 +34,9 @@ public class WriteFeedbackServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-
         Customer customer = (Customer) session.getAttribute("cus");
 
-        if ( customer == null) {
+        if (customer == null) {
 
             response.sendRedirect("Login");
             return;
@@ -59,7 +58,7 @@ public class WriteFeedbackServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Customer customer = (Customer) session.getAttribute("cus");
 
-        if ( customer == null) {
+        if (customer == null) {
 
             response.sendRedirect("Login");
             return;
@@ -120,17 +119,17 @@ public class WriteFeedbackServlet extends HttpServlet {
 
             // Thử dùng ProductRatingDAO thay vì FeedbackDAO
             ProductRatingDAO dao = new ProductRatingDAO();
-////            boolean alreadyRated = dao.hasRatedProduct(customerID, productID, orderID);
-//            if (alreadyRated) {
-//                response.sendRedirect("CustomerOrderDetail?orderID=" + orderID + "&error=alreadyRated");
-//                return;
-//            }
-//            int result = dao.addProductRating(customerID, productID, orderID, star, comment.trim());
-//            if (result > 0) {
-//                response.sendRedirect("CustomerOrderDetail?orderID=" + orderID + "&success=feedback");
-//            } else {
-//                response.sendRedirect("CustomerOrderDetail?orderID=" + orderID + "&error=feedback");
-//            }
+            boolean alreadyRated = dao.hasRatedProduct(customerID, productID, orderID);
+            if (alreadyRated) {
+                response.sendRedirect("CustomerOrderDetail?orderID=" + orderID + "&error=alreadyRated");
+                return;
+            }
+            int result = dao.addProductRating(customerID, productID, orderID, star, comment.trim());
+            if (result > 0) {
+                response.sendRedirect("CustomerOrderDetail?orderID=" + orderID + "&success=feedback");
+            } else {
+                response.sendRedirect("CustomerOrderDetail?orderID=" + orderID + "&error=feedback");
+            }
 
         } catch (NumberFormatException e) {
             e.printStackTrace();

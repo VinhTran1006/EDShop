@@ -31,7 +31,7 @@
             }     /* Waiting */
             .status-2 {
                 background-color: #0d6efd;
-            }     /* Packaging */
+            }     /* Packing */
             .status-3 {
                 background-color: #6366f1;
             }     /* Waiting for Delivery */
@@ -104,24 +104,33 @@
                                 <c:forEach var="order" items="${orderList}">
                                     <tr>
                                         <td>#${order.orderID}</td>
-                                        <td>${order.fullName}</td>
-                                        <td>${order.phone}</td>
+                                        <td>${order.customer.fullName}</td>
+                                        <td>${order.customer.phoneNumber}</td>
                                         <td>${order.addressSnapshot}</td>
                                         <td><fmt:formatNumber value="${order.totalAmount}" type="currency" currencySymbol="₫" /></td>
                                         <td>${order.orderDate}</td>
-                                        <td>${order.updatedDate}</td>
+                                        <td>${order.updatedAt}</td>
 
                                         <td>
-                                            <span class="badge status-${order.status}">
-                                                <c:choose>
-                                                    <c:when test="${order.status == 1}">Waiting</c:when>
-                                                    <c:when test="${order.status == 2}">Packaging</c:when>
-                                                    <c:when test="${order.status == 3}">Awaiting Delivery</c:when>
-                                                    <c:when test="${order.status == 4}">Delivered</c:when>
-                                                    <c:otherwise>Cancelled</c:otherwise>
-                                                </c:choose>
-                                            </span>
+                                            <c:choose>
+                                                <c:when test="${order.status eq 'Waiting'}">
+                                                    <span class="badge status-1">Waiting</span>
+                                                </c:when>
+                                                <c:when test="${order.status eq 'Packing'}">
+                                                    <span class="badge status-2">Packing</span>
+                                                </c:when>
+                                                <c:when test="${order.status eq 'Waiting for Delivery'}">
+                                                    <span class="badge status-3">Waiting for Delivery</span>
+                                                </c:when>
+                                                <c:when test="${order.status eq 'Delivered'}">
+                                                    <span class="badge status-4">Delivered</span>
+                                                </c:when>
+                                                <c:when test="${order.status eq 'Cancelled'}">
+                                                    <span class="badge status-5">Cancelled</span>
+                                                </c:when>
+                                            </c:choose>
                                         </td>
+
                                         <td>
                                             <div class="text-center">
                                                 <a href="ViewOrderDetail?orderID=${order.orderID}" class="btn btn-primary">

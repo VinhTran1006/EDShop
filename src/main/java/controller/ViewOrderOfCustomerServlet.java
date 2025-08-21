@@ -63,14 +63,12 @@ public class ViewOrderOfCustomerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-
-
         Customer cus = (Customer) session.getAttribute("cus");
-
-        if ( cus == null) {
-            response.sendRedirect("Login");
-            return;
-        }
+//
+//        if ( cus == null) {
+//            response.sendRedirect("Login");
+//            return;
+//        }
         OrderDAO dao = new OrderDAO();
         List<Order> orders = dao.getOrdersByCustomerID(cus.getCustomerID());
         String success = request.getParameter("success");

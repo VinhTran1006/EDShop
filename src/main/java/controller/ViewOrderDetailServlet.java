@@ -6,7 +6,6 @@ package controller;
 
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
-import dao.OrderStatusDAO;
 import model.Order;
 import model.OrderDetail;
 import java.io.IOException;
@@ -17,7 +16,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-import model.OrderStatus;
+
 
 /**
  *
@@ -64,21 +63,16 @@ public class ViewOrderDetailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String orderID = request.getParameter("orderID");
-
+       
         OrderDAO oDAO = new OrderDAO();
         Order o = oDAO.getOrderByID(orderID);
-
+        
         OrderDetailDAO odDAO = new OrderDetailDAO();
         List<OrderDetail> list = odDAO.getOrderDetail(orderID);
-
-        OrderStatusDAO statusDAO = new OrderStatusDAO();
-        List<OrderStatus> statusList = statusDAO.getAllStatuses(); // dùng getAllStatuses()
-
         request.setAttribute("dataDetail", list);
         request.setAttribute("data", o);
-        request.setAttribute("statusList", statusList); // set đúng thuộc tính
 
-        if (o != null && o.getFullName() != null && !o.getFullName().trim().isEmpty()) {
+        if (o != null) {
             request.getRequestDispatcher("/WEB-INF/View/staff/orderManagement/orderDetailsView.jsp")
                     .forward(request, response);
         } else {
