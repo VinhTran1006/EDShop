@@ -90,32 +90,26 @@ public class UpdateCategoryServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         CategoryDAO dao = new CategoryDAO();
-        String rawCategoryId = request.getParameter("categoryId");
-        int categoryId = -1;
-        if (rawCategoryId != null && !rawCategoryId.isEmpty()) {
-            categoryId = Integer.parseInt(rawCategoryId);
+        String categoryName = request.getParameter("categoryName");
+        int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+        String ImgURLLogo = request.getParameter("ImgURLLogo");
+        dao.updateCategory(categoryId, categoryName, ImgURLLogo);
 
-            String categoryName = request.getParameter("categoryName");
-            String ImgURLLogo = request.getParameter("ImgURLLogo");
-            dao.updateCategory(categoryId, categoryName, ImgURLLogo);
-  
-            String[] attributeIDs = request.getParameterValues("attributeID");
-            String[] attibuteNames = request.getParameterValues("attributeName");
-            boolean checkUpdateCategoryDetail = true;
-            if (attributeIDs != null && attibuteNames != null && attributeIDs.length == attibuteNames.length) {
-                for (int i = 0; i < attributeIDs.length; i++) {
-                    int groupId = Integer.parseInt(attributeIDs[i]);
-                    String groupName = attibuteNames[i];
-                    checkUpdateCategoryDetail &= dao.updateAtrribute(groupId, groupName);
-                }
-            }
-            if (checkUpdateCategoryDetail == true) {
-                response.sendRedirect("CategoryView");
-            } else {
-                response.sendRedirect("UpdateCategory?categoryId=" + categoryId + "&error=1");
+        String[] attributeIDs = request.getParameterValues("attributeID");
+        String[] attibuteNames = request.getParameterValues("attributeName");
+        boolean checkUpdateCategoryDetail = true;
+        if (attributeIDs != null && attibuteNames != null && attributeIDs.length == attibuteNames.length) {
+            for (int i = 0; i < attributeIDs.length; i++) {
+                int groupId = Integer.parseInt(attributeIDs[i]);
+                String groupName = attibuteNames[i];
+                checkUpdateCategoryDetail &= dao.updateAtrribute(groupId, groupName);
             }
         }
-        
+        if (checkUpdateCategoryDetail == true) {
+            response.sendRedirect("CategoryView");
+        } else {
+            response.sendRedirect("UpdateCategory?categoryId=" + categoryId + "&error=1");
+        }
     }
 
     /**

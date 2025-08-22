@@ -1,8 +1,4 @@
-<%-- 
-    Document   : fillterProductList
-    Created on : Jun 18, 2025, 9:30:11 PM
-    Author     : HP - Gia Khiêm
---%>
+
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
@@ -27,7 +23,6 @@
             </h1>
         </div>
         <div style="display: flex; justify-content: flex-end; gap: 12px;">
-            <a class="create-btn" href="AddPromotionServlet">Set Promotion</a>
             <a class="create-btn" href="AdminCreateProduct">Create</a>
         </div>
 
@@ -47,12 +42,9 @@
                 <select name="filter" id="filter" onchange="this.form.submit()"
                         style="border-radius: 30px; padding: 6px 16px; font-size: 16px; border: 1px solid #ccc;">
                     <option value="All" <%= "All".equals(selectedFilter) ? "selected" : ""%>>All products</option>
-                    <option value="Active" <%= "Active".equals(selectedFilter) ? "selected" : ""%>>Active</option>
-                    <option value="Hidden" <%= "Hidden".equals(selectedFilter) ? "selected" : ""%>>Hidden</option>
                     <option value="Featured" <%= "Featured".equals(selectedFilter) ? "selected" : ""%>>Featured</option>
                     <option value="Bestseller" <%= "Bestseller".equals(selectedFilter) ? "selected" : ""%>>Bestseller</option>
                     <option value="New" <%= "New".equals(selectedFilter) ? "selected" : ""%>>New</option>
-                    <option value="Discount" <%= "Discount".equals(selectedFilter) ? "selected" : ""%>>Discounted</option>
                 </select>
             </div>
         </form>

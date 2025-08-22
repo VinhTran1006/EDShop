@@ -66,5 +66,10 @@ public class ProductDetail {
         this.isActive = isActive;
     }
 
+    @Override
+    public String toString() {
+        return "ProductDetail{" + "productDetailID=" + productDetailID + ", productID=" + productID + ", attibuteID=" + attibuteID + ", attributeValue=" + attributeValue + ", isActive=" + isActive + '}';
+    }
+
    
 }

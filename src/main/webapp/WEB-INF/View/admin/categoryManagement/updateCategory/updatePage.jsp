@@ -17,6 +17,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
     <body>
+         <jsp:include page="/WEB-INF/View/admin/categoryManagement/deleteCategory/deleteAttribute.jsp" />
         <form method="post" action="UpdateCategory">
             <!-- Truyền categoryId ẩn -->
             <input type="hidden" name="categoryId" value="<%= category.getCategoryId()%>">
@@ -41,7 +42,7 @@
                     <label for="ImgURLLogo<%= category.getCategoryId()%>">ImgURLLogo:</label>
                     <input type="text"
                            id="ImgURLLogo:"
-                           name="ImgURLLogo:"
+                           name="ImgURLLogo"
                            value="<%= category.getImgUrlLogo()%>"
                            class="input-category" required/>
                 </div>
@@ -68,7 +69,7 @@
                            name="attributeName"
                            value="<%= a.getAtrributeName()%>"
                            class="group-name-input" required/>
-                    <button class="btn btn-danger" onclick="confirmDelete(<%= a.getAttributeID()%>)">Delete</button>
+                  <button type="button" class="btn btn-danger" onclick="confirmDelete(<%= a.getAttributeID()%>, <%= category.getCategoryId()%>)">Delete</button>
                 </div>
                 <%
                         groupIndex++;
@@ -99,9 +100,6 @@
                 }
             %>
         </form>
-
-
-
     </body>
 </html>
 
@@ -129,6 +127,24 @@
             showConfirmButton: true,
             confirmButtonText: 'Try Again',
             timer: 3000
+        });
+    <% }%>
+    };
+    
+     window.onload = function () {
+    <% if ("1".equals(success)) { %>
+        Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'The category has been hidden.',
+            timer: 2000
+        });
+    <% } else if ("1".equals(error)) { %>
+        Swal.fire({
+            icon: 'error',
+            title: 'Failed!',
+            text: 'Could not hide the category.',
+            timer: 2000
         });
     <% }%>
     };

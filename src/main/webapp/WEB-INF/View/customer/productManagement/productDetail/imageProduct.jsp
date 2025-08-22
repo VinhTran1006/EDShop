@@ -1,33 +1,32 @@
+
+<%@page import="model.ProductDetail"%>
 <%@page import="java.util.List"%>
 <%@page import="model.Product"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     Product product = (Product) request.getAttribute("product");
+    List<ProductDetail> productDetail = (List<ProductDetail>) request.getAttribute("productDetailList");
 %>
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="UTF-8">
-        <title>Chi tiết hình ảnh sản phẩm</title>
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>JSP Page</title>
         <link rel="stylesheet" href="Css/imageProductDetail1.css">
+
     </head>
-
     <body>
+        <%
+            if (product != null) {
+        %>
 
-
-        <div class = "divAllImg" style = "width: 100%">
             <%
-                if (product != null) {
-                   
+                if (productDetail != null && product != null) {
+                    for (ProductDetail proDetail : productDetail) {
             %>
 
-            <div class="divAnhLon text-center col-md-12"> 
-                <img style = "width: 100%" id="mainImage" src="<%= product.getImageUrl1()%>" class="anhLon img-fluid main-img">
+            <div style = "width: 60%; margin: 0 auto;" class="divAnhLon text-center"> 
+                <img id="mainImage" src="<%= product.getImageUrl1()%>" class="anhLon">
             </div>
 
             <div style = "" class="d-flex flex-wrap gap-2 row div4AnhNho">
@@ -42,20 +41,24 @@
                 <div class="img-thumbnail col-auto">
                     <img class = "" src="<%= product.getImageUrl4()%>" onclick="changeMainImage(this.src)">
                 </div>
+
             </div>
             <%
+                    break;
+                }
             } else {
             %>
-            <div class="alert alert-warning">Do NOT HAVE PRODUCT DATA!</div>
+            <div class="alert alert-warning">DO NOT HAVE PRODUCT DATA!</div>
             <% }
             %>
-        </div>
+        <%
+            } // { cua check khac null
+        %>
     </body>
+
+    <script>
+        function changeMainImage(src) {
+            document.getElementById("mainImage").src = src;
+        }
+    </script>
 </html>
-
-<script>
-    function changeMainImage(src) {
-        document.getElementById("mainImage").src = src;
-    }
-</script>
-

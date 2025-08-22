@@ -4,6 +4,8 @@
  */
 package controller;
 
+import dao.BrandDAO;
+import dao.CategoryDAO;
 import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,10 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Category;
 import model.Product;
+import model.Brand;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 @WebServlet(name = "StaffProductList", urlPatterns = {"/AdminProduct"})
 public class AdminProductList extends HttpServlet {
@@ -64,32 +67,33 @@ public class AdminProductList extends HttpServlet {
             throws ServletException, IOException {
 
         ProductDAO proDAO = new ProductDAO();
+        CategoryDAO cateDAO = new CategoryDAO();
+        BrandDAO brandDAO = new BrandDAO();
         String filter = request.getParameter("filter");
         List<Product> productList = new ArrayList<>();
+        List<Category> cateList = new ArrayList<>();
+        List<Brand> brandList = new ArrayList<>();
 
         if (filter == null || filter.equals("All")) {
-            productList = proDAO.getAllProduct();
+            productList = proDAO.getProductListAdmin();
         } else if (filter.equals("Featured")) {
             productList = proDAO.getProductIsFeatured();
         } else if (filter.equals("Bestseller")) {
             productList = proDAO.getProductIsBestSeller();
         } else if (filter.equals("New")) {
             productList = proDAO.getProductIsNew();
-        } else if (filter.equals("Discount")) {
-            productList = proDAO.getDiscountedProducts();
-        } else if (filter.equals("Active")) {
-            productList = proDAO.getAllProductActive();
-        } else if (filter.equals("InActive")) {
-            productList = proDAO.getAllProductInactive(); // fallback
-        }
-
+        } 
+        cateList = cateDAO.getAllCategory();
+        brandList = brandDAO.getAllBrand();
         String keyword = request.getParameter("keyword");
         if (keyword != null) {
             productList = proDAO.getProductByKeyword(keyword);
         }
 
         request.setAttribute("productList", productList);
-        request.setAttribute("selectedFilter", filter); // để giữ lại lựa chọn sau reload
+        request.setAttribute("cateList", cateList);
+        request.setAttribute("brandList", brandList);
+        request.setAttribute("selectedFilter", filter);
         request.getRequestDispatcher("/WEB-INF/View/admin/productManagement/viewProductList/adminProductList.jsp").forward(request, response);
 
     }

@@ -14,8 +14,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-import model.CategoryDetail;
-import model.CategoryDetailGroup;
 import model.Product;
 import model.ProductDetail;
 import dao.ProductRatingDAO;
@@ -26,11 +24,12 @@ import dao.RatingRepliesDAO;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import model.Attribute;
 import model.RatingReplies;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 @WebServlet(name = "ProductDetailServlet", urlPatterns = {"/ProductDetail"})
 public class ProductDetailServlet extends HttpServlet {
@@ -84,34 +83,33 @@ public class ProductDetailServlet extends HttpServlet {
             int categoryId = Integer.parseInt(categoryIdStr);
 
             // Lấy thông tin chi tiết sản phẩm
-            List<CategoryDetailGroup> cateGroupList = cateDao.getCategoryDetailGroupById(categoryId);
-            List<CategoryDetail> cateDetailList = cateDao.getCategoryDetailById(categoryId);
-            Product product = proDao.getProductById(productId);
-            List<ProductDetail> productDetailList = proDao.getProductDetailById(productId);
+            List<Attribute> attributeList = cateDao.getAttributeByCategoryID(categoryId);
+            Product product = proDao.getProductByID(productId);
+            List<ProductDetail> productDetailList = proDao.getProductDetailByProductId(productId);
 
             // Lấy danh sách đánh giá và phản hồi
             ProductRatingDAO ratingDAO = new ProductRatingDAO();
             CustomerDAO customerDAO = new CustomerDAO();
             RatingRepliesDAO repliesDAO = new RatingRepliesDAO();
-            List<ProductRating> productRatings = ratingDAO.getProductRatingsByProductId(productId);
+           // List<ProductRating> productRatings = ratingDAO.getProductRatingsByProductId(productId);
             double totalStars = 0;
             int visibleRatingCount = 0;
 
-            for (ProductRating rating : productRatings) {
-                if (!rating.isIsDeleted()) {  // <-- chỉ tính đánh giá chưa bị ẩn
-                    totalStars += rating.getStar();
-                    visibleRatingCount++;
-                }
-
-                Customer customer = customerDAO.getCustomerbyID(rating.getCustomerID());
-                rating.setFullName(customer.getFullName());
-
-                List<RatingReplies> replies = repliesDAO.getAllRatingRepliesByRateID(rating.getRateID());
-                if (replies == null) {
-                    replies = new ArrayList<>();
-                }
-                rating.setReplies(replies);
-            }
+//            for (ProductRating rating : productRatings) {
+//                if (!rating.isIsDeleted()) {  // <-- chỉ tính đánh giá chưa bị ẩn
+//                    totalStars += rating.getStar();
+//                    visibleRatingCount++;
+//                }
+//
+//                Customer customer = customerDAO.getCustomerbyID(rating.getCustomerID());
+//                rating.setFullName(customer.getFullName());
+//
+//                List<RatingReplies> replies = repliesDAO.getAllRatingRepliesByRateID(rating.getRateID());
+//                if (replies == null) {
+//                    replies = new ArrayList<>();
+//                }
+//                rating.setReplies(replies);
+//            }
 
             double averageRating = 0;
             if (visibleRatingCount > 0) {
@@ -121,16 +119,15 @@ public class ProductDetailServlet extends HttpServlet {
 
             // Truyền dữ liệu sang JSP
             request.setAttribute("product", product);
-            request.setAttribute("cateGroupList", cateGroupList);
-            request.setAttribute("cateDetailList", cateDetailList);
+            request.setAttribute("attributeList", attributeList);
             request.setAttribute("productDetailList", productDetailList);
             List<ProductRating> visibleRatings = new ArrayList<>();
-            for (ProductRating rating : productRatings) {
-                if (!rating.isIsDeleted()) {
-                    visibleRatings.add(rating);
-                }
-            }
-            request.setAttribute("productRatings", visibleRatings);
+//            for (ProductRating rating : productRatings) {
+//                if (!rating.isIsDeleted()) {
+//                    visibleRatings.add(rating);
+//                }
+//            }
+//            request.setAttribute("productRatings", visibleRatings);
 
             request.getRequestDispatcher("/WEB-INF/View/customer/productManagement/productDetail/productDetail.jsp").forward(request, response);
         }
