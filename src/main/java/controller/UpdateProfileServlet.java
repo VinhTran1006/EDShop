@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.CustomerDAO;
 import dao.ProfileDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +14,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.Date;
+
 import model.Customer;
 
 /**
@@ -60,11 +63,11 @@ public class UpdateProfileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ProfileDAO dao = new ProfileDAO();
+        CustomerDAO dao = new CustomerDAO();
         HttpSession session = request.getSession();
 
-        int id = (Integer) session.getAttribute("accountId");
-        Customer cus = dao.getCustomerbyID(id);
+        int id = (Integer) session.getAttribute("customerId");
+        Customer cus = dao.getCustomerById(id);
         request.setAttribute("cus", cus);
         request.getRequestDispatcher("/WEB-INF/View/customer/profile/update-profile.jsp").forward(request, response);
 
@@ -84,7 +87,8 @@ public class UpdateProfileServlet extends HttpServlet {
         int id = Integer.parseInt(request.getParameter("id"));
         String fullName = request.getParameter("fullname");
         String phone = request.getParameter("phone");
-        String birthDate = request.getParameter("dob");
+        String dob = request.getParameter("dob");
+        Date birthDate = Date.valueOf(dob);
         String gender = request.getParameter("gender");
 
         ProfileDAO dao = new ProfileDAO();

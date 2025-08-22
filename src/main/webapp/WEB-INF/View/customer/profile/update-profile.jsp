@@ -1,5 +1,4 @@
 <%@page import="model.Customer"%>
-<%@page import="model.Account"%>
 <%@page import="model.Staff"%>
 <%
     Customer cus = (Customer) request.getAttribute("cus");
@@ -37,7 +36,7 @@
                     </div>
                 <% } else { %>
                     <form method="post" action="UpdateProfile">
-                        <input type="hidden" name="id" value="<%= cus.getId() %>">
+                        <input type="hidden" name="id" value="<%= cus.getCustomerID()%>">
 
                         <div class="form-group">
                             <label>
@@ -58,7 +57,7 @@
                             </label>
                             <input type="tel"
                                    name="phone"
-                                   value="<%= cus.getPhone() != null ? cus.getPhone() : "" %>"
+                                   value="<%= cus.getPhoneNumber()!= null ? cus.getPhoneNumber(): "" %>"
                                    class="form-control"
                                    pattern="[0-9]{10,11}"
                                    title="Please enter a valid phone number">
@@ -71,7 +70,7 @@
                             </label>
                             <input type="date"
                                    name="dob"
-                                   value="<%= cus.getBirthDay() != null ? cus.getBirthDay() : "" %>"
+                                   value="<%= cus.getBirthDate()!= null ? cus.getBirthDate(): "" %>"
                                    class="form-control"
                                    max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>">
                         </div>

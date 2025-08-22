@@ -128,7 +128,7 @@ public class VerifyOTPServlet extends HttpServlet {
             String phone = (String) session.getAttribute("tempPhone");
 
             // ✅ Gọi hàm mới có thêm khách hàng luôn
-            boolean success = dao.addNewAccount(email, passwordHash, fullName, phone);
+            boolean success = dao.addNewCustomer(email, passwordHash, fullName, phone);
 
             if (success) {
                 session.removeAttribute("otpManager");
