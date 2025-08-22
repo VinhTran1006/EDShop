@@ -76,10 +76,6 @@ public class CartItemServlet extends HttpServlet {
                 handleRemoveItem(request, response, session, customer.getCustomerID());
                 break;
 
-            case "removeMultiple":
-                handleRemoveMultiple(request, response, session, customer.getCustomerID());
-                break;
-
             case "clearAll":
                 handleClearAll(request, response, session, customer.getCustomerID());
                 break;
@@ -121,7 +117,7 @@ public class CartItemServlet extends HttpServlet {
             }
 
             // Kiểm tra số lượng sản phẩm có sẵn
-            Product product = productDAO.getProductById(currentItem.getProductID());
+            Product product = productDAO.getProductByID(currentItem.getProductID());
             if (product == null || !product.isIsActive()) {
                 response.setContentType("text/plain");
                 response.setCharacterEncoding("UTF-8");
@@ -189,51 +185,6 @@ public class CartItemServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("message", "Có lỗi xảy ra!");
-            response.sendRedirect("CartItem");
-        }
-    }
-
-    private void handleRemoveMultiple(HttpServletRequest request, HttpServletResponse response,
-            HttpSession session, int customerId) throws IOException, ServletException {
-        try {
-            String selectedItemsStr = request.getParameter("selectedItems");
-            if (selectedItemsStr == null || selectedItemsStr.trim().isEmpty()) {
-                session.setAttribute("message", "Không có sản phẩm nào được chọn!");
-                response.sendRedirect("CartItem");
-                return;
-            }
-
-            String[] itemIds = selectedItemsStr.split(",");
-            int deletedCount = 0;
-
-            for (String itemIdStr : itemIds) {
-                try {
-                    int cartItemId = Integer.parseInt(itemIdStr.trim());
-
-                    // Kiểm tra quyền sở hữu
-                    CartItem item = cartItemDAO.getCartItemById(cartItemId);
-                    if (item != null && item.getCustomerID() == customerId) {
-                        if (cartItemDAO.removeCartItem(cartItemId)) {
-                            deletedCount++;
-                        }
-                    }
-                } catch (NumberFormatException e) {
-                    // Skip invalid item ID
-                    continue;
-                }
-            }
-
-            if (deletedCount > 0) {
-                session.setAttribute("message", "Đã xóa " + deletedCount + " sản phẩm khỏi giỏ hàng!");
-            } else {
-                session.setAttribute("message", "Không thể xóa sản phẩm nào!");
-            }
-
-            response.sendRedirect("CartItem");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            session.setAttribute("message", "Có lỗi xảy ra khi xóa sản phẩm!");
             response.sendRedirect("CartItem");
         }
     }
