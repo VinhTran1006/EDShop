@@ -1,8 +1,4 @@
-<%-- 
-    Document   : productInfo
-    Created on : Jun 24, 2025, 10:43:34 AM
-    Author     : HP - Gia Khiêm
---%>
+
 
 <%@page import="model.Suppliers"%>
 <%@page import="java.text.NumberFormat"%>
@@ -23,6 +19,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
     </head>
@@ -31,17 +28,52 @@
 
             <div class="mb-3">
                 <label class="form-label">Product Name</label>
-                <input type="text" class="form-control" name="productName" required/>
-            </div>
-            
-            <div class="mb-3">
-                <label class="form-label">Description</label>
+                <c:if test="${not empty sessionScope.errorProductName}">
+                    <span style="color:red">${sessionScope.errorProductName}</span>
+                </c:if>
+                <c:remove var="errorProductName" scope="session"/>
                 <input type="text" class="form-control" name="productName" required/>
             </div>
 
             <div class="mb-3">
+                <label class="form-label">Description</label>
+                <c:if test="${not empty sessionScope.errorDescription}">
+                    <span style="color:red">${sessionScope.errorDescription}</span>
+                </c:if>
+                <c:remove var="errorDescription" scope="session"/>
+                <input type="text" class="form-control" name="description" required/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Price</label>
+                <c:if test="${not empty sessionScope.errorPrice}">
+                    <span style="color:red">${sessionScope.errorPrice}</span>
+                </c:if>
+                <c:remove var="errorPrice" scope="session"/>
+                <input type="text" class="form-control" name="price" required/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Warranty period</label>
+                <c:if test="${not empty sessionScope.errorWarranty}">
+                    <span style="color:red">${sessionScope.errorWarranty}</span>
+                </c:if>
+                <c:remove var="errorWarranty" scope="session"/>
+                <input type="text" class="form-control" name="warranty" required/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Quantity</label>
+                <c:if test="${not empty sessionScope.errorQuantity}">
+                    <span style="color:red">${sessionScope.errorQuantity}</span>
+                </c:if>
+                <c:remove var="errorQuantity" scope="session"/>
+                <input type="text" class="form-control" name="quantity" required/>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label">Suppliers</label>
-                <select class="form-control" id="suppliers" name="suppliers" required>
+                <select class="form-control" id="suppliers" name="supplier" required>
                     <option value="">-- Select suppliers --</option>
                     <% for (Suppliers sup : supList) {%>
                     <option value="<%= sup.getSupplierID()%>"><%= sup.getName()%></option>
@@ -63,65 +95,13 @@
                 <label class="form-label">Brand</label>
                 <select class="form-control" id="brand" name="brand" required>
                     <option value="">-- Select brand --</option>
+                    <% for (Brand b : brandList) {%>
+                    <option value="<%= b.getBrandId()%>"><%= b.getBrandName()%></option>
+                    <% }%>
                 </select>
             </div>
-
-            <!-- Checkboxes -->
-            <div style="display: flex; gap: 30px;">
-                <div class="form-check mb-2">
-                    <input class="form-check-input rounded-circle" type="checkbox" id="isFeatured" name="isFeatured">
-                    <label class="form-check-label" for="isFeatured">Is Featured</label>
-                </div>
-
-                <div class="form-check mb-2">
-                    <input class="form-check-input rounded-circle" type="checkbox" id="isNew" name="isNew">
-                    <label class="form-check-label" for="isNew">Is New</label>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 20px;">
-                <div class="form-check mb-2">
-                    <input class="form-check-input rounded-circle" type="checkbox" id="isBestSeller" name="isBestSeller">
-                    <label class="form-check-label" for="isBestSeller">Is Best Seller</label>
-                </div>
-
-                <div class="form-check mb-2">
-                    <input class="form-check-input rounded-circle" type="checkbox" id="isActive" name="isActive">
-                    <label class="form-check-label" for="isActive">Is Active</label>
-                </div>
-            </div>
- 
         </div>
     </body>
 
-    <script>
-        var jsBrandList = [];
 
-        <% for (Brand b : brandList) {%>
-        jsBrandList.push({
-            id: <%= b.getBrandId()%>,
-            name: "<%= b.getBrandName()%>",
-            categoryId: <%= b.getCategoryID()%>
-        });
-        <% }%>
-
-        function updateBrands() {
-            const categoryId = document.getElementById("category").value;
-            const brandSelect = document.getElementById("brand");
-
-            // Xóa tất cả brand cũ
-            brandSelect.innerHTML = '<option value="">-- Chọn thương hiệu --</option>';
-
-            // Lọc và thêm brand mới theo category
-            jsBrandList.forEach(brand => {
-                if (brand.categoryId.toString() === categoryId.toString()) {
-                    const option = document.createElement("option");
-                    option.value = brand.id;
-                    option.textContent = brand.name;
-                    brandSelect.appendChild(option); // ❌ không cần .selected
-                }
-            });
-        }
-
-    </script>
 </html>

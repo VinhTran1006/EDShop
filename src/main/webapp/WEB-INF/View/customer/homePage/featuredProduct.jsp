@@ -14,9 +14,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-        <style>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>JSP Page</title>
+    <style>
             #product-scroll-featured {
                 display: flex;
                 overflow-x: auto;
@@ -109,79 +109,76 @@
             }
 
         </style>
-    </head>
-    <body>
-        <div class="" style="width: 100%; border-radius: 15px; margin-top: 1%; background-color: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
-            <p class="new-product-label">Featured product</p>
+</head>
+<body>
+    <div class="" style="width: 100%; border-radius: 15px; margin-top: 1%; background-color: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+        <p class="new-product-label">Featured product</p>
 
-            <div style="display: flex; border-radius: 10px;">
-                <div class = "col-md-4" style="border-radius: 5px; margin-bottom: 1%">
-                    <img style="width: 100%; height: auto" src="https://res.cloudinary.com/dgnyskpc3/image/upload/v1750919683/Discount_abpcr2.png">
-                </div>
+        <div style="display: flex; border-radius: 10px;">
+            <div class = "col-md-4" style="border-radius: 5px; margin-bottom: 1%">
+                <img style="width: 100%; height: auto" src="https://res.cloudinary.com/dgnyskpc3/image/upload/v1750919683/Discount_abpcr2.png">
+            </div>
 
-                <!-- PHẦN SẢN PHẨM CUỘN NGANG -->
-                <div class="product-scroll-wrapper">
-                    <!-- Nút trái -->
-                    <button style = "margin-right: 2%;" onclick="scrollLeft()" class="scroll-btn scroll-left-featured">←</button>
+            <!-- PHẦN SẢN PHẨM CUỘN NGANG -->
+            <div class="product-scroll-wrapper">
+                <!-- Nút trái -->
+                <button style = "margin-right: 2%;" onclick="scrollLeft()" class="scroll-btn scroll-left-featured">←</button>
 
-                    <!-- Danh sách sản phẩm -->
-                    <div id="product-scroll-featured" style = "gap: 0.25%">
-                        <% if (productList != null) {
-                                for (Product pro : productList) {
-                                    if (pro.isIsActive() == true) {   
-                            oldPrice = pro.getPrice();
-                            Locale localeVN = new Locale("vi", "VN");
-                            NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
-                            String giaCuFormatted = currencyVN.format(oldPrice);
-                        %>
-                        <div class="sanPhamMoi">
-                            <a href="<%= request.getContextPath()%>/ProductDetail?productId=<%= pro.getProductID()%>&categoryId=<%= pro.getCategoryID()%>" style="text-decoration: none; color: inherit; display: block;">
-                                <div class="divHinh">
-                                    <img style="width: 98%" src="<%= pro.getImageUrl1()%>" alt="anhDienThoai" class="anhDienThoaiDocQuyen">
-                                </div>
-                                <div class="divTraGop">
-                                    <p class="traGop">Trả góp 0%</p>
-                                </div>
-                                <p class="productName"><%= pro.getProductName()%></p>
-                                <p class="giaMoi"><%= giaCuFormatted%> đ</p>
-                            </a>
-                        </div>
-                        <%
-                                } // end for
-                            }
-                        } else { %>
-                        <p>null</p>
-                        <% }%>
+                <!-- Danh sách sản phẩm -->
+                <div id="product-scroll-featured" style = "gap: 0.25%">
+                    <% if (productList != null) {
+                            for (Product pro : productList) {
+                                if (pro.isIsActive() == true) {
+                                    oldPrice = pro.getPrice();
+                                    Locale localeVN = new Locale("vi", "VN");
+                                    NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
+                                    String giaCuFormatted = currencyVN.format(oldPrice);
+                    %>
+                    <div class="sanPhamMoi">
+                        <a href="<%= request.getContextPath()%>/ProductDetail?productId=<%= pro.getProductID()%>&categoryId=<%= pro.getCategoryID()%>" style="text-decoration: none; color: inherit; display: block;">
+                            <div class="divHinh">
+                                <img style="width: 98%" src="<%= pro.getImageUrl1()%>" alt="anhDienThoai" class="anhDienThoaiDocQuyen">
+                            </div>
+                            <div class="divTraGop">
+                                <p class="traGop">Trả góp 0%</p>
+                            </div>
+                            <p class="productName"><%= pro.getProductName()%></p>
+                            <p class="giaMoi"><%= giaCuFormatted%> đ</p>
+                        </a>
                     </div>
-
-                    <!-- Nút phải -->
-                    <button style = "margin-left: 2%;" onclick="scrollRight()" class="scroll-btn scroll-right-featured">→</button>
+                    <%
+                            } // end for
+                        }
+                    } else { %>
+                    <p>null</p>
+                    <% }%>
                 </div>
+
+                <!-- Nút phải -->
+                <button style = "margin-left: 2%;" onclick="scrollRight()" class="scroll-btn scroll-right-featured">→</button>
             </div>
         </div>
+    </div>
 
-        <!-- JS scroll ngang -->
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const container = document.getElementById('product-scroll-featured');
-                if (!container)
-                    return;
+    <!-- JS scroll ngang -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.getElementById('product-scroll-featured');
+            if (!container)
+                return;
 
-                const scrollAmount = container.clientWidth;
+            const scrollAmount = container.clientWidth;
 
-                document.querySelector('.scroll-left-featured').addEventListener('click', () => {
-                    container.scrollBy({left: -scrollAmount, behavior: 'smooth'});
-                });
-
-                document.querySelector('.scroll-right-featured').addEventListener('click', () => {
-                    container.scrollBy({left: scrollAmount, behavior: 'smooth'});
-                });
+            document.querySelector('.scroll-left-featured').addEventListener('click', () => {
+                container.scrollBy({left: -scrollAmount, behavior: 'smooth'});
             });
-        </script>
 
-    </body>
+            document.querySelector('.scroll-right-featured').addEventListener('click', () => {
+                container.scrollBy({left: scrollAmount, behavior: 'smooth'});
+            });
+        });
+    </script>
+
+</body>
 </html>
 
-<style>
-
-</style>

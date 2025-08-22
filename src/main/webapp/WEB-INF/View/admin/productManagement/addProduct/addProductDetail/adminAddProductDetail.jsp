@@ -1,8 +1,4 @@
-<%-- 
-    Document   : adminAddProductDetail
-    Created on : Jun 29, 2025, 4:56:36 PM
-    Author     : HP - Gia Khiêm
---%>
+
 
 <%@page import="model.Product"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -18,16 +14,12 @@
     </head>
     <body>
         <div style = "width: 100%">
-            <form action="AdminAddProductDetail?categoryId=<%= categoryId%>&productId=<%= product.getProductId()%>" method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; align-items: center;">
+            <form action="AdminAddProductDetail?categoryId=<%= categoryId%>&productId=<%= product.getProductID()%>" method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; align-items: center;">
                 <div style="margin-top: 5%; width: 68.4%; margin-bottom: -0.2%; background-color: #0D6EFD; border: 0.5px solid gray; padding: 0.8%; border-top-left-radius: 12px; border-top-right-radius: 12px;">
                     <h4 style="color: white; margin: 0; text-align: left;">Add Product</h4>
                 </div>
 
                 <div style="width: 70%; display: flex; gap: 1.5%; border: 0.5px solid gray; justify-content: center; align-items: center; background-color: #ffffff; border-bottom: none ">
-
-                    <div style="width: 40%;">
-                        <jsp:include page="/WEB-INF/View/admin/productManagement/addProduct/addProductDetail/imgProductDetail.jsp" />
-                    </div>
 
                     <div style="width: 58%; background-color: #ffffff; padding: 10px; border-radius: 12px;">
                         <jsp:include page="/WEB-INF/View/admin/productManagement/addProduct/addProductDetail/productDetail.jsp" />
@@ -36,7 +28,7 @@
                 </div>
                 <div style="text-align: right; width: 67%; border: 0.5px solid gray; padding: 1.5%; border-top: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
                     <button class = "btn-success"type="submit">Create</button>
-                    <a style = "text-decoration: none;"href="DeleteProductWhenCancel?productId=<%=product.getProductId()%>" class="btn-back">Cancel</a>
+                    <a style = "text-decoration: none;"href="DeleteProductWhenCancel?productId=<%=product.getProductID()%>" class="btn-back">Cancel</a>
                 </div>
 
             </form>
@@ -99,7 +91,7 @@
             }
 
             .btn-success, .btn-back {
-                padding: 8px 16px;  /* trước là 10px 20px */
+                padding: 8px 16px; 
                 font-size: 14px;
             }
 

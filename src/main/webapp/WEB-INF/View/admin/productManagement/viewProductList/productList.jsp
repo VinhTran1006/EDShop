@@ -1,3 +1,5 @@
+<%@page import="dao.BrandDAO"%>
+<%@page import="dao.CategoryDAO"%>
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
 <%@page import="java.util.List"%>
@@ -64,7 +66,11 @@
                         <%
                             Locale localeVN = new Locale("vi", "VN");
                             NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
+                            CategoryDAO catedao = new CategoryDAO();
+                            BrandDAO branddao = new BrandDAO();
                             for (Product product : productList) {
+                               String brandname = branddao.getBrandNameByBrandId(product.getBrandID());
+                               String CategoryName = catedao.getCategoryNameByCategoryId(product.getCategoryID());
                                 if (product != null) {
                                     String giaFormatted = "______";
                                     if (product.getPrice() != null) {
@@ -72,19 +78,19 @@
                                     }
                         %>
                         <tr>
-                            <td><%= product.getProductId()%></td>
+                            <td><%= product.getProductID()%></td>
                             <td><%= product.getProductName()%></td>
                             <td><%= giaFormatted%></td>
-                            <td><%= product.getCategoryName()%></td>
-                            <td><%= product.getBrandName()%></td>
+                            <td><%= CategoryName%></td>
+                            <td><%= brandname %></td>
                             <td>
-                                <img src="<%= (product.getImageUrl() != null) ? product.getImageUrl() : ""%>" alt="Product Image">
+                                <img src="<%= (product.getImageUrl1() != null) ? product.getImageUrl2() : ""%>" alt="Product Image">
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="AdminViewProductDetail?productId=<%= product.getProductId()%>" class="btn btn-warning">Detail</a>
-                                    <a href="AdminUpdateProduct?productId=<%= product.getProductId()%>" class="btn btn-primary">Edit</a>
-                                    <button class="btn btn-danger" onclick="confirmDelete(<%= product.getProductId()%>)">Delete</button>
+                                    <a href="AdminViewProductDetail?productId=<%= product.getProductID()%>" class="btn btn-warning">Detail</a>
+                                    <a href="AdminUpdateProduct?productId=<%= product.getProductID()%>" class="btn btn-primary">Edit</a>
+                                    <button class="btn btn-danger" onclick="confirmDelete(<%= product.getProductID()%>)">Delete</button>
                                 </div>
                             </td>
                         </tr>

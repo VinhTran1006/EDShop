@@ -295,29 +295,30 @@ public class ProductDAO extends DBContext {
     }
 
 
-    public List<ProductDetail> getProductDetailByProductId(int productId) {
-        List<ProductDetail> productDetailList = new ArrayList<>();
-        String sql = "SELECT *"
-                + "FROM ProductDetails p "
-                + "where p.ProductID = ?";
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, productId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int productDetailId = rs.getInt("ProductDetailID");
-                int productID = rs.getInt("ProductID");
-                int attributeID = rs.getInt("AttribiteID");
-                String attributeValue = rs.getString("AttributeValue");
-                boolean isActive = rs.getBoolean("isAvtive");
-                ProductDetail productDetail = new ProductDetail(productDetailId, productID, attributeID, attributeValue, isActive);
-
-                productDetailList.add(productDetail);
-            }
-        } catch (SQLException e) {
+  public List<ProductDetail> getProductDetailByProductId(int productId) {
+    List<ProductDetail> productDetailList = new ArrayList<>();
+    String sql = "SELECT * FROM ProductDetails p WHERE p.ProductID = ?";
+    try {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, productId);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            int productDetailId = rs.getInt("ProductDetailID");
+            int productID = rs.getInt("ProductID");
+            int attributeID = rs.getInt("AttributeID"); 
+            String attributeValue = rs.getString("AttributeValue");
+            boolean isActive = rs.getBoolean("IsActive"); 
+            ProductDetail productDetail = new ProductDetail(
+                productDetailId, productID, attributeID, attributeValue, isActive
+            );
+            productDetailList.add(productDetail);
         }
-        return productDetailList;
+    } catch (SQLException e) {
+        e.printStackTrace(); 
     }
+    return productDetailList;
+}
+
 
     public boolean updateProduct(int id, String productName, String description, BigDecimal price, int supplierid, int categoryid, int brandid, int warranty, Date addedat, int quantity, String url1, String url2, String url3, String url4) {
         String sql1 = "UPDATE Products SET ProductName = ?,Description=?, Price = ?, SupplierID = ?, CategoryID = ?, "
@@ -372,9 +373,9 @@ public class ProductDAO extends DBContext {
         return 0;
     }
 
-    public int insertProduct(String productName, String description, BigDecimal price, int supplierid, int categoryid, int brandid, int warranty, Date addedat, int quantity, String url1, String url2, String url3, String url4) {
+    public int insertProduct(String productName, String description, BigDecimal price, int supplierid, int categoryid, int brandid, int warranty, int quantity, String url1, String url2, String url3, String url4) {
         int productId = 0;
-        String sql = "INSERT INTO Products (ProductName, Description,Price,SupplierID,CategoryID, BrandID, WarrantyPeriod, AddedAt, Quantity, ImageURL1, ImageURL2,ImageURL3,ImageURL4, IsActive ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)";
+        String sql = "INSERT INTO Products (ProductName, Description,Price,SupplierID,CategoryID, BrandID, WarrantyPeriod, Quantity, ImageURL1, ImageURL2,ImageURL3,ImageURL4, IsActive ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?, 1)";
 
         try ( PreparedStatement pstmt1 = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
             pstmt1.setString(1, productName);
@@ -384,12 +385,11 @@ public class ProductDAO extends DBContext {
             pstmt1.setInt(5, categoryid);
             pstmt1.setInt(6, brandid);
             pstmt1.setInt(7, warranty);
-            pstmt1.setDate(8, addedat);
-            pstmt1.setInt(9, quantity);
-            pstmt1.setString(10, url1);
-            pstmt1.setString(11, url2);
-            pstmt1.setString(12, url3);
-            pstmt1.setString(13, url4);
+            pstmt1.setInt(8, quantity);
+            pstmt1.setString(9, url1);
+            pstmt1.setString(10, url2);
+            pstmt1.setString(11, url3);
+            pstmt1.setString(12, url4);
             int affectedRows = pstmt1.executeUpdate();
             if (affectedRows == 0) {
                 throw new SQLException("Insert product failed, no rows affected.");
@@ -687,6 +687,16 @@ public class ProductDAO extends DBContext {
             e.printStackTrace();
         }
         return productDetail;
+    }
+      
+          public static void main(String[] args) {
+
+       List<ProductDetail> r = new ArrayList<>();
+    ProductDAO dao = new ProductDAO();
+     r = dao.getProductDetailByProductId(1);
+        for (ProductDetail s : r) {
+            System.out.println(s.toString());
+        }
     }
     
 }

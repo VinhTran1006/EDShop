@@ -100,12 +100,7 @@ public class CreateCategoryServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/createCategory/createCategory.jsp").forward(request, response);
                 return;
             }
-
         }
-           System.out.println("categoryName = " + categoryId);
-           System.out.println("categoryID = " + categoryName);
-    System.out.println("ImgURLLogo = " + ImgURLLogo);
-    System.out.println("group[][name] = " + request.getParameter("groups[1][name]"));
 
         // Thành công
         request.setAttribute("createSuccess", "1");

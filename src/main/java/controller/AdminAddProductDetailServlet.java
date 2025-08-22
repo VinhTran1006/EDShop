@@ -16,17 +16,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import model.Attribute;
-import model.CategoryDetail;
-import model.CategoryDetailGroup;
 import model.Product;
-import model.ProductDetail;
+
 
 /**
  *
@@ -93,10 +86,9 @@ public class AdminAddProductDetailServlet extends HttpServlet {
         int categoryId = Integer.parseInt(request.getParameter("categoryId"));
         Product product = proDAO.getProductByID(productId);
         request.setAttribute("product", product);
-
         CategoryDAO cateDAO = new CategoryDAO();
         List<Attribute> attributes = cateDAO.getAttributeByCategoryID(categoryId);
-        request.setAttribute("attributes", attributes);
+        request.setAttribute("attributeList", attributes);
         request.setAttribute("categoryId", categoryId);
         request.getRequestDispatcher("/WEB-INF/View/admin/productManagement/addProduct/addProductDetail/adminAddProductDetail.jsp").forward(request, response);
     }
@@ -126,7 +118,6 @@ public class AdminAddProductDetailServlet extends HttpServlet {
 
             for (Attribute a : AttributeList) {
                 String paramName = "attribute_" + a.getAttributeID();
-
                 String value = request.getParameter(paramName);
 
                 if (value != null && !value.trim().isEmpty()) {

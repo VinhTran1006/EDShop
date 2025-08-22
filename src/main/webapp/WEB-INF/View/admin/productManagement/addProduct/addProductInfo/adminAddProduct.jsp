@@ -1,8 +1,4 @@
-<%-- 
-    Document   : staffAddProduct
-    Created on : Jun 24, 2025, 10:43:57 AM
-    Author     : HP - Gia Khiêm
---%>
+
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
