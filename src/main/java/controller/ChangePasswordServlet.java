@@ -6,14 +6,12 @@ package controller;
 
 import dao.AccountDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Account;
 import model.Customer;
 
 /**
@@ -35,13 +33,12 @@ public class ChangePasswordServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
-        Customer customer = (Customer) session.getAttribute("cus");
+        Customer cus = (Customer) session.getAttribute("cus");
 
-        if (user == null || customer == null) {
+        if (cus == null) {
 
             response.sendRedirect("Login");
-            return;
+
         }
     }
 
@@ -58,9 +55,9 @@ public class ChangePasswordServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
+        Customer cus = (Customer) session.getAttribute("cus");
         Customer customer = (Customer) session.getAttribute("cus");
-        if (user == null || customer == null) {
+        if (cus == null || customer == null) {
             response.sendRedirect("Login");
             return;
         }
@@ -79,9 +76,9 @@ public class ChangePasswordServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Integer accountId = (Integer) session.getAttribute("accountId");
+        Integer customerId = (Integer) session.getAttribute("customerId");
 
-        if (accountId == null) {
+        if (customerId == null) {
             response.sendRedirect("Login");
             return;
         }
@@ -89,6 +86,10 @@ public class ChangePasswordServlet extends HttpServlet {
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
 
+        // Ghi log để kiểm tra
+        System.out.println("DEBUG - Old Password: " + oldPassword);
+        System.out.println("DEBUG - New Password: " + newPassword);
+        System.out.println("DEBUG - Confirm Password: " + confirmPassword);
         String passwordPattern = "^.{9,}$";
 
         if (!newPassword.equals(confirmPassword)) {
@@ -104,7 +105,7 @@ public class ChangePasswordServlet extends HttpServlet {
         }
 
         AccountDAO dao = new AccountDAO();
-        boolean success = dao.changePassword(accountId, oldPassword, newPassword);
+        boolean success = dao.changePassword(customerId, oldPassword, newPassword);
 
         if (success) {
             request.setAttribute("success", "Password changed successfully!");

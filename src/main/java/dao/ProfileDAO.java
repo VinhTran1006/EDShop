@@ -19,30 +19,13 @@ public class ProfileDAO extends DBContext {
         super();
     }
 
-    public Customer getCustomerByID(int customerID) {
-        Customer cus = null;
-        String sql = "SELECT c.CustomerID, a.Email, a.PasswordHash, c.FullName, c.PhoneNumber, "
-                   + "c.BirthDate, c.Gender, a.IsActive, a.EmailVerified, a.CreatedAt "
-                   + "FROM Accounts a JOIN Customers c ON c.AccountID = a.AccountID "
-                   + "WHERE a.AccountID = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, customerID);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    cus = mapResultSetToCustomer(rs);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return cus;
-    }
+
 
     public Customer getCustomerByCustomerID(int customerID) {
         Customer cus = null;
         String sql = "SELECT c.CustomerID, a.Email, a.PasswordHash, c.FullName, c.PhoneNumber, "
                    + "c.BirthDate, c.Gender, a.IsActive, a.EmailVerified, a.CreatedAt "
-                   + "FROM Accounts a JOIN Customers c ON c.AccountID = a.AccountID "
+                   + "FROM Customers a JOIN Customers c ON c.AccountID = a.AccountID "
                    + "WHERE c.CustomerID = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, customerID);
@@ -58,12 +41,12 @@ public class ProfileDAO extends DBContext {
     }
 
     public int getAccountIDByCustomerID(int customerID) {
-        String sql = "SELECT AccountID FROM Customers WHERE CustomerID = ?";
+        String sql = "SELECT CustomerID FROM Customers WHERE CustomerID = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, customerID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getInt("AccountID");
+                return rs.getInt("CustomerID");
             }
         } catch (Exception e) {
             e.printStackTrace();

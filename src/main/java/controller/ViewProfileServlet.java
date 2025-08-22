@@ -4,7 +4,7 @@
  */
 package controller;
 
-import dao.ProfileDAO;
+import dao.CustomerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -60,21 +60,28 @@ public class ViewProfileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ProfileDAO dao = new ProfileDAO();
+        CustomerDAO dao = new CustomerDAO();
         HttpSession session = request.getSession();
-        Customer customer = (Customer) session.getAttribute("cus");
 
-        if ( customer == null) {
-
+        // check đăng nhập
+        Integer id = (Integer) session.getAttribute("customerId");
+        if (id == null) {
             response.sendRedirect("Login");
             return;
         }
-        int id = (Integer) session.getAttribute("customerId");
-        session.setAttribute("accountId", id);
-        Customer cus = dao.getCustomerByID(id);
+
+        Customer cus = dao.getCustomerById(id);
+        if (cus == null) {
+            response.sendRedirect("Login");
+            return;
+        }
+
+        // set vào cả request và session cho tiện
         request.setAttribute("cus", cus);
-        request.getRequestDispatcher("/WEB-INF/View/customer/profile/view-profile.jsp").forward(request, response);
-        request.getAttribute("user");
+        session.setAttribute("customer", cus);
+
+        request.getRequestDispatcher("/WEB-INF/View/customer/profile/view-profile.jsp")
+                .forward(request, response);
     }
 
     /**
