@@ -30,7 +30,7 @@ public class ProductFeedback {
     private String reply;
     private int staffID;
     private DateTime replyDate;
-    
+     private String fullName;
     public ProductFeedback() {
     }
 
@@ -143,6 +143,14 @@ public class ProductFeedback {
 
     public void setReplyDate(DateTime replyDate) {
         this.replyDate = replyDate;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     

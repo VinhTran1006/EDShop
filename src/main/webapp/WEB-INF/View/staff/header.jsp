@@ -1,14 +1,13 @@
-<%@ page import="model.Account" %>
+
 <%@ page import="model.Staff" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%
-    Account acc = (Account) session.getAttribute("user");
-    Staff staff = (Staff) session.getAttribute("staff");
-    if (acc == null || acc.getRoleID() != 2 || staff == null) {
-        response.sendRedirect("LoginStaff");
-        return;
-    }
+   // Staff staff = (Staff) session.getAttribute("staff");
+   // if (staff == null) {
+       // response.sendRedirect("LoginStaff");
+      //  return;
+   // }
 %>
 
 <style>

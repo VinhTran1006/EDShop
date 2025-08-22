@@ -14,9 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
-import model.Account;
 import model.Customer;
 
 import model.Order;
@@ -40,14 +38,13 @@ public class CancelOrderServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
         Customer customer = (Customer) session.getAttribute("cus");
 
-        if (user == null || customer == null) {
-
-            response.sendRedirect("Login");
-            return;
-        }
+//        if (customer == null) {
+//
+//            response.sendRedirect("Login");
+//            return;
+//        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -77,10 +74,9 @@ public class CancelOrderServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
         Customer customer = (Customer) session.getAttribute("cus");
 
-        if (user == null || customer == null) {
+        if (customer == null) {
 
             response.sendRedirect("Login");
             return;
@@ -89,8 +85,8 @@ public class CancelOrderServlet extends HttpServlet {
         OrderDAO dao = new OrderDAO();
         Order order = dao.getOrderByID(orderID + "");
 
-        if (order.getStatus() == 1 || order.getStatus() == 2) {
-            dao.updateStatus(orderID, 5);
+        if ("Waiting".equals(order.getStatus()) || "Packing".equals(order.getStatus())) {
+            dao.updateStatus(orderID, "Cancelled");
             OrderDetailDAO itemDAO = new OrderDetailDAO();
             ProductDAO productDAO = new ProductDAO();
             List<OrderDetail> items = itemDAO.getOrderDetailsByOrderID(orderID);

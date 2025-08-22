@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import model.Account;
 import model.Customer;
 
 import model.Order;
@@ -70,15 +69,14 @@ public class CustomerOrderDetailServlet extends HttpServlet {
         int orderID = Integer.parseInt(request.getParameter("orderID"));
         OrderDAO odao = new OrderDAO();
         OrderDetailDAO detailDAO = new OrderDetailDAO();
-        Account acc = (Account) session.getAttribute("user");
         Customer cus = (Customer) session.getAttribute("cus");
-        if (acc == null || cus == null) {
-            response.sendRedirect("Login");
-            return;
-        }
+//        if (cus == null) {
+//            response.sendRedirect("Login");
+//            return;
+//        }
         Order order = odao.getOrderByID(orderID + "");
         List<OrderDetail> details = detailDAO.getOrderDetailsByOrderID(orderID);
-        List<Order> orders = odao.getOrdersByCustomerID(cus.getId());
+        List<Order> orders = odao.getOrdersByCustomerID(cus.getCustomerID());
         request.setAttribute("data", order);
         request.setAttribute("orderList", orders);
         request.setAttribute("dataDetail", details);

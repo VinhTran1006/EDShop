@@ -14,7 +14,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 
         <!-- Custom Styles -->
-        
+
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css" />
         <style>
             body {
@@ -80,17 +80,27 @@
                                     <tr>
                                         <th>Status:</th>
                                         <td>
-                                            <span class="badge status-${data.status}">
-                                                <c:choose>
-                                                    <c:when test="${data.status == 1}">Waiting</c:when>
-                                                    <c:when test="${data.status == 2}">Packaging</c:when>
-                                                    <c:when test="${data.status == 3}">Waiting for Delivery</c:when>
-                                                    <c:when test="${data.status == 4}">Delivered</c:when>
-                                                    <c:when test="${data.status == 5}">Cancelled</c:when>
-                                                </c:choose>
-                                            </span>
+                                            <c:choose>
+                                                <c:when test="${data.status eq 'Waiting'}">
+                                                    <span class="badge bg-warning">Waiting</span>
+                                                </c:when>
+                                                <c:when test="${data.status eq 'Packing'}">
+                                                    <span class="badge bg-primary">Packing</span>
+                                                </c:when>
+                                                <c:when test="${data.status eq 'Waiting for Delivery'}">
+                                                    <span class="badge status-3">Waiting for Delivery</span>
+                                                </c:when>
+                                                <c:when test="${data.status eq 'Delivered'}">
+                                                    <span class="badge bg-success">Delivered</span>
+                                                </c:when>
+                                                <c:when test="${data.status eq 'Cancelled'}">
+                                                    <span class="badge bg-danger">Cancelled</span>
+                                                </c:when>
+                                            </c:choose>
                                         </td>
                                     </tr>
+
+
                                     <tr><th>Total Amount:</th><td><fmt:formatNumber value="${data.totalAmount}" type="number" groupingUsed="true" />₫</td></tr>
                                     <tr><th>Discount:</th><td>${data.discount}</td></tr>
                                     <tr><th>Customer Name:</th><td>${data.fullName}</td></tr>
@@ -117,14 +127,13 @@
 
                                 <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-flex gap-3 flex-wrap align-items-center mt-3">
                                     <input type="hidden" name="orderID" value="${data.orderID}" />
-                                    <select id="orderStatus" name="update" class="form-select w-auto" onchange="disableOptions()">
-                                        <option value="1" <c:if test="${data.status == 1}">selected</c:if>>Waiting</option>
-                                        <option value="2" <c:if test="${data.status == 2}">selected</c:if>>Packaging</option>
-                                        <option value="3" <c:if test="${data.status == 3}">selected</c:if>>Waiting for Delivery</option>
-                                        <option value="4" <c:if test="${data.status == 4}">selected</c:if>>Delivered</option>
-                                        <option value="5" <c:if test="${data.status == 5}">selected</c:if>>Cancelled</option>
+                                    <select id="orderStatus" name="update" class="form-select w-auto">
+                                        <option value="Waiting" <c:if test="${data.status eq 'Waiting'}">selected</c:if>>Waiting</option>
+                                        <option value="Packing" <c:if test="${data.status eq 'Packing'}">selected</c:if>>Packing</option>
+                                        <option value="Waiting for Delivery" <c:if test="${data.status eq 'Waiting for Delivery'}">selected</c:if>>Waiting for Delivery</option>
+                                        <option value="Delivered" <c:if test="${data.status eq 'Delivered'}">selected</c:if>>Delivered</option>
+                                        <option value="Cancelled" <c:if test="${data.status eq 'Cancelled'}">selected</c:if>>Cancelled</option>
                                         </select>
-
                                         <button type="submit" class="btn btn-success">Save</button>
                                         <a href="${pageContext.request.contextPath}/ViewOrderList" class="btn btn-outline-primary">Back to list</a>
                                 </form>
@@ -138,36 +147,42 @@
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-            <script>
-                                function disableOptions() {
-                                    const status = document.getElementById('orderStatus').value;
-                                    const options = document.getElementById('orderStatus').options;
-    
-                                    for (let i = 0; i < options.length; i++) {
-                                        options[i].disabled = false;
-                                    }
-    
-                                    if (status === '3') {
-                                        options[0].disabled = true;
-                                        options[1].disabled = true;
-                                        options[4].disabled = true;
-                                    } else if (status === '2') {
-                                        options[0].disabled = true;                                
-                                    } else if (status === '4') {
-                                        options[0].disabled = true;
-                                        options[1].disabled = true;
-                                        options[2].disabled = true;
-                                        options[4].disabled = true;
-                                    } else if (status === '5') {
-                                        options[0].disabled = true;
-                                        options[1].disabled = true;
-                                        options[2].disabled = true;
-                                        options[3].disabled = true;
-                                    }
-                                }
-    
-                                disableOptions(); 
-            </script>
+    <script>
+
+                                        function disableOptions() {
+                                            const status = document.getElementById('orderStatus').value;
+                                            const options = document.getElementById('orderStatus').options;
+                                            // reset all
+                                            for (let i = 0; i < options.length; i++) {
+                                                options[i].disabled = false;
+                                            }
+
+                                            if (status === 'Waiting for Delivery') {
+                                                // disable Waiting, Packaging, Cancelled
+                                                options[0].disabled = true; // Waiting
+                                                options[1].disabled = true; // Packaging
+                                                options[4].disabled = true; // Cancelled
+                                            } else if (status === 'Packing') {
+                                                // disable Waiting
+                                                options[0].disabled = true; // Waiting
+                                            } else if (status === 'Delivered') {
+                                                // disable Waiting, Packaging, Waiting for Delivery, Cancelled
+                                                options[0].disabled = true;
+                                                options[1].disabled = true;
+                                                options[2].disabled = true;
+                                                options[4].disabled = true;
+                                            } else if (status === 'Cancelled') {
+                                                // disable tất cả trừ Cancelled
+                                                options[0].disabled = true;
+                                                options[1].disabled = true;
+                                                options[2].disabled = true;
+                                                options[3].disabled = true;
+                                            }
+                                        }
+
+                                        // gọi khi load trang để setup ban đầu
+                                        disableOptions();
+    </script>
 
 </body>
 </html>

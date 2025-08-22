@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
-import model.Account;
 import model.Customer;
 
 /**
@@ -35,10 +34,9 @@ public class WriteFeedbackServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
         Customer customer = (Customer) session.getAttribute("cus");
 
-        if (user == null || customer == null) {
+        if (customer == null) {
 
             response.sendRedirect("Login");
             return;
@@ -58,10 +56,9 @@ public class WriteFeedbackServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account user = (Account) session.getAttribute("user");
         Customer customer = (Customer) session.getAttribute("cus");
 
-        if (user == null || customer == null) {
+        if (customer == null) {
 
             response.sendRedirect("Login");
             return;

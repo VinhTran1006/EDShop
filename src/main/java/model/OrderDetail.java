@@ -15,7 +15,7 @@ public class OrderDetail {
     private int productID;
     private int quantity;
     private long price;
-   
+    private String productName;
 
     public OrderDetail() {
     }
@@ -68,7 +68,13 @@ public class OrderDetail {
         this.price = price;
     }
 
-   
-    
-    
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
 }
