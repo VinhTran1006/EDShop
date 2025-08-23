@@ -5,12 +5,17 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style>
             .footer {
-                background-color: #000; /* Nền đen */
-                color: #ccc; /* Màu chữ xám nhẹ */
-                padding: 40px 20px;
+                position: fixed;         /* Cố định footer */
+                bottom: 0;               /* Dính vào đáy */
+                left: 0;                 /* Căn từ trái */
+                width: 100%;             /* Trải ngang toàn màn hình */
+                background-color: #000;  /* Nền đen */
+                color: #ccc;             /* Màu chữ xám nhẹ */
+                padding: 20px;
                 text-align: center;
                 font-size: 14px;
                 line-height: 1.6;
+                z-index: 1000;           /* Đảm bảo nằm trên nội dung khác */
             }
 
             .footer a {
@@ -31,6 +36,13 @@
                 font-size: 13px;
                 color: #888;
             }
+
+            /* Chừa khoảng trống phía dưới nội dung để không bị footer che */
+            body {
+                margin: 0;
+                padding-bottom: 80px; /* cao hơn chiều cao footer một chút */
+            }
+
         </style>
     </head>
     <body>

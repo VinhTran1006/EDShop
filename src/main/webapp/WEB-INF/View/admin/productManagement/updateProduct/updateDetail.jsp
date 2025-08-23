@@ -1,18 +1,14 @@
-<%-- 
-    Document   : updateDetail
-    Created on : Jul 30, 2025, 7:44:37 PM
-    Author     : HP - Gia Khiêm
---%>
 
+
+<%@page import="model.Attribute"%>
 <%@page import="model.Product"%>
 <%@page import="model.ProductDetail"%>
-<%@page import="model.CategoryDetail"%>
-<%@page import="model.CategoryDetailGroup"%>
+
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    List<CategoryDetailGroup> categoryDetailGroupList = (List<CategoryDetailGroup>) request.getAttribute("categoryGroupList");
-    List<CategoryDetail> categoryDetailList = (List<CategoryDetail>) request.getAttribute("categoryDetailList");
+
+    List<Attribute> attributeList = (List<Attribute>) request.getAttribute("attributeList");
     List<ProductDetail> productDetailList = (List<ProductDetail>) request.getAttribute("productDetailList");
     Product product = (Product) request.getAttribute("product");
 %>
@@ -43,41 +39,26 @@
             <div class = "row">
                 <div class="col-md-12">
                     <table class="category-table">
-                        <%
-                            if (categoryDetailGroupList != null) {
-                                int groupIndex = 0;
-                                for (CategoryDetailGroup cateGroup : categoryDetailGroupList) {
-                        %>
-                        <!-- Tên nhóm -->
-                        <tr class="group-header" onclick="toggleDetails(<%= groupIndex%>)">
-                            <td colspan="2" class="group-cell">
-                                <div class="group-header-content">
-                                    <h2 style="max-width: 50%; word-wrap: break-word; overflow-wrap: break-word; margin: 0;"><%= cateGroup.getNameCategoryDetailsGroup()%></h2>
-                                    <span class="arrow-icon" id="arrow<%= groupIndex%>">▼</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tbody id="detailGroup<%= groupIndex%>" class="group-details hidden">
+                        <tbody id="detailGroup">
                             <%
-                                if (categoryDetailList != null && !categoryDetailList.isEmpty()) {
-                                    for (CategoryDetail cateList : categoryDetailList) {
-                                        if (cateList.getCategoryDetailsGroupID() == cateGroup.getCategoryDetailsGroupID()) {
-                                            boolean hasValue = false;
+                                if (attributeList != null && !attributeList.isEmpty()) {
+                                    for (Attribute a : attributeList) {
+                                        boolean hasValue = false;
                             %>
                             <tr>
                                 <td class="category-name">
-                                    <%= cateList.getCategoryDatailName()%>
+                                    <%= a.getAtrributeName()%>
                                 </td>
                                 <td class="attribute-values">
                                     <%
                                         if (productDetailList != null) {
                                             for (ProductDetail proDetail : productDetailList) {
-                                                if (proDetail.getCategoryDetailID() == cateList.getCategoryDetailID()) {
+                                                if (proDetail.getAttibuteID() == a.getAttributeID()) {
                                                     hasValue = true;
                                     %>
                                     <input type="text" 
                                            class="attribute-input"
-                                           name="attribute_<%= proDetail.getCategoryDetailID()%>" 
+                                           name="attribute_<%= proDetail.getAttributeValue()%>" 
                                            value="<%= proDetail.getAttributeValue()%>" 
                                            oninput="this.size = this.value.length || 1;" required>
 
@@ -87,28 +68,20 @@
                                         }
                                         if (!hasValue) {
                                     %>
-                                    <div class="attribute-item">No data</div>
+                                    <input type="text"
+                                           style="width: auto; max-width: 190px; background-color: none;"
+                                           class="attribute-input"
+                                           name="attribute_<%= a.getAttributeID()%>">
                                     <%
                                         }
                                     %>
                                 </td>
                             </tr>
                             <%
-                                        }
                                     }
                                 }
                             %>
                         </tbody>
-
-                        <%
-                                groupIndex++;
-                            }
-                        } else {
-                        %>
-                        <tr><td colspan="2" class="no-data-message">No data</td></tr>
-                        <%
-                            }
-                        %>
                     </table>
                 </div>
             </div>

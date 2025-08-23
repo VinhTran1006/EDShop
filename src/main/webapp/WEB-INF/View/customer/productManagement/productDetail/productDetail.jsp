@@ -107,7 +107,7 @@
             </div>
 
             <div class="customerDivaddToCartAndBuyNow" style="width: 40%; margin-top: 6.8%; max-height: 820px;">
-                <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/addToCartAndBuyNow.jsp" />
+               
             </div>
         </div>
     </body>

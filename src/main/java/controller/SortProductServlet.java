@@ -22,7 +22,7 @@ import model.Product;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 @WebServlet(name = "SortProductServlet", urlPatterns = {"/SortProduct"})
 public class SortProductServlet extends HttpServlet {
@@ -68,12 +68,11 @@ public class SortProductServlet extends HttpServlet {
         ProductDAO proDao = new ProductDAO();
         BrandDAO brandDao = new BrandDAO();
 
-        String sort = request.getParameter("sort");
+    
 
         List<Product> productList = null;
         List<Brand> brandList = null;
 
-        String categoryIdStr = null;
         int brandIdOld = -1;
         int categoryId = -1;
         int brandId = -1;
@@ -96,7 +95,10 @@ public class SortProductServlet extends HttpServlet {
             }
 
         }
-
+        System.out.println("day la dong moi ----------------------------------------");
+        System.out.println("brandid " +brandId);
+        System.out.println("categoryID "+categoryId);
+        System.out.println(brandIdOld);
         String priceRangeAndCategory = request.getParameter("priceRangeCategory");
         String priceRange = null;
         if (priceRangeAndCategory != null && priceRangeAndCategory.contains("-")) {
@@ -109,9 +111,10 @@ public class SortProductServlet extends HttpServlet {
         }
         
         if (categoryId != -1) {
-            brandList = brandDao.getBrandByCategoryId(categoryId);
+            brandList = brandDao.getAllBrand();
         }
-            
+            System.out.println(priceRange);
+            System.out.println(categoryId);
         if (priceRange != null) {
 
             switch (priceRange) {
@@ -141,16 +144,21 @@ public class SortProductServlet extends HttpServlet {
                     break;
             }
         }
+        
+        System.out.println(minPrice);
+        System.out.println(maxPrice);
         if (brandId != -1 && priceRange != null) {
             productList = proDao.getProductByBrandAndPrice(brandId, minPrice, maxPrice);
         } else if (brandId != -1 && priceRange == null) {
-            productList = proDao.getProductByBrand(brandId);
+            productList = proDao.getProductByBrandAndCategory(brandId, categoryId);
         } else if (brandId == -1 && priceRange != null) {
             productList = proDao.getProductByCategoryAndPrice(categoryId, minPrice, maxPrice);
         } else {
-            productList = proDao.getProductByCategory(categoryId);
+            productList = proDao.getProductByCategoryID(categoryId);
         }
-        
+        for (Product p : productList) {
+            System.out.println(p.toString());
+        }
         CategoryDAO categoryDAO = new CategoryDAO();
         List<Category> categoryList = categoryDAO.getAllCategory(); // hoặc getAllCategory()
         request.setAttribute("categoryList", categoryList);
