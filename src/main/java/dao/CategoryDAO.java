@@ -8,9 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.List;
 import model.Category;
 import model.Attribute;
 import utils.DBContext;
@@ -27,7 +25,7 @@ public class CategoryDAO extends DBContext {
 
     public ArrayList<Category> getAllCategory() {
         ArrayList<Category> categoryList = new ArrayList<>();
-        String sql = "SELECT CategoryID, CategoryName, ImgURLLogo, isActive FROM Categories";
+        String sql = "SELECT CategoryID, CategoryName, ImgURLLogo, isActive FROM Categories WHERE IsActive != 0";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -48,7 +46,7 @@ public class CategoryDAO extends DBContext {
 
     public ArrayList<Attribute> getAttributeByCategoryID(int categoryId) {
         ArrayList<Attribute> categoryDetailGroupList = new ArrayList<>();
-        String sql = "SELECT * from Attributes where CategoryID = ?";
+        String sql = "SELECT * from Attributes where CategoryID = ? AND IsActive != 0";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, categoryId);
@@ -70,7 +68,7 @@ public class CategoryDAO extends DBContext {
     
     public Category getCategoryById(int categoryID) {
         Category category = null;
-        String sql = "SELECT CategoryID, CategoryName, ImgURLLogo, isActive FROM Categories where categoryID = ?";
+        String sql = "SELECT CategoryID, CategoryName, ImgURLLogo, isActive FROM Categories where categoryID = ? AND IsActive != 0";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, categoryID);

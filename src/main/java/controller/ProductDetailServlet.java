@@ -18,14 +18,10 @@ import model.Product;
 import model.ProductDetail;
 import dao.ProductRatingDAO;
 import dao.CustomerDAO;
-import model.ProductRating;
-import model.Customer;
 import dao.RatingRepliesDAO;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import model.Attribute;
-import model.RatingReplies;
+
 
 /**
  *
@@ -111,17 +107,17 @@ public class ProductDetailServlet extends HttpServlet {
 //                rating.setReplies(replies);
 //            }
 
-            double averageRating = 0;
-            if (visibleRatingCount > 0) {
-                averageRating = totalStars / visibleRatingCount;
-            }
-            request.setAttribute("averageRating", averageRating);
+//            double averageRating = 0;
+//            if (visibleRatingCount > 0) {
+//                averageRating = totalStars / visibleRatingCount;
+//            }
+//            request.setAttribute("averageRating", averageRating);
 
             // Truyền dữ liệu sang JSP
             request.setAttribute("product", product);
             request.setAttribute("attributeList", attributeList);
             request.setAttribute("productDetailList", productDetailList);
-            List<ProductRating> visibleRatings = new ArrayList<>();
+ //           List<ProductRating> visibleRatings = new ArrayList<>();
 //            for (ProductRating rating : productRatings) {
 //                if (!rating.isIsDeleted()) {
 //                    visibleRatings.add(rating);

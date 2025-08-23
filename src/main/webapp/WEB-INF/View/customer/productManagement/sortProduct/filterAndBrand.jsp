@@ -16,7 +16,6 @@
         <meta charset="UTF-8">
         <title>Filter & Brand</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
         <style>
             .filter {
                 border: 1px solid #2a83e9;
@@ -69,8 +68,10 @@
             <!-- Modal -->
             <div id="filterModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.4); z-index:1000;">
                 <div style="background-color:#fff; padding: 20px; border-radius: 10px; width: 40%; margin: 5% auto;">
-                    <h3>Choose brand and price</h3>
+                    <h3>Brand and Price</h3>
+
                     <form action="SortProduct" method="get" onsubmit="return validateFilter()">
+
 
                         <!-- Brand Section -->
                         <div>
@@ -78,15 +79,23 @@
                             <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
                                 <%
                                     if (brandList != null) {
-                                        categoryId = brandList.get(0).getCategoryID();
+                                        String catParam = request.getParameter("categoryId");
+                                        if (catParam != null) {
+                                            categoryId = Integer.parseInt(catParam);
+                                            session.setAttribute("categoryId", categoryId); // cập nhật khi có param mới
+                                        } else if (session.getAttribute("categoryId") != null) {
+                                            categoryId = (int) session.getAttribute("categoryId"); // lấy từ session nếu không có param
+                                        }
+
                                         for (Brand br : brandList) {
                                 %>
                                 <label style="width: 100px; height: 60px; display: flex; justify-content: center; align-items: center; border-radius: 10px; padding: 5px; cursor: pointer; position: relative;">
-                                    <input type="radio" name="brandcategory" value="<%=br.getBrandId()%>-<%=br.getCategoryID()%>-<%=(brandIdOld != 0) ? brandIdOld : 1%>" 
+                                    <input type="radio" name="brandcategory" value="<%=br.getBrandId()%>-<%=categoryId%>-<%=(brandIdOld != 0) ? brandIdOld : 1%>" 
                                            style="opacity: 0; position: absolute;">
                                     <img src="<%=br.getImgUrlLogo()%>" alt="<%=br.getBrandName()%>" 
                                          style="max-width: 100%; max-height: 100%; object-fit: contain;">
                                 </label>
+
 
                                 <%
                                         }
@@ -126,6 +135,7 @@
                                 <input type="radio" name="priceRangeCategory" value="above20-<%=categoryId%>" hidden>
                                 <span>Above 20 million</span>
                             </label>
+
                         </div>
 
                         <!-- Buttons -->
@@ -134,6 +144,7 @@
                             <button type="button" class="filter" onclick="closeModal()" style="margin-left: 10px;">Close</button>
                         </div>
                     </form>
+
                 </div>
             </div>
 
@@ -183,6 +194,8 @@
                 }
 
             </script>
+
+
         </div>
     </body>
-</html>
+</html> 

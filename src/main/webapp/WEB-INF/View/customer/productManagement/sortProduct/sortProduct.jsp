@@ -1,8 +1,4 @@
-<%-- 
-    Document   : filterProduct
-    Created on : Jul 12, 2025, 6:02:22 PM
-    Author     : HP - Gia Khiêm
---%>
+
 
 <%@page import="model.Product"%>
 <%@page import="java.util.List"%>
@@ -80,11 +76,23 @@
             <p class="p">Rice Cookers</p>
         </div>
 
-        <div class = "divSoLuong" style = "padding: 5px;">
-            <a class = "home" href = "Home">Home ></a>
-            <a class = "soLuong" href=""><%=(productList != null) ? productList.size() : 0%></a>
-            <a class = "soLuong" href=""><%=(productList != null) ? productList.get(0).getCategoryName() : 0%></a>
+        <div class="divSoLuong" style="padding: 5px;">
+            <a class="home" href="Home">Home ></a>
+            <%
+                int size = 0;
+                int categoryID = 0;
+
+                if (productList != null && !productList.isEmpty()) {
+                    size = productList.size();
+                    if (productList.get(0) != null) {
+                        categoryID = productList.get(0).getCategoryID();
+                    }
+                }
+            %>
+            <span class="soLuong"><%= size%></span>
+            <span class="soLuong"><%= categoryID%></span>
         </div>
+
 
         <div class = "banner">
             <jsp:include page="/WEB-INF/View/customer/productManagement/sortProduct/banner.jsp" />
@@ -93,7 +101,6 @@
         <div class = "container-fluid" style = "background-color: #ffffff; border-radius: 12px; margin-top: 1%; width: 98%;" >
             <div class = "filterAndBrand" style = "display: flex; gap: 1%;">
                 <jsp:include page="/WEB-INF/View/customer/productManagement/sortProduct/filterAndBrand.jsp" />
-                <jsp:include page="/WEB-INF/View/customer/productManagement/filterProduct/brands.jsp" />
             </div>
 
             <div class = "productList" style = "width: 100%; margin-top: 1%; ">
