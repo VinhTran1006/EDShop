@@ -24,20 +24,27 @@ public class ImportHistoryDetailServlet extends HttpServlet {
             importId = Integer.parseInt(rawId);
         } catch (Exception e) {
             request.setAttribute("error", "Invalid import ID");
-            request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importHistoryDetail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importHistoryDetail.jsp")
+                    .forward(request, response);
             return;
         }
+
+        // Lấy ImportStock kèm chi tiết
         ImportStock importStock = importStockDAO.getImportStockDetailsByID(importId);
 
         if (importStock == null) {
             request.setAttribute("error", "Import stock not found!");
-            request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importHistoryDetail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importHistoryDetail.jsp")
+                    .forward(request, response);
             return;
         }
+
         ArrayList<ImportStockDetail> details = (ArrayList<ImportStockDetail>) importStock.getImportStockDetails();
         request.setAttribute("importStock", importStock);
         request.setAttribute("details", details);
 
-        request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importHistoryDetail.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importHistoryDetail.jsp")
+                .forward(request, response);
     }
+    
 }

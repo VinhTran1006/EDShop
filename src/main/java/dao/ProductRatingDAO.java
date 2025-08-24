@@ -6,7 +6,7 @@ package dao;
 
 import utils.DBContext;
 import model.Product;
-import model.ProductRating;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
