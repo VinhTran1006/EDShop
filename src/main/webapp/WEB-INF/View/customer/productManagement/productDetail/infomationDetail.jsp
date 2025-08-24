@@ -21,7 +21,7 @@
         <h1 style = "font-size: 16px; text-align: center;">
             Specifications
         </h1>
-        
+
         <div class = " col-md-12">
             <div class = "row">
                 <div class="col-md-12">
@@ -31,7 +31,7 @@
                             <%
                                 if (attributeList != null && !attributeList.isEmpty()) {
                                     for (Attribute a : attributeList) {
-                                     boolean hasValue = false;
+                                        boolean hasValue = false;
                             %>
                             <tr>
                                 <td class="category-name" style = "font-size: 14px;">
@@ -41,7 +41,7 @@
                                     <%
                                         if (productDetailList != null) {
                                             for (ProductDetail proDetail : productDetailList) {
-                                                if (proDetail.getAttibuteID()== a.getAttributeID()) {
+                                                if (proDetail.getAttibuteID() == a.getAttributeID()) {
                                                     hasValue = true;
                                     %>
                                     <div style = "font-size: 14px;" class="attribute-item"><%= proDetail.getAttributeValue()%></div>
@@ -59,7 +59,6 @@
                                 </td>
                             </tr>
                             <%
-                                        
                                     }
                                 }
                             %>
@@ -85,26 +84,102 @@
         </script>
 
         <style>
-            .btn-back {
-                color: #fff;
-                background-color: #6c757d;
-                border: 1px solid #6c757d;
-                padding: 10px 20px;
-                border-radius: 6px;
-                font-size: 16px;
+            /* specification.jsp */
+            /* productDetail.jsp */
+            body {
+                font-family: "Segoe UI", Tahoma, sans-serif;
+                background-color: #f9fafb;
+                color: #333;
+                margin: 0;
+                padding: 20px;
+            }
+
+            .product-detail-container {
+                display: flex;
+                gap: 24px;
+                align-items: flex-start;
+            }
+
+            /* Cột trái - Hình ảnh */
+            .product-images {
+                flex: 1;
+            }
+            .divAnhLon {
+                text-align: center;
+                margin-bottom: 15px;
+            }
+            .divAnhLon img {
+                max-width: 100%;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            .div4AnhNho {
+                display: flex;
+                justify-content: center;
+                gap: 12px;
+                margin-top: 12px;
+            }
+            .div4AnhNho img {
+                width: 80px;
+                height: 80px;
+                border-radius: 8px;
+                object-fit: cover;
                 cursor: pointer;
-                transition: background-color 0.3s ease;
+                border: 2px solid transparent;
+                transition: all 0.2s ease;
+            }
+            .div4AnhNho img:hover {
+                border-color: #007bff;
+                transform: scale(1.05);
             }
 
-            .btn-back:hover {
-                background-color: #5c636a;
-                border-color: #565e64;
+            /* Cột phải - Thông tin chi tiết */
+            .product-specs {
+                flex: 1;
             }
-
-            .btn-success, .btn-back {
-                padding: 8px 16px;  /* trước là 10px 20px */
+            h1 {
+                font-size: 20px;
+                font-weight: 600;
+                color: #222;
+                margin-bottom: 16px;
+            }
+            .category-table {
+                width: 100%;
+                border-collapse: collapse;
+                background: #fff;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            }
+            .category-table tr {
+                border-bottom: 1px solid #eee;
+            }
+            .category-table tr:last-child {
+                border-bottom: none;
+            }
+            .category-table td {
+                padding: 10px 14px;
                 font-size: 14px;
             }
+            .category-name {
+                width: 35%;
+                font-weight: 600;
+                color: #333;
+                background: #f3f4f6;
+            }
+            .attribute-item {
+                padding: 4px 8px;
+                border-radius: 6px;
+                display: inline-block;
+                margin: 2px;
+                background: #f9fafb;
+                border: 1px solid #e5e7eb;
+                font-size: 13px;
+            }
+            .category-table .attribute-item {
+                color: #333 !important;  /* ép màu chữ đen */
+            }
+
         </style>
     </body>
 </html>

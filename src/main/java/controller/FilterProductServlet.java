@@ -22,7 +22,7 @@ import model.Product;
 
 /**
  *
- * @author HP - Gia Khiêm
+ * 
  */
 @WebServlet(name = "FilterProductServlet", urlPatterns = {"/FilterProduct"})
 public class FilterProductServlet extends HttpServlet {
@@ -67,40 +67,36 @@ public class FilterProductServlet extends HttpServlet {
             throws ServletException, IOException {
 
         ProductDAO proDao = new ProductDAO();
-        String sort = request.getParameter("sort");
         List<Product> productList = null;
         List<Brand> brandList = null;
         String categoryIdStr = null;
-        String brandIdStr = null;
+       String brandIdStr = null;
 
         categoryIdStr = request.getParameter("categoryId");
-        brandIdStr = request.getParameter("brandId");
+         brandIdStr = request.getParameter("brandId");
 
         int categoryId = (categoryIdStr != null) ? Integer.parseInt(categoryIdStr) : -1;
         int brandId = (brandIdStr != null) ? Integer.parseInt(brandIdStr) : -1;
 
         BrandDAO brandDao = new BrandDAO();
 
-        if (categoryId != -1 && brandId == -1) {
-            productList = proDao.getProductByCategory(categoryId);
-            brandList = brandDao.getBrandByCategoryId(categoryId);
+          if (categoryId != -1 && brandId != -1) {
+            productList = proDao.getProductByBrandAndCategory(brandId, categoryId);
+            brandList = brandDao.getAllBrand();
         }
-
-        if (categoryId != -1 && brandId != -1) {
-            productList = proDao.getProductByBrand(brandId);
-            brandList = brandDao.getBrandByCategoryId(categoryId);
+          
+          else if (categoryId != -1) {
+            productList = proDao.getProductByCategoryID(categoryId);
+            brandList = brandDao.getAllBrand();
         }
-        
         CategoryDAO categoryDAO = new CategoryDAO();
         List<Category> categoryList = categoryDAO.getAllCategory(); // hoặc getAllCategory()
         request.setAttribute("categoryList", categoryList);
-
         request.setAttribute("productList", productList);
         request.setAttribute("brandList", brandList);
         request.setAttribute("categoryId", categoryId);
-        request.setAttribute("brandId", brandId);
+      //  request.setAttribute("brandId", brandId);
         request.getRequestDispatcher("/WEB-INF/View/customer/productManagement/filterProduct/filterProduct.jsp").forward(request, response);
-
     }
 
     /**

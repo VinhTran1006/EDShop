@@ -1,14 +1,20 @@
-<%-- 
-    Document   : banner
-    Created on : Jul 12, 2025, 6:03:29 PM
-    Author     : HP - Gia Khiêm
---%>
 
 <%@page import="model.Brand"%>
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    List<Brand> brandList = (List<Brand>) request.getAttribute("brandList");
+    int categoryId = -1;
+    Object catAttr = request.getAttribute("categoryId");
+    if (catAttr != null) {
+        categoryId = (Integer) catAttr;
+    }
+
+    if (categoryId == -1) {
+        Integer catFromSession = (Integer) session.getAttribute("categoryId");
+        if (catFromSession != null) {
+            categoryId = catFromSession;
+        }
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -18,11 +24,10 @@
     </head>
     <body>
         <%
-            if (brandList != null) {
+            if (categoryId != -1) {
                 String banner1 = null;
                 String banner2 = null;
-                Brand br = brandList.get(0);
-                switch (br.getCategoryID()) {
+                switch (categoryId) {
                     case 1:
                         banner1 = "https://cdnv2.tgdd.vn/mwg-static/dmx/Banner/fb/74/fb74632c62b3fa78b974fc4c3d737433.png";
                         banner2 = "https://cdnv2.tgdd.vn/mwg-static/dmx/Banner/ef/dd/efddab4db919e5f678367d599c64be42.png";

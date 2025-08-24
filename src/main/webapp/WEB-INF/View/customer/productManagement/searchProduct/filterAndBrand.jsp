@@ -1,14 +1,13 @@
+<%@page import="model.Product"%>
 <!-- ... phần đầu không đổi ... -->
 <%@page import="model.Brand"%>
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     List<Brand> brandList = (List<Brand>) request.getAttribute("brandList");
-    int brandId = 0;
-    int categoryId = 0;
-    if (brandList != null){
-        brandId = brandList.get(0).getBrandId();
-        categoryId = brandList.get(0).getCategoryID();
+    int brandIdOld = 0, categoryId = 0;
+    if (request.getAttribute("brandIdOld") != null) {
+        brandIdOld = (int) request.getAttribute("brandIdOld");
     }
 %>
 <!DOCTYPE html>
@@ -69,19 +68,29 @@
             <!-- Modal -->
             <div id="filterModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.4); z-index:1000;">
                 <div style="background-color:#fff; padding: 20px; border-radius: 10px; width: 40%; margin: 5% auto;">
-                    <h3>Chọn hãng và giá</h3>
-                    <form action="SortProduct?categoryId=<%= categoryId%>&brandId=<%= brandId%>" method="get">
+                    <h3>Brand and Price</h3>
+
+                    <form action="SortProduct" method="get" onsubmit="return validateFilter()">
+
+
+                        <!-- Brand Section -->
                         <div>
-                            <p><strong>Hãng:</strong></p>
+                            <p><strong>Brand:</strong></p>
                             <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
                                 <%
                                     if (brandList != null) {
+                                        categoryId = Integer.parseInt(request.getParameter("categoryId"));
                                         for (Brand br : brandList) {
                                 %>
-                                <label style="width: 100px; height: 60px; display: flex; justify-content: center; align-items: center; border-radius: 10px; padding: 5px; cursor: pointer;">
-                                    <input type="radio" name="brandcategory" value="<%=br.getBrandId()%>-<%=br.getCategoryID()%>"; style="display: none;">
-                                    <img src="<%=br.getImgUrlLogo()%>" alt="<%=br.getBrandName()%>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                <label style="width: 100px; height: 60px; display: flex; justify-content: center; align-items: center; border-radius: 10px; padding: 5px; cursor: pointer; position: relative;">
+                                    <input type="radio" name="brandcategory" value="<%=br.getBrandId()%>-<%=categoryId%>-<%=(brandIdOld != 0) ? brandIdOld : 1%>" 
+                                           style="position: absolute; opacity: 0;">
+                                    <img src="<%=br.getImgUrlLogo()%>" alt="<%=br.getBrandName()%>" 
+                                         style="max-width: 100%; max-height: 100%; object-fit: contain;">
                                 </label>
+
+
+
                                 <%
                                         }
                                     }
@@ -92,7 +101,7 @@
                         <!-- Price Section -->
                         <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
                             <label class="price-pill" onclick="selectRadio(this)">
-                                <input type="radio" name="priceRange" value="under7" hidden>
+                                <input type="radio" name="priceRangeCategory" value="under7-<%=categoryId%>" hidden>
                                 <span>Less than 7 million</span>
                             </label>
 
@@ -124,10 +133,11 @@
 
                         <!-- Buttons -->
                         <div style="margin-top: 20px;">
-                            <button type="submit" class="filter">Áp dụng</button>
-                            <button type="button" class="filter" onclick="closeModal()" style="margin-left: 10px;">Đóng</button>
+                            <button type="submit" class="filter">Apply</button>
+                            <button type="button" class="filter" onclick="closeModal()" style="margin-left: 10px;">Close</button>
                         </div>
                     </form>
+
                 </div>
             </div>
 
@@ -164,27 +174,21 @@
                     label.classList.add('checked');
                 }
 
+                function validateFilter() {
+                    const hasBrand = document.querySelector('input[name="brandcategory"]:checked') !== null;
+                    const hasPrice = document.querySelector('input[name="priceRangeCategory"]:checked') !== null;
+
+                    if (!hasBrand && !hasPrice) {
+                        alert("Please select at least a brand or a price range.");
+                        return false;
+                    }
+
+                    return true;
+                }
 
             </script>
 
-            <!-- List thương hiệu ngoài modal -->
-            <div style="display: flex; width: 100%; gap: 1%;">
-                <%
-                    if (brandList != null) {
-                        for (Brand br : brandList) {
-                %>
-                <div style="margin-top: 1%; width: 6%; border-radius: 8px; background-color: rgba(242, 244, 247, 1); border: 1px solid rgba(242, 244, 247, 1); align-content: center;">
-                    <a href="FilterProduct?categoryId=<%=br.getCategoryID()%>&brandId=<%=br.getBrandId()%>">
-                        <img style="width: 100%; border-radius: 12px;" src="<%= br.getImgUrlLogo()%>">
-                    </a>
-                </div>
-                <%
-                    }
-                } else {
-                %>
-                <p>null</p>
-                <% }%>
-            </div>
+
         </div>
     </body>
-</html>
+</html> 

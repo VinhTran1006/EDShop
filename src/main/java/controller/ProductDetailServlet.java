@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.BrandDAO;
 import dao.CategoryDAO;
 import dao.ProductDAO;
 import java.io.IOException;
@@ -18,14 +19,10 @@ import model.Product;
 import model.ProductDetail;
 import dao.ProductRatingDAO;
 import dao.CustomerDAO;
-import model.ProductRating;
-import model.Customer;
 import dao.RatingRepliesDAO;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import model.Attribute;
-import model.RatingReplies;
+
 
 /**
  *
@@ -78,6 +75,7 @@ public class ProductDetailServlet extends HttpServlet {
         if (productIdStr != null && categoryIdStr != null) {
             CategoryDAO cateDao = new CategoryDAO();
             ProductDAO proDao = new ProductDAO();
+            BrandDAO brDAO = new BrandDAO();
 
             int productId = Integer.parseInt(productIdStr);
             int categoryId = Integer.parseInt(categoryIdStr);
@@ -91,9 +89,11 @@ public class ProductDetailServlet extends HttpServlet {
             ProductRatingDAO ratingDAO = new ProductRatingDAO();
             CustomerDAO customerDAO = new CustomerDAO();
             RatingRepliesDAO repliesDAO = new RatingRepliesDAO();
+            String brandName = brDAO.getBrandNameByBrandId(product.getBrandID());
            // List<ProductRating> productRatings = ratingDAO.getProductRatingsByProductId(productId);
             double totalStars = 0;
             int visibleRatingCount = 0;
+
 
 //            for (ProductRating rating : productRatings) {
 //                if (!rating.isIsDeleted()) {  // <-- chỉ tính đánh giá chưa bị ẩn
@@ -111,17 +111,18 @@ public class ProductDetailServlet extends HttpServlet {
 //                rating.setReplies(replies);
 //            }
 
-            double averageRating = 0;
-            if (visibleRatingCount > 0) {
-                averageRating = totalStars / visibleRatingCount;
-            }
-            request.setAttribute("averageRating", averageRating);
+//            double averageRating = 0;
+//            if (visibleRatingCount > 0) {
+//                averageRating = totalStars / visibleRatingCount;
+//            }
+//            request.setAttribute("averageRating", averageRating);
 
             // Truyền dữ liệu sang JSP
             request.setAttribute("product", product);
+            request.setAttribute("brandName", brandName);
             request.setAttribute("attributeList", attributeList);
             request.setAttribute("productDetailList", productDetailList);
-            List<ProductRating> visibleRatings = new ArrayList<>();
+ //           List<ProductRating> visibleRatings = new ArrayList<>();
 //            for (ProductRating rating : productRatings) {
 //                if (!rating.isIsDeleted()) {
 //                    visibleRatings.add(rating);

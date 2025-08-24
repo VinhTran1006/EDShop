@@ -4,6 +4,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     List<Category> categoryList = (List<Category>) request.getAttribute("categoryList");
+    
 %>
 <!DOCTYPE html>
 <html>

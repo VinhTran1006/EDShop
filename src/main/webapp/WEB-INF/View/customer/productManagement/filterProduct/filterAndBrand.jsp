@@ -79,15 +79,16 @@
                             <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
                                 <%
                                     if (brandList != null) {
-                                        categoryId = brandList.get(0).getCategoryID();
+                                        categoryId = Integer.parseInt(request.getParameter("categoryId"));
                                         for (Brand br : brandList) {
                                 %>
                                 <label style="width: 100px; height: 60px; display: flex; justify-content: center; align-items: center; border-radius: 10px; padding: 5px; cursor: pointer; position: relative;">
-                                    <input type="radio" name="brandcategory" value="<%=br.getBrandId()%>-<%=br.getCategoryID()%>-<%=(brandIdOld != 0) ? brandIdOld : 1%>" 
-                                           style="opacity: 0; position: absolute;">
+                                    <input type="radio" name="brandcategory" value="<%=br.getBrandId()%>-<%=categoryId%>-<%=(brandIdOld != 0) ? brandIdOld : 1%>" 
+                                           style="position: absolute; opacity: 0;">
                                     <img src="<%=br.getImgUrlLogo()%>" alt="<%=br.getBrandName()%>" 
                                          style="max-width: 100%; max-height: 100%; object-fit: contain;">
                                 </label>
+
 
 
                                 <%
@@ -190,4 +191,4 @@
 
         </div>
     </body>
-</html>
+</html> 

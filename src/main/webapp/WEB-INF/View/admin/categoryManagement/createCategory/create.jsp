@@ -113,6 +113,7 @@
                     <div class="alert alert-danger"><%= request.getAttribute("createError")%></div>
                     <% } %>
                     <form action="CreateCategory" method="post">
+                        <input type="hidden" id="groupCount" name="groupCount" value="0" />
                         <div class="form-section">
                             <h5 class="section-title">Category Name</h5>
                             <div class="row">
@@ -155,18 +156,25 @@
 
             function addAttribute() {
                 groupCount++;
+                document.getElementById("groupCount").value = groupCount;
+
                 const groupDiv = document.createElement('div');
                 groupDiv.classList.add('group-container');
 
                 groupDiv.innerHTML =
                         '<div style="margin-bottom: 8px;">' +
-                        '<label>Detail Group Name:</label>' +
-                        '<input type="text" name="groups[' + groupCount + '][name]" class="form-control supplier-input" required maxlength="500" />' +
-                        '<button type="button" onclick="this.parentElement.parentElement.remove()" class="btn btn-danger">❌ Remove Group</button>' +
+                        '<label style="font-weight:600; color:#000;">Detail Group Name:</label>' +
+                        '<input type="text" name="groups[' + groupCount + '][name]" ' +
+                        'class="form-control supplier-input" required maxlength="500" /> ' +
+                        '<button type="button" onclick="removeGroup(this)" class="btn btn-danger">❌ Remove Group</button>' +
                         '</div>' +
                         '<div class="detail-list"></div>';
 
                 document.getElementById('groupWrapper').appendChild(groupDiv);
+            }
+
+            function removeGroup(btn) {
+                btn.parentElement.parentElement.remove();
             }
 
 
@@ -189,6 +197,11 @@
                 });
             <% }%>
             };
+
+            
+
+
+
         </script>
     </body>
 </html>

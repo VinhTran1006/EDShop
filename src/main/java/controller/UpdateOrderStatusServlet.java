@@ -85,32 +85,49 @@ public class UpdateOrderStatusServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String status = request.getParameter("update");
-        String orderID = request.getParameter("orderID");
-        try {
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    String status = request.getParameter("update");
+    String orderID = request.getParameter("orderID");
 
-            OrderDAO oDAO = new OrderDAO();
+    try {
+        OrderDAO oDAO = new OrderDAO();
+OrderDetailDAO odDAO = new OrderDetailDAO();
 
-            if (status != null && orderID != null) {
-                int count = oDAO.updateOrder(Integer.parseInt(orderID), status);
+        if (status != null && orderID != null) {
+            int count = oDAO.updateOrder(Integer.parseInt(orderID), status);
 
-                if (count > 0) {
-                    // ✅ Update thành công → quay về danh sách và show thông báo
-                    response.sendRedirect(request.getContextPath() + "/ViewOrderList?success=update");
-                } else {
-                    // ❌ Update thất bại → vẫn quay về danh sách nhưng hiện thông báo lỗi
-                    response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=1");
+            if (count > 0) {
+                // ✅ Nếu status = cancel thì hoàn kho
+                if ("Cancelled".equalsIgnoreCase(status)) {
+                    List<OrderDetail> list = odDAO.getOrderDetail(orderID);
+
+                    // Tạo ProductDAO để update stock
+                    dao.ProductDAO pDAO = new dao.ProductDAO();
+
+                    for (OrderDetail od : list) {
+                        pDAO.increaseStock(od.getProductID(), od.getQuantity());
+                    }
                 }
+                // ✅ Thành công
+                response.sendRedirect(request.getContextPath() + "/ViewOrderList?success=update");
             } else {
-                response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=1");
+                // ❌ Không update được
+                response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=update-failed");
             }
-
-        } catch (NumberFormatException e) {
-            System.out.println(e);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-params");
         }
+
+    } catch (NumberFormatException e) {
+        e.printStackTrace(); // In log server
+        response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-orderid");
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=exception");
     }
+}
+
 
     /**
      * Returns a short description of the servlet.

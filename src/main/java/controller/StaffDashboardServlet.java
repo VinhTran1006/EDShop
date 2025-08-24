@@ -7,7 +7,7 @@ package controller;
 import dao.CustomerDAO;
 import dao.OrderDAO;
 import dao.ProductDAO;
-import dao.ProductRatingDAO;
+import dao.ProductFeedbackDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -63,16 +63,16 @@ public class StaffDashboardServlet extends HttpServlet {
             throws ServletException, IOException {
         // Tạo instance các DAO
         OrderDAO orderDAO = new OrderDAO();
-        ProductRatingDAO productRatingDAO = new ProductRatingDAO();
+        ProductFeedbackDAO productRatingDAO = new ProductFeedbackDAO();
         CustomerDAO customerDAO = new CustomerDAO();
         ProductDAO productDAO = new ProductDAO();
         int todayOrders = orderDAO.countTodayOrders();
-        int newFeedback = productRatingDAO.countUnreadFeedback();
+//        int newFeedback = productRatingDAO.countUnreadFeedback();
         int totalCustomers = customerDAO.countTotalCustomers();
         int lowStockAlerts = productDAO.countLowStockDynamic(5); // 5 là mức cảnh báo bạn muốn
 
         request.setAttribute("todayOrders", todayOrders);
-        request.setAttribute("newFeedback", newFeedback);
+//        request.setAttribute("newFeedback", newFeedback);
         request.setAttribute("totalCustomers", totalCustomers);
         request.setAttribute("lowStockAlerts", lowStockAlerts);
         request.getRequestDispatcher("/WEB-INF/View/staff/staffDashboard.jsp").forward(request, response);

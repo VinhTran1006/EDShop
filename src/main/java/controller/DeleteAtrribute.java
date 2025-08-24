@@ -4,7 +4,7 @@
  */
 package controller;
 
-import dao.InventoryStatisticDAO;
+import dao.CategoryDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,16 +12,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import model.InventoryStatistic;
 
 /**
  *
  * @author HP
  */
-@WebServlet(name = "InventoryStatisticServlet", urlPatterns = {"/InventoryStatistic"})
-public class InventoryStatisticServlet extends HttpServlet {
+@WebServlet(name = "DeleteAttribute", urlPatterns = {"/DeleteAttribute"})
+public class DeleteAtrribute extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,22 +58,20 @@ public class InventoryStatisticServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        InventoryStatisticDAO dao = new InventoryStatisticDAO();
-        String keyword = request.getParameter("keyword");
-
-        ArrayList<InventoryStatistic> statistics = dao.getAllInventoryBatch();
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            statistics = dao.searchInventory(keyword.trim());
-            request.setAttribute("searchKeyword", keyword.trim());
+        CategoryDAO categoryDAO = new CategoryDAO();
+        System.out.println("Seveletttttttttttttttttttt");
+        int attributeID = Integer.parseInt(request.getParameter("attributeID"));
+        int categoryID = Integer.parseInt(request.getParameter("categoryID"));
+        System.out.println("AttributeID " + attributeID);
+        System.out.println("CategoryID " + categoryID);
+        boolean isSuccess = categoryDAO.deleteAttribute(attributeID);
+        if (isSuccess) {
+             response.sendRedirect("UpdateCategory?categoryId=" + categoryID + "&success=1");
+            
         } else {
-            statistics = dao.getAllInventoryBatch();
+            response.sendRedirect("UpdateCategory?categoryId=" + categoryID + "&error=1");
+           
         }
-        String message = (statistics == null || statistics.isEmpty()) ? "No inventory statistics available." : null;
-        request.setAttribute("inventoryStatistics", statistics);
-        request.setAttribute("message", message);
-        request.getRequestDispatcher("/WEB-INF/View/admin/manageStatistics/inventoryStatistic.jsp")
-                .forward(request, response);
     }
 
     /**

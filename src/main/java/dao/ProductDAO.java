@@ -11,7 +11,6 @@ import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import model.Attribute;
 import model.Product;
 import model.ProductDetail;
 
@@ -206,11 +205,48 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
-    public List<Product> searchProductByName(String keyword) {
+    public List<Product> searchProductByNameForCustomer(String keyword) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT *"
                 + "FROM Products p "
-                + "WHERE LOWER(p.ProductName) LIKE ?";
+                + "WHERE LOWER(p.ProductName) LIKE ? AND IsActive != 0 AND Quantity != 0";
+
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + keyword.toLowerCase() + "%");
+            try ( ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int productId = rs.getInt("ProductID");
+                    String productName = rs.getString("ProductName");
+                    String description = rs.getString("Description");
+                    BigDecimal price = rs.getBigDecimal("Price");
+                    int supplierId = rs.getInt("SupplierID");
+                    int categoryId = rs.getInt("CategoryID");
+                    int brandId = rs.getInt("BrandID");
+                    int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                    Date addedAt = rs.getDate("AddedAt");
+                    boolean isActive = rs.getBoolean("isActive");
+                    String imageUrl1 = rs.getString("ImageURL1");
+                    String imageUrl2 = rs.getString("ImageURL2");
+                    String imageUrl3 = rs.getString("ImageURL3");
+                    String imageUrl4 = rs.getString("ImageURL4");
+                    int quantity = rs.getInt("Quantity");
+
+                    Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
+
+                    list.add(product);
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        return list;
+    }
+
+    public List<Product> searchProductByNameForAdmin(String keyword) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT *"
+                + "FROM Products p "
+                + "WHERE LOWER(p.ProductName) LIKE ? AND IsActive != 0";
 
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword.toLowerCase() + "%");
@@ -247,7 +283,7 @@ public class ProductDAO extends DBContext {
         Product product = null;
         String sql = "SELECT *"
                 + "FROM Products p "
-                + "WHERE p.ProductID = ?";
+                + "WHERE p.ProductID = ? AND IsActive != 0";
 
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, productID);
@@ -294,7 +330,9 @@ public class ProductDAO extends DBContext {
 
     public List<ProductDetail> getProductDetailByProductId(int productId) {
         List<ProductDetail> productDetailList = new ArrayList<>();
-        String sql = "SELECT * FROM ProductDetails p WHERE p.ProductID = ?";
+
+        String sql = "SELECT * FROM ProductDetails p WHERE p.ProductID = ? AND IsActive != 0";
+
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, productId);
@@ -316,9 +354,9 @@ public class ProductDAO extends DBContext {
         return productDetailList;
     }
 
-    public boolean updateProduct(int id, String productName, String description, BigDecimal price, int supplierid, int categoryid, int brandid, int warranty, Date addedat, int quantity, String url1, String url2, String url3, String url4) {
+    public boolean updateProduct(int id, String productName, String description, BigDecimal price, int supplierid, int categoryid, int brandid, int warranty, int quantity, String url1, String url2, String url3, String url4) {
         String sql1 = "UPDATE Products SET ProductName = ?,Description=?, Price = ?, SupplierID = ?, CategoryID = ?, "
-                + "BrandID = ?,WarrantyPeriod =? ,Quantity = ?, ImageURL1 ,ImageURL2 , ImageURL3 ,ImageURL4  WHERE ProductID = ?";
+                + "BrandID = ?,WarrantyPeriod =? ,Quantity = ?, ImageURL1 = ? ,ImageURL2 =? , ImageURL3 =? ,ImageURL4 =? WHERE ProductID = ?";
 
         try (
                  PreparedStatement pstmt1 = conn.prepareStatement(sql1);) {
@@ -329,13 +367,12 @@ public class ProductDAO extends DBContext {
             pstmt1.setInt(5, categoryid);
             pstmt1.setInt(6, brandid);
             pstmt1.setInt(7, warranty);
-            pstmt1.setDate(8, addedat);
-            pstmt1.setInt(9, quantity);
-            pstmt1.setString(10, url1);
-            pstmt1.setString(11, url2);
-            pstmt1.setString(12, url3);
-            pstmt1.setString(13, url4);
-            pstmt1.setInt(14, id);
+            pstmt1.setInt(8, quantity);
+            pstmt1.setString(9, url1);
+            pstmt1.setString(10, url2);
+            pstmt1.setString(11, url3);
+            pstmt1.setString(12, url4);
+            pstmt1.setInt(13, id);
 
             int rows1 = pstmt1.executeUpdate();
 
@@ -345,12 +382,12 @@ public class ProductDAO extends DBContext {
         return false;
     }
 
-    public boolean updateProductDetail(int productId, int productDetailID, String proDetail, String url1, String url2, String url3, String url4, String mainUrl) {
+    public boolean updateProductDetail(int productdetailID, String atrributeValue) {
         String sql = "UPDATE ProductDetails SET AttributeValue = ? WHERE ProductDetailID  = ?";
         try (
                  PreparedStatement pstmt = conn.prepareStatement(sql);) {
-            pstmt.setString(1, proDetail);
-            pstmt.setInt(2, productDetailID);
+            pstmt.setString(1, atrributeValue);
+            pstmt.setInt(2, productdetailID);
             int rows2 = pstmt.executeUpdate();
             return rows2 > 0;
         } catch (SQLException e) {
@@ -359,7 +396,7 @@ public class ProductDAO extends DBContext {
     }
 
     public int getTotalProducts() {
-        String sql = "SELECT COUNT(*) FROM Products";
+        String sql = "SELECT COUNT(*) FROM Products Where IsActive != 0";
         try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
@@ -427,8 +464,7 @@ public class ProductDAO extends DBContext {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT *"
                 + "FROM Products p "
-                + "JOIN Brands br ON br.BrandID = p.BrandID "
-                + "WHERE br.BrandID = ? AND p.Price >= ? AND p.Price <= ?";
+                + "WHERE p.BrandID = ? AND p.Price >= ? AND p.Price <= ? AND p.IsActive != 0";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -467,8 +503,7 @@ public class ProductDAO extends DBContext {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * "
                 + "FROM Products p "
-                + "JOIN Categories cate ON cate.CategoryID = p.CategoryID "
-                + "WHERE cate.CategoryID = ? AND p.Price >= ? AND p.Price <= ?";
+                + "WHERE p.CategoryID = ? AND p.Price >= ? AND p.Price <= ? AND p.IsActive != 0";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -509,9 +544,10 @@ public class ProductDAO extends DBContext {
                 + "FROM Products p "
                 + "JOIN Categories cate ON cate.CategoryID = p.CategoryID "
                 + "JOIN Brands br ON br.BrandID = p.BrandID "
-                + "WHERE LOWER(p.ProductName) LIKE ? "
+                + "WHERE (LOWER(p.ProductName) LIKE ? "
                 + "OR LOWER(br.BrandName) LIKE ? "
-                + "OR LOWER(cate.CategoryName) LIKE ?";
+                + "OR LOWER(cate.CategoryName) LIKE ?) "
+                + "AND p.IsActive != 0";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -548,15 +584,16 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
-    public List<Product> getProductByBrand(int brandId) {
+    public List<Product> getProductByBrandAndCategory(int brandId, int categoryID) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * "
                 + "FROM Products p "
-                + "WHERE p.BrandID = ?";
+                + "WHERE p.BrandID = ? AND p.CategoryID = ? AND IsActive != 0";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, brandId);
+            ps.setInt(2, categoryID);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int productId = rs.getInt("ProductID");
@@ -589,7 +626,7 @@ public class ProductDAO extends DBContext {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT *"
                 + "FROM Products p "
-                + "where cate.CategoryID = ?";
+                + "where p.CategoryID = ? AND IsActive != 0";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -646,7 +683,7 @@ public class ProductDAO extends DBContext {
     public Map<Integer, Integer> getAllProductStocks() {
         Map<Integer, Integer> stockMap = new HashMap<>();
         String sql = "SELECT p.ProductID, "
-                + "ISNULL(SUM(isd.Quantity), 0) - ISNULL((SELECT SUM(od.Quantity) FROM OrderDetails od WHERE od.ProductID = p.ProductID), 0) AS Stock "
+                + "ISNULL(SUM(isd.Quantity), 0) - ISNULL((SELECT SUM(od.Quantity) FROM OrderDetails od WHERE od.ProductID = p.ProductID), 0) AS Stock AND IsActive != 0"
                 + "FROM Products p "
                 + "LEFT JOIN ImportStockDetails isd ON p.ProductID = isd.ProductID "
                 + "GROUP BY p.ProductID";
@@ -666,7 +703,7 @@ public class ProductDAO extends DBContext {
         ProductDetail productDetail = null;
         String sql = "SELECT *"
                 + "FROM ProductDetails p "
-                + "where p.ProductID = ?";
+                + "where p.ProductID = ? AND IsActive != 0";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, productId);
@@ -685,16 +722,6 @@ public class ProductDAO extends DBContext {
         return productDetail;
     }
 
-    public static void main(String[] args) {
-
-        List<ProductDetail> r = new ArrayList<>();
-        ProductDAO dao = new ProductDAO();
-        r = dao.getProductDetailByProductId(1);
-        for (ProductDetail s : r) {
-            System.out.println(s.toString());
-        }
-    }
-
     public boolean updateProductQuantity(int productId, int quantityChange) {
         String sql = "UPDATE Products SET quantity = quantity + ? WHERE productID = ?";
 
@@ -709,4 +736,26 @@ public class ProductDAO extends DBContext {
             return false;
         }
     }
+
+    // Nguyễn Thế Vinh
+      public void increaseStock(int productID, int quantity) {
+    String sql = "UPDATE Products SET Quantity = Quantity + ? WHERE ProductID = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, quantity);
+        ps.setInt(2, productID);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}     
+          public static void main(String[] args) {
+
+       List<Product> r = new ArrayList<>();
+    ProductDAO dao = new ProductDAO();
+     r = dao.getProductByBrandAndCategory(1, 1);
+        for (Product s : r) {
+            System.out.println(s.toString());
+        }
+    }
+  
 }

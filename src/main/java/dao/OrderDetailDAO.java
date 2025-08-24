@@ -144,11 +144,12 @@ public class OrderDetailDAO extends DBContext {
 
             while (rs.next()) {
                 OrderDetail detail = new OrderDetail();
-                detail.setOrderDetailsID(rs.getInt("OrderDetailsID"));
                 detail.setOrderID(rs.getInt("OrderID"));
                 detail.setProductID(rs.getInt("ProductID"));
+                detail.setProductName(rs.getString("ProductName"));
                 detail.setQuantity(rs.getInt("Quantity"));
-                detail.setPrice(rs.getLong("Price"));               
+                detail.setPrice(rs.getLong("Price"));
+                
                 list.add(detail);
             }
         } catch (Exception e) {

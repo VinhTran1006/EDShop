@@ -1,8 +1,3 @@
-<%-- 
-    Document   : update
-    Created on : Jun 22, 2025, 2:00:49 PM
-    Author     : HP - Gia Khiêm
---%>
 
 <%@page import="model.ProductDetail"%>
 <%@page import="model.Suppliers"%>
@@ -37,7 +32,7 @@
         <div class="form-wrapper">
             <div class="mb-3">
                 <label class="form-label">ID</label>
-                <input type="text" class="form-control" name="id" required value="<%= product.getProductId()%>" readonly/>
+                <input type="text" class="form-control" name="productId" required value="<%= product.getProductID()%>" readonly/>
             </div>
 
             <div class="mb-3">
@@ -45,6 +40,11 @@
                 <input type="text" class="form-control" name="productName" required value="<%= product.getProductName()%>"/>
             </div>
 
+            
+                  <div class="mb-3">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-control" name="description" required value="<%= product.getDescription()%>"/>
+                  </div><!-- comment -->
             <%
                 String priceFormatted = "";
                 if (product.getPrice() != null) {
@@ -64,12 +64,23 @@
                 }
             %>
 
+            
+               <div class="mb-3">
+                <label class="form-label">Warranty period</label>
+                <input type="text" class="form-control" name="warranty" required value="<%= product.getWarrantyPeriod()%>"/>
+            </div>
+            
+                  <div class="mb-3">
+                <label class="form-label">Quantity</label>
+                <input type="text" class="form-control" name="quantity" required value="<%= product.getQuantity()%>"/>
+            </div>
+            
             <div class="mb-3">
                 <label class="form-label">Supplier</label>
-                <select class="form-control" id="suppliers" name="suppliers">
+                <select class="form-control" id="supplier" name="supplier">
                     <option value="">-- Select Supplier --</option>
                     <% for (Suppliers sup : supList) {
-                            boolean isSelected = (sup.getSupplierID() == product.getSupplierId());
+                            boolean isSelected = (sup.getSupplierID() == product.getSupplierID());
                     %>
                     <option value="<%= sup.getSupplierID()%>" <%= isSelected ? "selected" : ""%>>
                         <%= sup.getName()%>
@@ -83,7 +94,7 @@
                 <select class="form-control" id="category" name="category" onchange="updateBrands()">
                     <option value="">-- Select category --</option>
                     <% for (Category c : categoryList) {
-                            boolean isSelected = (c.getCategoryId() == product.getCategoryId());
+                            boolean isSelected = (c.getCategoryId() == product.getCategoryID());
                     %>
                     <option value="<%= c.getCategoryId()%>" <%= isSelected ? "selected" : ""%>>
                         <%= c.getCategoryName()%>
@@ -97,7 +108,7 @@
                 <select class="form-control" id="brand" name="brand">
                     <option value="">-- Select brand --</option>
                     <% for (Brand b : brandList) {
-                            boolean isSelected = (b.getBrandId() == product.getBrandId());
+                            boolean isSelected = (b.getBrandId() == product.getBrandID());
                     %>
                     <option value="<%= b.getBrandId()%>" <%= isSelected ? "selected" : ""%>>
                         <%= b.getBrandName()%>
@@ -106,50 +117,18 @@
                 </select>
             </div>
 
-            <!-- Checkboxes -->
-            <div style="display: flex; gap: 30px;">
-                <div class="form-check mb-2">
-                    <input class="form-check-input rounded-circle" type="checkbox" id="isFeatured" name="isFeatured" <%= product.isIsFeatured() ? "checked" : ""%>>
-                    <label class="form-check-label" for="isFeatured">Is Featured</label>
-                </div>
-
-                <div class="form-check mb-2">
-                    <input class="form-check-input rounded-circle" type="checkbox" id="isNew" name="isNew" <%= product.isIsNew() ? "checked" : ""%>>
-                    <label class="form-check-label" for="isNew">Is New</label>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 20px;">
-                <div class="form-check mb-2">
-                    <input class="form-check-input rounded-circle" type="checkbox" id="isBestSeller" name="isBestSeller" <%= product.isIsBestSeller() ? "checked" : ""%>>
-                    <label class="form-check-label" for="isBestSeller">Is Best Seller</label>
-                </div>
-
-                <div class="form-check mb-2">
-                    <input class="form-check-input rounded-circle" type="checkbox" id="isActive" name="isActive" <%= product.isIsActive() ? "checked" : ""%>>
-                    <label class="form-check-label" for="isActive">Is Active</label>
-                </div>
-            </div>
-
+            
+            
         </div>
 
     </body>
 
     <script>
-        var jsBrandList = [];
-
-        <% for (Brand b : brandList) {%>
-        jsBrandList.push({
-            id: <%= b.getBrandId()%>,
-            name: "<%= b.getBrandName()%>",
-            categoryId: <%= b.getCategoryID()%>
-        });
-        <% }%>
 
         function updateBrands() {
             const categoryId = document.getElementById("category").value;
             const brandSelect = document.getElementById("brand");
-            const selectedBrandId = "<%= product.getBrandId()%>";
+            const selectedBrandId = "<%= product.getBrandID()%>";
 
             brandSelect.innerHTML = '<option value="">-- Chọn thương hiệu --</option>';
 

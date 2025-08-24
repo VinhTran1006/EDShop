@@ -1,5 +1,7 @@
 
-
+<%@page import="java.text.NumberFormat"%>
+<%@page import="java.util.Locale"%>
+<%@page import="java.math.BigDecimal"%>
 <%@page import="dao.CategoryDAO"%>
 <%@page import="model.Product"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -9,9 +11,10 @@
 
 <%
     Product product = (Product) request.getAttribute("product");
+    String brandName = (String) request.getAttribute("brandName");
     CategoryDAO cateDAO = new CategoryDAO();
-   String categoryname = cateDAO.getCategoryNameByCategoryId(product.getCategoryID());
-    
+    String categoryname = cateDAO.getCategoryNameByCategoryId(product.getCategoryID());
+
 %>
 <!DOCTYPE html>
 <html>
@@ -34,27 +37,40 @@
     <jsp:include page="/WEB-INF/View/customer/homePage/header.jsp" />
 
     <body>
-        <div style="display: flex; gap: 1%;">
+        <div style="display: flex; gap: 2%; align-items: flex-start;">
 
-            <div style="width: 59%;">
+            <div style="width: 53%;">
                 <div style="display: flex; gap: 4px; font-size: 14px; color: #555; margin-top: 2%; margin-bottom: 2%;">
                     <a href="/" style="text-decoration: none; color: #007bff;">Home</a> >
-                    <a href="#" style="text-decoration: none; color: #007bff;"><%= categoryname %></a> >
+                    <a href="#" style="text-decoration: none; color: #007bff;"><%= categoryname%></a> >
                     <a href="#" style="text-decoration: none; color: #000;"><%= product.getProductName()%></a>
                 </div>
 
-                <h1 style="font-size: 20px"><%= product.getProductName()%></h1>
-
-                <div class="customerDivImageDetail">
-                    <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/imageProduct.jsp" />
+                <div style="text-align: left; margin-bottom: 10px;">
+                    <h1 style="font-size: 20px; margin: 5px 0; font-weight: bold; color: #333;">
+                        <%= product.getProductName()%>
+                    </h1>
+                    <p style="font-size: 16px; margin: 5px 0; color: #555;">
+                        Brand: <%= brandName%>
+                    </p>
                 </div>
 
-                <div class="customerDivCommitted">
-                    <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/committed.jsp" />
-                </div>
 
-                <div class="customerDivinfomationDetail" style="margin-top: 15px;">
-                    <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/infomationDetail.jsp" />
+                <div style="flex: 2;">
+                    <div class="customerDivImageDetail">
+                        <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/imageProduct.jsp" />
+                    </div>
+
+                    <p style="font-size: 20px">In Stock: <%= product.getQuantity()%></p>
+                    <% BigDecimal oldPrice = product.getPrice();
+                        Locale localeVN = new Locale("vi", "VN");
+                        NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
+                        String giaCuFormatted = currencyVN.format(oldPrice);%>
+                    <p class="giaMoi" style="font-size: 20px">Price: <%= giaCuFormatted%></p>
+
+                    <div class="customerDivCommitted">
+                        <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/committed.jsp" />
+                    </div>
                 </div>
 
                 <%-- ⭐ Feedback Section Start --%>
@@ -102,14 +118,13 @@
                     </c:forEach>
                 </div>
                 <%-- ⭐ Feedback Section End --%>
-
-
             </div>
 
-            <div class="customerDivaddToCartAndBuyNow" style="width: 40%; margin-top: 6.8%; max-height: 820px;">
-                <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/addToCartAndBuyNow.jsp" />
+            <div class="customerDivinfomationDetail" style="margin-top: 15px; width: 50%; float: right;">
+                <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/infomationDetail.jsp" />
             </div>
         </div>
+        <div class="customerDivaddToCartAndBuyNow" style="width: 40%; margin-top: 6.8%; max-height: 820px;"></div>
     </body>
 
     <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />

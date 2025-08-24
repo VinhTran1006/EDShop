@@ -35,7 +35,7 @@
                                 if (attributeList != null && !attributeList.isEmpty()) {
                                     for (Attribute a : attributeList) {
                                         boolean hasValue = false;
-%>
+                            %>
                             <tr>
                                 <td class="category-name">
                                     <%= a.getAtrributeName()%>
@@ -52,12 +52,11 @@
                                                 }
                                             }
                                         }
-                                        
+
                                     %> 
                                 </td>
                             </tr>
-                            <%
-                                } // end for
+                            <%                                } // end for
                             } else {
                             %>
                             <tr>
@@ -94,24 +93,106 @@
 </script>
 
 <style>
-    .btn-back {
-        color: #fff;
-        background-color: #6c757d;
-        border: 1px solid #6c757d;
-        padding: 10px 20px;
-        border-radius: 6px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
+    /* Reset */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
+    body {
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        background-color: #F2F4F7;
+        color: #333;
+    }
+
+    /* Container chính */
+    .divAll {
+        background-color: #F2F4F7;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        background: #fff;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+
+    /* --- Title --- */
+    h1.display-5 {
+        font-size: 2rem;
+        color: #222;
+    }
+
+    h3 {
+        margin-top: 12px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #444;
+    }
+
+    /* --- Bảng thông số kỹ thuật --- */
+    .category-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .category-table tr {
+        border-bottom: 1px solid #eee;
+    }
+    .category-table tr:last-child {
+        border-bottom: none;
+    }
+
+    .category-table td {
+        padding: 10px 14px;
+        font-size: 14px;
+        vertical-align: middle;
+        color: #333;
+    }
+
+    .category-name {
+        width: 35%;
+        font-weight: 600;
+        color: #222;
+        background: #f3f4f6;
+    }
+
+    .attribute-item {
+        display: inline-block;
+        padding: 4px 8px;
+        margin: 2px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+
+    /* --- Buttons --- */
+    .btn-back {
+        color: #fff !important;
+        background-color: #6c757d;
+        border: none;
+        padding: 8px 18px;
+        border-radius: 6px;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
     .btn-back:hover {
         background-color: #5c636a;
-        border-color: #565e64;
+        transform: translateY(-2px);
+    }
+    .category-table td .attribute-item{
+        color: #000 !important;
     }
 
-    .btn-success, .btn-back {
-        padding: 8px 16px;  /* trước là 10px 20px */
-        font-size: 14px;
-    }
 </style>
