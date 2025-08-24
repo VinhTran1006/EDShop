@@ -4,7 +4,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%
     Staff staff = (Staff) session.getAttribute("staff");
-
     if (!(staff.getRole().equalsIgnoreCase("staff") || staff.getRole().equalsIgnoreCase("admin"))) {
         response.sendRedirect("LoginStaff");
         return;
@@ -190,10 +189,6 @@
             </div>
             <div class="user-details">
                 <h5>${staff.fullName}</h5>
-<<<<<<< HEAD
-                <small>${staff.role}</small>
-=======
->>>>>>> d94a0fad7e0dda23d4a863f91ed4f6213926800a
             </div>
         </div>
 

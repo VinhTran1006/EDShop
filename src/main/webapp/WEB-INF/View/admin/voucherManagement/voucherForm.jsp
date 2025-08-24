@@ -1,12 +1,8 @@
-<%@page import="model.Account"%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.Voucher" %>
 <%
-    Account acc = (Account) session.getAttribute("admin");
-    if (acc == null || acc.getRoleID() != 1) {
-        response.sendRedirect("LoginAdmin");
-        return;
-    }
+    
     Voucher v = (Voucher) request.getAttribute("voucher");
     boolean isEdit = v != null;
 %>

@@ -72,7 +72,6 @@
                         <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/committed.jsp" />
                     </div>
                 </div>
-
                 <%-- ⭐ Feedback Section Start --%>
                 <div class="customerFeedbackSection" style="margin-top: 30px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 8px rgba(0,0,0,0.05);">
                     <div style="text-align: center; margin-bottom: 20px; position: relative;">
@@ -81,6 +80,17 @@
                             Customer Feedback
                         </h2>
                     </div>
+                    <c:if test="${not empty productRatings}">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <strong style="font-size: 18px;">Average Rating:</strong>
+                            <span style="color: #f5a623; font-size: 18px;">
+                                <c:forEach begin="1" end="5" var="i">
+                                    <i class="fa fa-star ${i <= averageRating ? 'checked' : ''}"></i>
+                                </c:forEach>
+                                (<fmt:formatNumber value="${averageRating}" maxFractionDigits="1" /> / 5)
+                            </span>
+                        </div>
+                    </c:if>
                     <c:if test="${empty productRatings}">
                         <p style="text-align: center; color: gray;">No feedback available for this product.</p>
                     </c:if>
@@ -89,34 +99,34 @@
                         <div style="border: 1px solid #e1e1e1; border-radius: 8px; padding: 15px; margin-bottom: 20px; background: #fafafa;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <strong>${rating.fullName}</strong> 
-
                                 <small style="color: gray;">${rating.createdDate}</small>
                             </div>
 
-                            <div style="color: #f5a623; margin: 5px 0;">
-                                <c:forEach begin="1" end="5" var="i">
-                                    <i class="fa fa-star <c:if test='${i <= rating.star}'>checked</c:if>'"></i>
-                                </c:forEach>
-                            </div>
+                            <c:set var="stars" value="${rating.star}" />
+<c:forEach begin="1" end="5" var="i">
+    <i class="fa fa-star ${i <= stars.intValue() ? 'checked' : ''}"></i>
+</c:forEach>
+
 
                             <p style="margin-top: 8px; font-size: 15px;">${rating.comment}</p>
 
-                            <%-- ✅ Nếu có phản hồi từ nhân viên --%>
-                            <c:if test="${not empty rating.replies}">
-                                <div style="margin-top: 15px; padding: 10px 15px; border: 1px solid #3399ff; border-radius: 6px; background-color: #f0f8ff;">
+                            <%-- ✅ Nếu feedback có reply từ staff --%>
+                            <c:if test="${not empty rating.reply}">
+                                <div style="margin-top: 15px; padding: 10px 15px; background: #eaf4ff; border-left: 4px solid #3399ff; border-radius: 6px;">
+                                    <strong style="color: #004a99;">Staff Response:</strong>
+                                    <p style="margin: 6px 0; font-size: 14px; color: #333;">${rating.reply}</p>
 
-                                    <c:forEach var="reply" items="${rating.replies}">
-                                        <div style="margin-top: 15px; padding: 10px 15px; background: #eaf4ff; border-left: 4px solid #3399ff; border-radius: 6px;">
-                                            <strong style="color: #004a99;">Staff Response:</strong>
-                                            <p style="margin: 6px 0; font-size: 14px; color: #333;">${reply.answer}</p>
-                                        </div>
-                                    </c:forEach>
-
+                                    <c:if test="${not empty rating.replyDate}">
+                                        <small style="color: gray; display:block; margin-top:5px;">
+                                            Replied on: ${rating.replyDate}
+                                        </small>
+                                    </c:if>
                                 </div>
                             </c:if>
                         </div>
                     </c:forEach>
                 </div>
+
                 <%-- ⭐ Feedback Section End --%>
             </div>
 

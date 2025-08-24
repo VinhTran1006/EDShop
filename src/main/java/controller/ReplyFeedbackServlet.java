@@ -90,15 +90,15 @@ public class ReplyFeedbackServlet extends HttpServlet {
                 boolean success = rrDAO.addReply(stID, feedbackID, answer);
                  rrDAO.updateisReadComment(feedbackID);  
                 if (success) {
-                    response.sendRedirect("ViewFeedBackForStaff?feedbackID=" + feedbackID + "&success=success");
+                    response.sendRedirect("ViewFeedbackForStaff?feedbackID=" + feedbackID + "&success=success");
                 } else {
-                    response.sendRedirect("ViewFeedBackForStaff?feedbackID=" + feedbackID + "&success=failed");
+                    response.sendRedirect("ViewFeedbackForStaff?feedbackID=" + feedbackID + "&success=failed");
                 }
 
                
             } catch (Exception e) {
                 e.printStackTrace();
-                response.sendRedirect("ViewFeedBackForStaff?feedbackID=" + request.getParameter("feedbackID") + "&success=error");
+                response.sendRedirect("ViewFeedbackForStaff?feedbackID=" + request.getParameter("feedbackID") + "&success=error");
             }
         }
     }

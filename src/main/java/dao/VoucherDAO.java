@@ -86,7 +86,7 @@ public class VoucherDAO extends DBContext {
     public boolean updateVoucher(Voucher v) {
         String sql = "UPDATE Vouchers SET Code=?, DiscountPercent=?, ExpiryDate=?, MinOrderAmount=?, "
                 + "MaxDiscountAmount=?, UsageLimit=?, UsedCount=?, IsActive=?, Description=?"
-                + "WHERE VoucherID = ?";
+                + " WHERE VoucherID = ?";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, v.getCode());
             ps.setInt(2, v.getDiscountPercent());
