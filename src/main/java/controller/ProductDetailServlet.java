@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.BrandDAO;
 import dao.CategoryDAO;
 import dao.ProductDAO;
 import java.io.IOException;
@@ -74,6 +75,7 @@ public class ProductDetailServlet extends HttpServlet {
         if (productIdStr != null && categoryIdStr != null) {
             CategoryDAO cateDao = new CategoryDAO();
             ProductDAO proDao = new ProductDAO();
+            BrandDAO brDAO = new BrandDAO();
 
             int productId = Integer.parseInt(productIdStr);
             int categoryId = Integer.parseInt(categoryIdStr);
@@ -84,12 +86,14 @@ public class ProductDetailServlet extends HttpServlet {
             List<ProductDetail> productDetailList = proDao.getProductDetailByProductId(productId);
 
             // Lấy danh sách đánh giá và phản hồi
-//            ProductRatingDAO ratingDAO = new ProductRatingDAO();
-//            CustomerDAO customerDAO = new CustomerDAO();
-//            RatingRepliesDAO repliesDAO = new RatingRepliesDAO();
-//           // List<ProductRating> productRatings = ratingDAO.getProductRatingsByProductId(productId);
-//            double totalStars = 0;
-//            int visibleRatingCount = 0;
+            ProductRatingDAO ratingDAO = new ProductRatingDAO();
+            CustomerDAO customerDAO = new CustomerDAO();
+            RatingRepliesDAO repliesDAO = new RatingRepliesDAO();
+            String brandName = brDAO.getBrandNameByBrandId(product.getBrandID());
+           // List<ProductRating> productRatings = ratingDAO.getProductRatingsByProductId(productId);
+            double totalStars = 0;
+            int visibleRatingCount = 0;
+
 
 //            for (ProductRating rating : productRatings) {
 //                if (!rating.isIsDeleted()) {  // <-- chỉ tính đánh giá chưa bị ẩn
@@ -115,6 +119,7 @@ public class ProductDetailServlet extends HttpServlet {
 
             // Truyền dữ liệu sang JSP
             request.setAttribute("product", product);
+            request.setAttribute("brandName", brandName);
             request.setAttribute("attributeList", attributeList);
             request.setAttribute("productDetailList", productDetailList);
  //           List<ProductRating> visibleRatings = new ArrayList<>();

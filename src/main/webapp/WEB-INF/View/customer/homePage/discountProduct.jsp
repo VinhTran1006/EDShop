@@ -1,8 +1,4 @@
-<%-- 
-    Document   : newProduct
-    Created on : Jun 16, 2025, 12:58:19 PM
-    Author     : HP - Gia Khiêm
---%>
+
 
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
@@ -110,29 +106,45 @@
                 display: none; /* Chrome, Safari */
             }
 
+            .divHinh {
+                width: 100%;
+                height: 200px;              /* cố định chiều cao khung ảnh */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;           /* ẩn phần thừa nếu ảnh quá lớn */
+                border-radius: 8px;         /* bo góc nhẹ cho đẹp */
+                background-color: #f9f9f9;  /* nền xám nhạt nếu ảnh không full */
+            }
+
+            .divHinh img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;   /* cắt ảnh vừa khung */
+                border-radius: 8px;
+            }
+
+
         </style>
     </head>
     <body>
         <div class="" style="width: 100%; border-radius: 15px; margin-top: 1%; background-color: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
-            <p class="new-product-label">Discount product</p>
 
             <!-- Danh sách sản phẩm -->
             <div id="" style = "gap: 0.25%; display: flex; width: 100%; flex-wrap: wrap;">
                 <% if (productList != null) {
                         for (Product pro : productList) {
-                    oldPrice = pro.getPrice();
-                    Locale localeVN = new Locale("vi", "VN");
-                    NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
-                    String giaCuFormatted = currencyVN.format(oldPrice);
+                            oldPrice = pro.getPrice();
+                            Locale localeVN = new Locale("vi", "VN");
+                            NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
+                            String giaCuFormatted = currencyVN.format(oldPrice);
                 %>
                 <div class="sanPhamMoi" style = "width: 18.9%">
                     <a href="<%= request.getContextPath()%>/ProductDetail?productId=<%= pro.getProductID()%>&categoryId=<%= pro.getCategoryID()%>" style="text-decoration: none; color: inherit; display: block;">
                         <div class="divHinh">
                             <img style="width: 98%" src="<%= pro.getImageUrl1()%>" alt="anhDienThoai" class="anhDienThoaiDocQuyen">
                         </div>
-                        <div class="divTraGop">
-                            <p class="traGop">Trả góp 0%</p>
-                        </div>
+
                         <p class="productName"><%= pro.getProductName()%></p>
                         <p class="giaMoi"><%= giaCuFormatted%> đ</p>
                     </a>

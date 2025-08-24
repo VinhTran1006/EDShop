@@ -1,8 +1,3 @@
-<%-- 
-    Document   : filterProduct
-    Created on : Jul 12, 2025, 6:02:22 PM
-    Author     : HP - Gia Khiêm
---%>
 
 <%@page import="model.Product"%>
 <%@page import="java.util.List"%>
@@ -26,7 +21,7 @@
             .filterAndBrand {
                 border-radius: 12px;
             }
-            
+
             .p {
                 font-size: 14px;
                 display: flex;
@@ -72,7 +67,7 @@
 
     <body>
         <jsp:include page="/WEB-INF/View/customer/homePage/header.jsp" />
-        
+
         <div class = "divGoiY">
             <p class="p">Air Conditioning</p>
             <p class="p">Refrigerator</p>
@@ -81,20 +76,29 @@
             <p class="p">Rice Cookers</p>
         </div>
 
-        <div class = "divSoLuong" style = "padding: 5px;">
-            <a class = "home" href = "Home">Home ></a>
-            <a class = "soLuong" href=""><%=(productList != null) ? productList.size() : 0%></a>
-            <a class = "soLuong" href=""><%=(productList != null) ? productList.get(0).getCategoryName() : 0%></a>
+        <div class="divSoLuong" style="padding: 5px;">
+            <a class="home" href="Home">Home ></a>
+            <span class="soLuong">
+                <%= (productList != null) ? productList.size() : 0%>
+            </span>
+            <span class="soLuong">
+                <%= (productList != null && !productList.isEmpty()) ? productList.get(0).getCategoryID() : 0%>
+            </span>
         </div>
 
         <div class = "banner">
-            <jsp:include page="/WEB-INF/View/customer/productManagement/filterProduct/banner.jsp" />
+            <jsp:include page="/WEB-INF/View/customer/productManagement/searchProduct/banner.jsp" />
         </div>
 
+
         <div class = "container-fluid" style = "background-color: #ffffff; border-radius: 12px; margin-top: 1%; width: 98%;" >
+            <div class = "filterAndBrand" style = "display: flex; gap: 1%;">
+                <jsp:include page="/WEB-INF/View/customer/productManagement/sortProduct/filterAndBrand.jsp" />
+
+            </div>
 
             <div class = "productList" style = "width: 100%; margin-top: 1%; ">
-                <jsp:include page="/WEB-INF/View/customer/productManagement/filterProduct/productList.jsp" />
+                <jsp:include page="/WEB-INF/View/customer/productManagement/searchProduct/productList.jsp" />
             </div>
         </div>
         <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />

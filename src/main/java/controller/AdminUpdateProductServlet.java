@@ -141,7 +141,6 @@ public class AdminUpdateProductServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        ProductDAO proDAO = new ProductDAO();
         String productIdString = request.getParameter("productId");
         int productId = ((productIdString != null) ? Integer.parseInt(productIdString) : -1);
         System.out.println("id khong loi");
@@ -205,7 +204,7 @@ public class AdminUpdateProductServlet extends HttpServlet {
                 session.setAttribute("errorWarranty", "Warranty must be a valid integer.");
             }
         }
-          System.out.println("warranty khong loi");
+        System.out.println("warranty khong loi");
         String quantityRaw = request.getParameter("quantity");
 
         if (quantityRaw == null || quantityRaw.trim().isEmpty()) {
@@ -220,7 +219,7 @@ public class AdminUpdateProductServlet extends HttpServlet {
                 session.setAttribute("errorQuantity", "Quantity must be a valid integer.");
             }
         }
-          System.out.println("quantity khong loi");
+        System.out.println("quantity khong loi");
         System.out.println("id " + productId);
         System.out.println("name " + productName);
         System.out.println("description " + discription);
@@ -230,18 +229,19 @@ public class AdminUpdateProductServlet extends HttpServlet {
         System.out.println("suplier " + Suppliers);
         System.out.println("warranty " + warranty);
         System.out.println("quantity " + quantity);
+        ProductDAO proDAO = new ProductDAO();
+        Product product = proDAO.getProductByID(productId);
 //        <====================================== Xử lý ảnh ===========================================>
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
 // ⚡ Khai báo map chứa 4 ảnh (1 chính, 3 phụ)
         Map<String, String> imageUrlMap = new LinkedHashMap<>();
-        imageUrlMap.put("fileMain", request.getParameter("previewImageMain"));
-        imageUrlMap.put("fileSub1", null);
-        imageUrlMap.put("fileSub2", null);
-        imageUrlMap.put("fileSub3", null);
+        imageUrlMap.put("fileMain", product.getImageUrl1());
+        imageUrlMap.put("file1", product.getImageUrl2());
+        imageUrlMap.put("file2", product.getImageUrl3());
+        imageUrlMap.put("file3", product.getImageUrl4());
 
-// tạo danh sách future
         Map<String, CompletableFuture<String>> futures = new LinkedHashMap<>();
 
         for (String key : imageUrlMap.keySet()) {
@@ -250,7 +250,6 @@ public class AdminUpdateProductServlet extends HttpServlet {
             if (part != null && part.getSize() > 0) {
                 futures.put(key, CompletableFuture.supplyAsync(() -> {
                     try ( InputStream is = part.getInputStream();  ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-
                         byte[] data = new byte[1024];
                         int bytesRead;
                         while ((bytesRead = is.read(data)) != -1) {
@@ -264,28 +263,29 @@ public class AdminUpdateProductServlet extends HttpServlet {
                         return (String) uploadResult.get("secure_url");
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png";
+                        return null; // để sau xử lý
                     }
                 }));
-            } else {
-                // nếu ko có file thì set mặc định ngay
-                imageUrlMap.put(key, "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
             }
         }
 
-// đợi tất cả upload xong
         for (String key : futures.keySet()) {
             try {
-                String url = futures.get(key).get(); // lấy kết quả upload
-                imageUrlMap.put(key, url != null ? url
-                        : "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
-            } catch (InterruptedException | ExecutionException e) {
+                String url = futures.get(key).get();
+                if (url != null) {
+                    imageUrlMap.put(key, url); // update link mới
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
-                imageUrlMap.put(key, "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
             }
         }
+        imageUrlMap.replaceAll((key, oldUrl)
+                -> (oldUrl == null || oldUrl.isEmpty())
+                ? "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png"
+                : oldUrl);
+
         //        <====================================== Xử lý ảnh ===========================================>
-        boolean res = proDAO.updateProduct(productId, productName, discription, price, Suppliers, Category, Brand, warranty, quantity, imageUrlMap.get("fileMain"), imageUrlMap.get("fileSub1"), imageUrlMap.get("fileSub2"), imageUrlMap.get("fileSub3"));
+        boolean res = proDAO.updateProduct(productId, productName, discription, price, Suppliers, Category, Brand, warranty, quantity, imageUrlMap.get("fileMain"), imageUrlMap.get("file1"), imageUrlMap.get("file2"), imageUrlMap.get("file3"));
 
         //        <====================================== Xử lý thông tin ===========================================>
         List<ProductDetail> productDetailList = proDAO.getProductDetailByProductId(productId);
@@ -297,15 +297,15 @@ public class AdminUpdateProductServlet extends HttpServlet {
 
             if (value != null && !value.trim().isEmpty()) {
                 proDetail.setAttributeValue(value.trim());
-
+                System.out.println("values " + value);
                 // Cập nhật lại DB
-                res = proDAO.updateProductDetail(productId, value);
+                res = proDAO.updateProductDetail(proDetail.getProductDetailID(), value);
             }
 
         }
 
         if (res) {
-            response.sendRedirect("AdminUpdateProduct?productId=" + productId + "&success=1");
+            response.sendRedirect("AdminProduct?updatesuccess=1");
         } else {
             response.sendRedirect("AdminUpdateProduct?productId=" + productId + "&error=1");
         }

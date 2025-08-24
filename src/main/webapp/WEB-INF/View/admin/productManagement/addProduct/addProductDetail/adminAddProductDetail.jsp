@@ -28,7 +28,6 @@
                 </div>
                 <div style="text-align: right; width: 67%; border: 0.5px solid gray; padding: 1.5%; border-top: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
                     <button class = "btn-success"type="submit">Create</button>
-                    <a style = "text-decoration: none;"href="DeleteProductWhenCancel?productId=<%=product.getProductID()%>" class="btn-back">Cancel</a>
                 </div>
 
             </form>

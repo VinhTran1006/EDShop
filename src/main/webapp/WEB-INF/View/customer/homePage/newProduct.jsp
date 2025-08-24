@@ -140,7 +140,6 @@
                                     <img style="width: 98%" src="<%= pro.getImageUrl1()%>" alt="anhDienThoai" class="anhDienThoaiDocQuyen">
                                 </div>
                                 <div class="divTraGop">
-                                    <p class="traGop">Trả góp 0%</p>
                                 </div>
                                 <p class="productName"><%= pro.getProductName()%></p>
                                 <p class="giaMoi"><%= giaCuFormatted%> đ</p>

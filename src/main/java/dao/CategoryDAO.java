@@ -224,6 +224,6 @@ public class CategoryDAO extends DBContext {
 //        for (Attribute s : r) {
 //            System.out.println(s.toString());
 //        }
-    dao.updateCategory(23,"bbbbbbb","bbbbbbbbb");
+    dao.deleteAttribute(1);
     }
 }

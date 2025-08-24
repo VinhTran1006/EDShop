@@ -17,7 +17,6 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
     <body>
-         <jsp:include page="/WEB-INF/View/admin/categoryManagement/deleteCategory/deleteAttribute.jsp" />
         <form method="post" action="UpdateCategory">
             <!-- Truyền categoryId ẩn -->
             <input type="hidden" name="categoryId" value="<%= category.getCategoryId()%>">
@@ -69,7 +68,12 @@
                            name="attributeName"
                            value="<%= a.getAtrributeName()%>"
                            class="group-name-input" required/>
-                  <button type="button" class="btn btn-danger" onclick="confirmDelete(<%= a.getAttributeID()%>, <%= category.getCategoryId()%>)">Delete</button>
+                    <a href="<%= request.getContextPath()%>/DeleteAttribute?attributeID=<%= a.getAttributeID()%>&categoryID=<%= category.getCategoryId()%>" 
+                       class="btn btn-danger">Delete</a>
+
+
+
+
                 </div>
                 <%
                         groupIndex++;
@@ -90,6 +94,9 @@
             <a style = "margin-left: 81%;" href="CategoryView" class="btn btn-secondary" id="back"><i class="bi bi-arrow-return-left"></i> Back</a>
             <button type="submit" class="btn btn-primary" id="submit">
                 <i class="fas fa-edit"></i> Save
+            </button>
+            <button type="submit" class="btn btn-primary" id="submit">
+                <i class="fas fa-edit"></i> Add Attribute
             </button>
 
             <%
@@ -130,8 +137,8 @@
         });
     <% }%>
     };
-    
-     window.onload = function () {
+
+    window.onload = function () {
     <% if ("1".equals(success)) { %>
         Swal.fire({
             icon: 'success',
@@ -148,6 +155,23 @@
         });
     <% }%>
     };
+
+    function confirmDelete(attributeID, categoryId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This category will be hidden from view.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '<%= request.getContextPath()%>/DeleteAttribute?attributeID=' + attributeID + '&categoryID=' + categoryId;
+            }
+        });
+    }
 </script>
 
 
