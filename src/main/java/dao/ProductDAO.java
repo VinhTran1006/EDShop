@@ -330,7 +330,9 @@ public class ProductDAO extends DBContext {
 
     public List<ProductDetail> getProductDetailByProductId(int productId) {
         List<ProductDetail> productDetailList = new ArrayList<>();
+
         String sql = "SELECT * FROM ProductDetails p WHERE p.ProductID = ? AND IsActive != 0";
+
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, productId);
@@ -720,6 +722,20 @@ public class ProductDAO extends DBContext {
         return productDetail;
     }
 
+    public boolean updateProductQuantity(int productId, int quantityChange) {
+        String sql = "UPDATE Products SET quantity = quantity + ? WHERE productID = ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, quantityChange); // Use negative value to decrease
+            ps.setInt(2, productId);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     // Nguyễn Thế Vinh
       public void increaseStock(int productID, int quantity) {
@@ -741,14 +757,5 @@ public class ProductDAO extends DBContext {
             System.out.println(s.toString());
         }
     }
-
-}
-
-    public static void main(String[] args) {
-
-        List<Product> r = new ArrayList<>();
-        ProductDAO dao = new ProductDAO();
-        dao.updateProductDetail(1, "something");
-    }
-
+  
 }

@@ -1,6 +1,6 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this templatea
  */
 package dao;
 
@@ -148,8 +148,7 @@ public class VoucherDAO extends DBContext {
         return v;
     }
 
-
-     public Voucher getVoucherByCode(String code) {
+    public Voucher getVoucherByCode(String code) {
         String sql = "SELECT * FROM Vouchers WHERE Code = ? AND IsActive = 1 AND ExpiryDate >= GETDATE()";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, code);
@@ -186,4 +185,82 @@ public class VoucherDAO extends DBContext {
         }
     }
 
+    public List<Voucher> getAvailableVouchersForCustomer(int customerId) {
+        List<Voucher> vouchers = new ArrayList<>();
+        String sql = "SELECT v.* FROM Vouchers v "
+                + "JOIN CustomerVouchers cv ON v.voucherID = cv.voucherID "
+                + "WHERE cv.customerID = ? AND v.isActive = 1 AND v.expiryDate > GETDATE() "
+                + "AND v.usedCount < v.usageLimit";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, customerId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Voucher voucher = mapResultSetToVoucher(rs);
+                vouchers.add(voucher);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return vouchers;
+    }
+
+    public Voucher validateVoucherForCustomer(String code, int customerId, long orderAmount) {
+        String sql = "SELECT v.* FROM Vouchers v "
+                + "JOIN CustomerVouchers cv ON v.voucherID = cv.voucherID "
+                + "WHERE v.code = ? AND cv.customerID = ? AND v.isActive = 1 "
+                + "AND v.expiryDate > GETDATE() AND v.usedCount < v.usageLimit "
+                + "AND v.minOrderAmount <= ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, code);
+            ps.setInt(2, customerId);
+            ps.setDouble(3, orderAmount);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return mapResultSetToVoucher(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public boolean incrementVoucherUsage(int voucherId) {
+        String sql = "UPDATE Vouchers SET usedCount = usedCount + 1 WHERE voucherID = ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, voucherId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    // Validate voucher cho khách hàng (kiểm tra tất cả điều kiện)
+    public Voucher validateVoucherForOrder(String code, int customerId, double orderAmount) {
+        String sql = "SELECT * FROM Vouchers WHERE Code = ? AND IsActive = 1 AND ExpiryDate >= GETDATE() "
+                + "AND MinOrderAmount <= ? AND UsedCount < UsageLimit";
+        
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, code);
+            ps.setDouble(2, orderAmount);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToVoucher(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

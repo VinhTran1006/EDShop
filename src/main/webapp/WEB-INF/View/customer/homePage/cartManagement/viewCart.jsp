@@ -285,7 +285,6 @@
             }
         </style>
     </head>
-    <%-- Phần đầu JSP giữ nguyên --%>
     <body>
         <jsp:include page="/WEB-INF/View/customer/homePage/header.jsp" />
         <div class="container">
@@ -401,11 +400,9 @@
                         <span id="cartTotal" style="font-weight: bold; font-size: 1.2em;">0 VND</span>
                     </div>
                     <div class="text-end mt-4">
-                        <form id="checkoutForm" action="${pageContext.request.contextPath}/CreateOrderServlet" method="get">
-                            <input type="hidden" name="selectedCartItemIds" id="selectedCartItemIds">
-                            <button type="submit" class="btn btn-success me-3">Proceed to Checkout</button>
-                            <a href="${pageContext.request.contextPath}/Home" class="btn btn-secondary">Continue Shopping</a>
-                        </form>
+                        <!-- Đơn giản hóa form checkout -->
+                        <button type="button" id="checkoutBtn" class="btn btn-success me-3">Create Order</button>
+                        <a href="${pageContext.request.contextPath}/Home" class="btn btn-secondary">Continue Shopping</a>
                     </div>
                 </div>
             </form>
@@ -645,9 +642,8 @@
                     });
 
                     // Handle checkout form submission
-                    $('#checkoutForm').on('submit', function (e) {
-                        e.preventDefault();
-
+                    // Handle checkout form submission
+                    $('#checkoutBtn').on('click', function () {
                         const selectedItems = [];
                         $('.selectItem:checked').each(function () {
                             const cartItemId = $(this).closest('tr').data('cart-item-id');
@@ -659,9 +655,6 @@
                             return false;
                         }
 
-                        // Set selected items to hidden input
-                        $('#selectedCartItemIds').val(selectedItems.join(','));
-
                         // Save selected items to session via AJAX
                         $.ajax({
                             url: 'CartItem',
@@ -672,8 +665,8 @@
                             },
                             success: function (response) {
                                 if (response === 'success') {
-                                    // Submit the form
-                                    $('#checkoutForm')[0].submit();
+                                    // Chuyển hướng trực tiếp đến CreateOrderServlet
+                                    window.location.href = 'CreateOrderServlet';
                                 } else {
                                     alert('Có lỗi xảy ra khi lưu thông tin!');
                                 }
