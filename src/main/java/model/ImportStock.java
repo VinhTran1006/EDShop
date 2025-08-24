@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class ImportStock {
     private int staffID;
     private int supplierID;
     private Timestamp importDate;
-    private long totalAmount;
+    private BigDecimal totalAmount;
 
     // Join
     private String fullName;    // staff name
@@ -27,13 +28,13 @@ public class ImportStock {
     public ImportStock() {
     }
 
-    public ImportStock(int importID, int staffID, int supplierID, Timestamp importDate, long totalAmount) {
-        this.importID = importID;
+    public ImportStock( int staffID, int supplierID,  BigDecimal totalAmount) {
+        
         this.staffID = staffID;
         this.supplierID = supplierID;
-        this.importDate = importDate;
+        this.importDate = new Timestamp(System.currentTimeMillis());
         this.totalAmount = totalAmount;
-        ;
+        
     }
 
     // getters & setters
@@ -69,11 +70,11 @@ public class ImportStock {
         this.importDate = importDate;
     }
 
-    public long getTotalAmount() {
+    public BigDecimal getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(long totalAmount) {
+    public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
     }
 

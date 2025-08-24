@@ -184,7 +184,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>${sup.taxId}</td>
+                                    <td>${sup.taxID}</td>
                                     <td>${sup.name}</td>
                                     <td>${sup.email}</td>
                                     <td>${sup.phoneNumber}</td>
@@ -193,6 +193,9 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Selected Products -->
+
 
                     <!-- Selected Products -->
                     <div class="table-container mb-4" style="max-width: 1150px; margin: 0 auto;">
@@ -212,35 +215,35 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:set var="sum" value="0" />
+                                <c:set var="sum" value="0" scope="page" />
                                 <c:forEach items="${sessionScope.selectedProducts}" var="d">
+                                    <c:set var="lineTotal" value="${d.stock * d.unitPrice}" scope="page"/>
+                                    <c:set var="sum" value="${sum + lineTotal}" scope="page"/>
                                     <tr>
-                                        <td>${d.getProduct().getProductId()}</td>
-                                        <td>${d.getProduct().getProductName()}</td>
-                                        <td>${d.getQuantity()}</td>
+                                        <td>${d.product.productID}</td>
+                                        <td>${d.product.productName}</td>
+                                        <td>${d.stock}</td>
                                         <td>
                                             <fmt:formatNumber value="${d.unitPrice}" type="number" groupingUsed="true" /> ₫
                                         </td>
                                         <td>
-                                            <fmt:formatNumber value="${d.quantity * d.unitPrice}" type="number" groupingUsed="true" /> ₫
+                                            <fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true" /> ₫
                                         </td>
                                         <td class="text-center">
                                             <button class="btn btn-warning rounded-3 fw-semibold px-3 py-2 me-2 edit-product"
-                                                    data-id="${d.getProduct().getProductId()}"
-                                                    data-name="${d.getProduct().getProductName()}"
-                                                    data-quantity="${d.getQuantity()}"
-                                                    data-price="${d.getUnitPrice()}"
-                                                    data-saleprice="${d.getProduct().getPrice()}">
-                                                <i class= "me-1"></i>Edit
+                                                    data-id="${d.product.productID}"
+                                                    data-name="${d.product.productName}"
+                                                    data-quantity="${d.stock}"
+                                                    data-price="${d.unitPrice}"
+                                                    data-saleprice="${d.product.price}">
+                                                Edit
                                             </button>
                                             <button class="btn btn-danger rounded-3 fw-semibold px-3 py-2 delete-product"
-                                                    data-id="${d.getProduct().getProductId()}">
-                                                <i class="me-1"></i>Delete
+                                                    data-id="${d.product.productID}">
+                                                Delete
                                             </button>
                                         </td>
-
                                     </tr>
-                                    <c:set var="sum" value="${sum + d.getQuantity() * d.getUnitPrice()}" scope="page"/>
                                 </c:forEach>
                                 <tr>
                                     <td colspan="4"></td>
@@ -257,6 +260,9 @@
                             <button type="button" class="back-btn" onclick="cancelImportStock()">Cancel</button>
                         </div>
                     </div>
+
+
+
 
                     <!-- Modal: Select Supplier -->
                     <div class="modal fade" id="createImportStock" tabindex="-1" aria-labelledby="createImportStockLabel" aria-hidden="true">
@@ -282,7 +288,7 @@
                                             <tbody>
                                                 <c:forEach items="${sessionScope.suppliers}" var="s">
                                                     <tr>
-                                                        <td>${s.getTaxId()}</td>
+                                                        <td>${s.getTaxID()}</td>
                                                         <td>${s.getName()}</td>
                                                         <td>${s.getEmail()}</td>
                                                         <td>${s.getPhoneNumber()}</td>
@@ -330,16 +336,16 @@
                                             <tbody>
                                                 <c:forEach items="${sessionScope.products}" var="p">
                                                     <tr>
-                                                        <td>${p.getProductId()}</td>
+                                                        <td>${p.getProductID()}</td>
                                                         <td>${p.getProductName()}</td>
                                                         <td>
-                                                            <input type="number" class="form-control product-quantity" data-id="${p.getProductId()}" min="1" placeholder="Enter quantity">
+                                                            <input type="number" class="form-control product-quantity" data-id="${p.getProductID()}" min="1" placeholder="Enter quantity">
                                                         </td>
                                                         <td>
-                                                            <input type="number" class="form-control product-price" data-id="${p.getProductId()}"  data-saleprice="${p.getPrice()}" min="1000" step="0.01" placeholder="Enter price">
+                                                            <input type="number" class="form-control product-price" data-id="${p.getProductID()}"  data-saleprice="${p.getPrice()}" min="1000" step="0.01" placeholder="Enter price">
                                                         </td>
                                                         <td>
-                                                            <button class="btn btn-primary select-product" data-id="${p.getProductId()}">Select</button>
+                                                            <button class="btn btn-primary select-product" data-id="${p.getProductID()}">Select</button>
                                                         </td>
                                                     </tr>
                                                 </c:forEach>
@@ -558,10 +564,10 @@
                                                     let filter = this.value.toLowerCase();
                                                     let rows = document.querySelectorAll("#supplierListTable tbody tr");
                                                     rows.forEach(row => {
-                                                        let taxId = row.cells[0].textContent.toLowerCase();
+                                                        let taxID = row.cells[0].textContent.toLowerCase();
                                                         let companyName = row.cells[1].textContent.toLowerCase();
                                                         let email = row.cells[2].textContent.toLowerCase();
-                                                        if (taxId.includes(filter) || companyName.includes(filter) || email.includes(filter)) {
+                                                        if (taxID.includes(filter) || companyName.includes(filter) || email.includes(filter)) {
                                                             row.style.display = "";
                                                         } else {
                                                             row.style.display = "none";

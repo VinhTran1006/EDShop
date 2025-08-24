@@ -3,9 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controller;
-
 import dao.ImportStockDAO;
-import dao.InventoryStatisticDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -92,50 +90,51 @@ public class ImportStatisticServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             String keyword = request.getParameter("search");
-            InventoryStatisticDAO invDao = new InventoryStatisticDAO();
+//            InventoryStatisticDAO invDao = new InventoryStatisticDAO();
             ImportStockDAO dao = new ImportStockDAO();
 
-            ArrayList<InventoryStatistic> inventoryList;
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                inventoryList = invDao.searchInventory(keyword);
-            } else {
-                inventoryList = invDao.getAllProductStock();
-            }
-
-            Map<String, Integer> dailyImport = dao.getImportStocksCountByDate();
-            Map<String, Integer> monthlyImport = dao.getImportStocksCountByMonth();
-            Map<String, Integer> supplierImport = dao.getStocksBySupplier();
-            Map<String, Integer> topProductImport = dao.getTopImportedProducts();
+            
+//            ArrayList<InventoryStatistic> inventoryList;
+//            if (keyword != null && !keyword.trim().isEmpty()) {
+//                inventoryList = invDao.searchInventory(keyword);
+//            } else {
+//                inventoryList = invDao.getAllProductStock();
+//            }
+//
+//            Map<String, Integer> dailyImport = dao.getImportStocksCountByDate();
+//            Map<String, Integer> monthlyImport = dao.getImportStocksCountByMonth();
+//            Map<String, Integer> supplierImport = dao.getStocksBySupplier();
+//            Map<String, Integer> topProductImport = dao.getTopImportedProducts();
 
             Map<String, Integer> top5ProductImportShort = new LinkedHashMap<>();
             Map<String, String> top5ProductImportFull = new LinkedHashMap<>();
             int count = 0;
-            for (Map.Entry<String, Integer> entry : topProductImport.entrySet()) {
-                if (count >= 5) {
-                    break;
-                }
-                String fullName = entry.getKey();
-                String shortName = fullName;
-                if (shortName.length() > 20) {
-                    shortName = shortName.substring(0, 20) + "...";
-                }
-                int idx = 2;
-                String check = shortName;
-                while (top5ProductImportShort.containsKey(check)) {
-                    check = shortName + " #" + idx++;
-                }
-                shortName = check;
+//            for (Map.Entry<String, Integer> entry : topProductImport.entrySet()) {
+//                if (count >= 5) {
+//                    break;
+//                }
+//                String fullName = entry.getKey();
+//                String shortName = fullName;
+//                if (shortName.length() > 20) {
+//                    shortName = shortName.substring(0, 20) + "...";
+//                }
+//                int idx = 2;
+//                String check = shortName;
+//                while (top5ProductImportShort.containsKey(check)) {
+//                    check = shortName + " #" + idx++;
+//                }
+//                shortName = check;
+//
+//                top5ProductImportShort.put(shortName, entry.getValue());
+//                top5ProductImportFull.put(shortName, fullName);
+//                count++;
+//            }
 
-                top5ProductImportShort.put(shortName, entry.getValue());
-                top5ProductImportFull.put(shortName, fullName);
-                count++;
-            }
-
-            Map<String, Integer> top5SupplierImport = getTop5ShortName(supplierImport);
-            request.setAttribute("inventoryList", inventoryList);
-            request.setAttribute("dailyImport", dailyImport);
-            request.setAttribute("monthlyImport", monthlyImport);
-            request.setAttribute("supplierImport", top5SupplierImport);
+//            Map<String, Integer> top5SupplierImport = getTop5ShortName(supplierImport);
+//            request.setAttribute("inventoryList", inventoryList);
+//            request.setAttribute("dailyImport", dailyImport);
+//            request.setAttribute("monthlyImport", monthlyImport);
+//            request.setAttribute("supplierImport", top5SupplierImport);
             request.setAttribute("topProductImportShort", top5ProductImportShort);
             request.setAttribute("topProductImportFull", top5ProductImportFull);
 
