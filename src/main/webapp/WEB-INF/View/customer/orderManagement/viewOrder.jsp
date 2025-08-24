@@ -48,23 +48,23 @@
                 font-weight: 600;
             }
 
-            .status-1 {
+            .status-Waiting {
                 background-color: #f59e0b;
                 color: #fff;
             }
-            .status-2 {
+            .status-Packing {
                 background-color: #0d6efd;
                 color: #fff;
             }
-            .status-3 {
+            .status-Waiting for Delivery {
                 background-color: #6366f1;
                 color: #fff;
             }
-            .status-4 {
+            .status-Delivered {
                 background-color: #22c55e;
                 color: #fff;
             }
-            .status-5 {
+            .status-Cancelled {
                 background-color: #ef4444;
                 color: #fff;
             }
@@ -131,10 +131,10 @@
 
                                         <span class="badge status-${order.status}">
                                             <c:choose>
-                                                <c:when test="${order.status == 1}">Waiting</c:when>
-                                                <c:when test="${order.status == 2}">Packaging</c:when>
-                                                <c:when test="${order.status == 3}">Waiting for Delivery</c:when>
-                                                <c:when test="${order.status == 4}">Delivered</c:when>
+                                                <c:when test="${order.status eq 'Waiting'}">Waiting</c:when>
+                                                <c:when test="${order.status eq 'Packing'}">Packing</c:when>
+                                                <c:when test="${order.status eq 'Waiting for Delivery'}">Waiting for Delivery</c:when>
+                                                <c:when test="${order.status eq 'Delivered'}">Delivered</c:when>
                                                 <c:otherwise>Cancelled</c:otherwise>
                                             </c:choose>
                                         </span>
@@ -147,7 +147,7 @@
                                         </tr>
                                         <tr>
                                             <th scope="row"><i class="bi bi-clock-history me-2"></i>Last Updated:</th>
-                                            <td>${order.updatedDate}</td>
+                                            <td>${order.updatedAt}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><i class="bi bi-cash-stack me-2"></i>Total Amount:</th>
@@ -155,7 +155,7 @@
                                         </tr>
                                         <tr>
                                             <th scope="row"><i class="bi bi-person-lines-fill me-2"></i>Recipient:</th>
-                                            <td>${order.fullName} - ${order.phone}</td>
+                                            <td>${order.customer.fullName} - ${order.customer.phoneNumber}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><i class="bi bi-geo-alt-fill me-2"></i>Address:</th>
@@ -166,7 +166,7 @@
                                         <a href="CustomerOrderDetail?orderID=${order.orderID}" class="btn-update">
                                             <i class="bi bi-eye me-1"></i> View Detail
                                         </a>
-                                        <c:if test="${order.status == 1 || order.status == 2}">
+                                        <c:if test="${order.status eq 'Waiting' || order.status eq 'Packing'}">
                                             <form action="CancelOrder" method="POST" class="d-inline-block cancel-form">
                                                 <input type="hidden" name="orderID" value="${order.orderID}" />
                                                 <button type="button" class="btn-cancel cancel-btn">

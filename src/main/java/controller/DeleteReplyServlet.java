@@ -4,9 +4,9 @@
  */
 package controller;
 
-import dao.ProductRatingDAO;
-import dao.RatingRepliesDAO;
-import model.RatingReplies;
+import dao.ProductFeedbackDAO;
+
+import model.ProductFeedback;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -73,25 +73,34 @@ public class DeleteReplyServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/plain"); // ✅ Ghi plain text
-        String replyID = request.getParameter("replyID");
+        
+        response.setContentType("text/plain;charset=UTF-8"); // JS sẽ nhận plain text
+        
+        String feedbackID_raw = request.getParameter("feedbackID"); // từ JS gửi lên
+        System.out.println("DeleteReplyServlet received feedbackID = " + feedbackID_raw);
 
         try {
-            int id = Integer.parseInt(replyID);
-            ProductRatingDAO prDAO = new ProductRatingDAO();
-            RatingRepliesDAO rrDAO = new RatingRepliesDAO();
-            RatingReplies r = rrDAO.getReplyByRepyID(id);
-            prDAO.markReplyAsUnRead(id);
-            boolean isdelete = rrDAO.DeleteRatingReply(id);
+            int feedbackID = Integer.parseInt(feedbackID_raw);
 
-            if (isdelete) {
-                response.getWriter().write("Success"); // ✅ JavaScript sẽ kiểm tra cái này
+            ProductFeedbackDAO pfDAO = new ProductFeedbackDAO();
+            ProductFeedback fb = pfDAO.getReplyByFeedbackID(feedbackID);
+
+            if (fb == null) {
+                response.getWriter().write("Failed"); // Không tìm thấy feedback
+                return;
+            }
+
+            // Gọi hàm delete/update trong DAO (xóa reply hoặc set reply = null)
+            boolean deleted = pfDAO.DeleteReply(feedbackID);
+
+            if (deleted) {
+                response.getWriter().write("Success");
             } else {
                 response.getWriter().write("Failed");
             }
 
         } catch (Exception e) {
-            e.printStackTrace();  // ✅ Log ra console
+            e.printStackTrace();
             response.getWriter().write("Error: " + e.getMessage());
         }
     }

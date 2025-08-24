@@ -688,7 +688,17 @@ public class ProductDAO extends DBContext {
         }
         return productDetail;
     }
-    
+    // Nguyễn Thế Vinh
+      public void increaseStock(int productID, int quantity) {
+    String sql = "UPDATE Products SET Quantity = Quantity + ? WHERE ProductID = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, quantity);
+        ps.setInt(2, productID);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
 }
 
 

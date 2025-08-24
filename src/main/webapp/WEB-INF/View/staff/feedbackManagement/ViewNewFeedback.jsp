@@ -140,6 +140,24 @@
                 background-color: #0d6efd;
                 border: none;
             }
+            /* Feedback hiển thị bình thường */
+            .review-card p {
+                color: #111827;            /* chữ đen đậm */
+                font-size: 16px;
+                line-height: 1.6;
+                background-color: #f9fafb; /* nền sáng */
+                padding: 10px 14px;
+                border-radius: 8px;
+                margin-bottom: 8px;
+            }
+
+            /* Feedback bị ẩn */
+            .hidden-feedback {
+                color: #9ca3af;       /* xám nhạt */
+                font-style: italic;
+                background-color: transparent; /* không nền */
+                padding: 0;
+            }
 
             .btn-primary:hover {
                 background-color: #0b5ed7;
@@ -197,7 +215,11 @@
                             <fmt:formatNumber value="${Product.price}" type="number" groupingUsed="true" />đ
                         </h3>
 
-                        <p class="text-muted">Reviewed by: <strong>${cus.fullName}</strong></p>
+                        <p class="text-muted">
+                            Reviewed by: <strong>${cus.fullName}</strong> 
+                            on <fmt:formatDate value="${rate.createdDate}" pattern="dd/MM/yyyy HH:mm"/>
+                        </p>
+
 
                         <!-- Stars -->
                         <div class="star-rating">
@@ -214,18 +236,20 @@
                         </div>
 
                         <!-- Customer Comment -->
+                        <!-- Customer Comment -->
                         <p id="comment-${rate.feedbackID}" data-original="${rate.comment}" 
-                           class="${rate.isActive ? 'hidden-feedback' : ''}">
-                            ${rate.isActive ? "This feedback was hidden for some reason." : rate.comment}
+                           class="${rate.isActive ? '' : 'hidden-feedback'}">
+                            ${rate.isActive ? rate.comment : "This feedback was hidden for some reason."}
                         </p>
 
-                        <!-- Toggle -->
+                        <!-- Toggle button -->
                         <button id="toggle-btn-${rate.feedbackID}" 
                                 class="btn btn-toggle ${rate.isActive ? 'btn-warning' : 'btn-success'} btn-sm"
                                 onclick="toggleVisibility(${rate.feedbackID}, ${rate.isActive ? 1 : 0})">
-                            <i class="fa ${rate.isActive ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                            ${rate.isActive ? "Show" : "Hidden"}
+                            <i class="fa ${rate.isActive ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                            ${rate.isActive ? "Hide" : "Show"}
                         </button>
+
                         <c:if test="${empty rate.reply}">
                             <button class="reply-btn btn btn-primary btn-sm mt-2"
                                     onclick="toggleReplyForm(${rate.feedbackID})">
@@ -247,6 +271,7 @@
                                     <i class="fa fa-edit"></i> Update
                                 </button>
 
+
                                 <button class="delete-btn btn btn-danger btn-sm" 
                                         onclick="openDeleteModal(${rate.feedbackID})">
                                     <i class="bi bi-trash"></i> Delete
@@ -257,7 +282,7 @@
                         <!-- Reply Form -->
                         <div id="replyForm-${rate.feedbackID}" class="reply-form mt-2">
                             <form method="POST" action="ReplyFeedback">
-                                <input type="hidden" name="rateID" value="${rate.feedbackID}">
+                                <input type="hidden" name="feedbackID" value="${rate.feedbackID}">
                                 <textarea required="true" name="Answer" class="form-control" placeholder="Write your reply..."></textarea>
                                 <button type="submit" class="btn btn-primary btn-sm mt-2">Submit Reply</button>
                             </form>
@@ -295,8 +320,8 @@
 
 
                 // Hàm xử lý khi submit trả lời
-                function submitReply(rateID) {
-                    let replyText = document.querySelector("#replyForm-" + rateID + " textarea").value;
+                function submitReply(feedbackID) {
+                    let replyText = document.querySelector("#replyForm-" + feedbackID + " textarea").value;
                     let xhr = new XMLHttpRequest();
                     xhr.open("POST", "ReplyFeedbackServlet", true);
                     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -311,17 +336,18 @@
                             }
                         }
                     };
-                    xhr.send("rateID=" + rateID + "&Answer=" + encodeURIComponent(replyText));
+                    xhr.send("feedbackID=" + feedbackID + "&Answer=" + encodeURIComponent(replyText));
                 }
 
 
 
-                function toggleReplyForm(rateID) {
-                    let form = document.getElementById("replyForm-" + rateID);
+                function toggleReplyForm(feedbackID) {
+                    let form = document.getElementById("replyForm-" + feedbackID);
                     form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
                 }
 
-                function toggleVisibility(rateID, currentStatus) {
+                function toggleVisibility(feedbackID, currentStatus) {
+                    // 1 = Show, 0 = Hide
                     let newStatus = currentStatus === 1 ? 0 : 1;
 
                     let xhr = new XMLHttpRequest();
@@ -330,39 +356,36 @@
 
                     xhr.onreadystatechange = function () {
                         if (xhr.readyState === 4 && xhr.status === 200) {
-                            let btn = document.getElementById("toggle-btn-" + rateID);
-                            let comment = document.getElementById("comment-" + rateID);
+                            let btn = document.getElementById("toggle-btn-" + feedbackID);
+                            let comment = document.getElementById("comment-" + feedbackID);
 
-                            if (newStatus === 1) {
-                                btn.innerHTML = '<i class="fa fa-eye"></i> Show';
+                            if (newStatus === 1) { // chuyển sang Show
+                                comment.innerHTML = comment.getAttribute("data-original");
+                                comment.classList.remove("hidden-feedback");
+
+                                btn.innerHTML = '<i class="fa fa-eye-slash"></i> Hide';
                                 btn.classList.remove("btn-success");
                                 btn.classList.add("btn-warning");
-
+                            } else { // chuyển sang Hide
                                 comment.setAttribute("data-original", comment.innerHTML);
                                 comment.innerHTML = "This feedback was hidden for some reason.";
                                 comment.classList.add("hidden-feedback");
-                            } else {
-                                btn.innerHTML = '<i class="fa fa-eye-slash"></i> Hidden';
+
+                                btn.innerHTML = '<i class="fa fa-eye"></i> Show';
                                 btn.classList.remove("btn-warning");
                                 btn.classList.add("btn-success");
-
-                                let originalContent = comment.getAttribute("data-original");
-                                if (originalContent) {
-                                    comment.innerHTML = originalContent;
-                                }
-                                comment.classList.remove("hidden-feedback");
                             }
 
-                            btn.setAttribute("onclick", "toggleVisibility(" + rateID + ", " + newStatus + ")");
-                        } else {
-                            console.error("error form server:", xhr.status, xhr.responseText);
+                            // Cập nhật onclick mới với giá trị thực
+                            btn.setAttribute("onclick", "toggleVisibility(" + feedbackID + ", " + newStatus + ")");
                         }
                     };
 
-                    xhr.send("rateID=" + rateID + "&isDeleted=" + newStatus);
+                    xhr.send("feedbackID=" + feedbackID + "&isActive=" + newStatus);
                 }
 
-                function openDeleteModal(replyID) {
+
+                function openDeleteModal(feedbackID) {
                     Swal.fire({
                         title: 'Are you sure?',
                         text: "You won't be able to revert this reply!",
@@ -400,16 +423,16 @@
                                 }
                             };
 
-                            xhr.send("replyID=" + replyID);
+                            xhr.send("feedbackID=" + feedbackID);
                         }
                     });
                 }
-                function openUpdateModal(replyID, currentText, rateID) {
-                    if (!replyID) {
+                function openUpdateModal(feedbackID, currentText) {
+                    if (!feedbackID) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Invalid reply ID'
+                            text: 'Invalid feedback ID'
                         });
                         return;
                     }
@@ -434,7 +457,6 @@
                             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                             xhr.onreadystatechange = function () {
                                 if (xhr.readyState === 4) {
-                                    console.log("UpdateReply response:", xhr.responseText, "Status:", xhr.status);
                                     if (xhr.status === 200 && xhr.responseText.trim() === "Success") {
                                         Swal.fire({
                                             icon: 'success',
@@ -454,12 +476,14 @@
                                     }
                                 }
                             };
-                            xhr.send("replyID=" + encodeURIComponent(replyID) + "&answer=" + encodeURIComponent(updatedText));
+                            xhr.send("feedbackID=" + encodeURIComponent(feedbackID)
+                                    + "&answer=" + encodeURIComponent(updatedText));
                         }
                     });
                 }
+
                 <% String success = request.getParameter("success");
-                    String rateID = request.getParameter("rateID"); // lấy từ URL
+                    String feedbackID = request.getParameter("feedbackID"); // lấy từ URL
                 %>
                 window.onload = function () {
                 <% if ("success".equals(success)) {%>
@@ -469,7 +493,7 @@
                         text: 'Your reply was sent successfully.',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        window.location.href = '/TMobile/ViewFeedBackForStaff?rateID=<%=rateID%>';
+                        window.location.href = '/TMobile/ViewFeedBackForStaff?feedbackID=<%=feedbackID%>';
                     });
                 <% } else if ("failed".equals(success)) { %>
                     Swal.fire({
@@ -487,7 +511,7 @@
                         text: 'Something went wrong while processing your reply.',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        window.location.href = '/TMobile/ViewFeedBackForStaff?rateID=<%=rateID%>';
+                        window.location.href = '/TMobile/ViewFeedBackForStaff?feedbackID=<%=feedbackID%>';
                     });
                 <% } else if ("nostaff".equals(success)) {%>
                     Swal.fire({
@@ -496,7 +520,7 @@
                         text: 'Staff ID not found for this account.',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        window.location.href = '/TMobile/ViewFeedBackForStaff?rateID=<%=rateID%>';
+                        window.location.href = '/TMobile/ViewFeedBackForStaff?feedbackID=<%=feedbackID%>';
                     });
                 <% }%>
                 };

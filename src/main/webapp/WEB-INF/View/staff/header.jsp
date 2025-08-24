@@ -3,12 +3,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%
-   // Staff staff = (Staff) session.getAttribute("staff");
-   // if (staff == null) {
-       // response.sendRedirect("LoginStaff");
-      //  return;
-   // }
-%>
+    Staff staff = (Staff) session.getAttribute("staff");
+   if (staff == null) {
+       response.sendRedirect("LoginStaff");
+       return;
+   } 
+%>     
 
 <style>
     .header-container {
@@ -188,7 +188,7 @@ main.main-content {
             </div>
             <div class="user-details">
                 <h5>${staff.fullName}</h5>
-                <small>${staff.position}</small>
+                <small>${staff.role}</small>
             </div>
         </div>
         

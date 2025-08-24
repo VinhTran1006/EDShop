@@ -4,8 +4,8 @@
  */
 package controller;
 
-import dao.RatingRepliesDAO;
-import model.RatingReplies;
+import dao.ProductFeedbackDAO;
+import model.ProductFeedback;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -25,15 +25,15 @@ public class UpdateReplyServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        RatingRepliesDAO rrDAO = new RatingRepliesDAO();
+        ProductFeedbackDAO rrDAO = new ProductFeedbackDAO();
         String answerUpdate = request.getParameter("answer");
-        String replyID_raw = request.getParameter("replyID");
+        String replyID_raw = request.getParameter("feedbackID");
         System.out.println("UpdateReplyServlet received: replyID = " + replyID_raw + ", answer = " + answerUpdate);
 
         try {
             int replyID = Integer.parseInt(replyID_raw);        
             if (replyID > 0 && answerUpdate != null && !answerUpdate.trim().isEmpty()) {
-                RatingReplies reply = rrDAO.getReplyByRepyID(replyID);
+                ProductFeedback reply = rrDAO.getReplyByFeedbackID(replyID);
                 if (reply == null) {
                     System.out.println("Reply not found for ID = " + replyID);
                     response.getWriter().write("Failed");
