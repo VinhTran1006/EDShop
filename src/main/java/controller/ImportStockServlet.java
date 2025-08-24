@@ -12,9 +12,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import model.ImportStock;
 import model.ImportStockDetail;
@@ -56,7 +57,6 @@ public class ImportStockServlet extends HttpServlet {
         }
     }
 
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -85,19 +85,22 @@ public class ImportStockServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession();
 
-        ArrayList<ImportStockDetail> detailList = (ArrayList<ImportStockDetail>) session.getAttribute("selectedProducts");
+        // --- Lấy session ---
+        List<ImportStockDetail> detailList = (List<ImportStockDetail>) session.getAttribute("selectedProducts");
         if (detailList == null) {
             detailList = new ArrayList<>();
         }
 
-        ArrayList<Product> products = (ArrayList<Product>) session.getAttribute("products");
+        List<Product> products = (List<Product>) session.getAttribute("products");
         if (products == null) {
-            products = (ArrayList<Product>) productDAO.getProductListAdmin();
+            products = productDAO.getProductListAdmin();
             session.setAttribute("products", products);
         }
 
+        // --- Chọn supplier ---
         String supplierIdRaw = request.getParameter("supplierId");
         if (supplierIdRaw != null && !supplierIdRaw.trim().isEmpty()) {
             try {
@@ -105,9 +108,7 @@ public class ImportStockServlet extends HttpServlet {
                 Suppliers supplier = supplierDAO.getSupplierById(supplierId);
                 session.setAttribute("supplier", supplier);
 
-                ArrayList<Product> allProducts = (ArrayList<Product>) productDAO.getProductListAdmin();
-                session.setAttribute("products", allProducts);
-
+                session.setAttribute("products", productDAO.getProductListAdmin());
                 session.setAttribute("selectedProducts", new ArrayList<ImportStockDetail>());
             } catch (NumberFormatException e) {
                 session.setAttribute("error", "Invalid supplier ID.");
@@ -116,6 +117,7 @@ public class ImportStockServlet extends HttpServlet {
             return;
         }
 
+        // --- Thêm sản phẩm ---
         String productIdRaw = request.getParameter("productId");
         String quantityRaw = request.getParameter("importQuantity");
         String priceRaw = request.getParameter("unitPrice");
@@ -125,55 +127,46 @@ public class ImportStockServlet extends HttpServlet {
             try {
                 int productId = Integer.parseInt(productIdRaw.trim());
                 int quantity = Integer.parseInt(quantityRaw.trim());
-                long price = Long.parseLong(priceRaw.trim());
+
+                // --- Parse unitPrice an toàn ---
+                String normalizedPrice = priceRaw.replaceAll("[^\\d.]", "").trim();
+                BigDecimal price = new BigDecimal(normalizedPrice);
 
                 Product product = productDAO.getProductByID(productId);
 
-                if (product.getPrice() != null && product.getPrice().longValue() > 0) {
-                    long maxImportPrice = Math.round(product.getPrice().longValue() * 0.9);
-                    if (price >= maxImportPrice) {
-                        session.setAttribute("error", "Import price must be less than 90% of sale price (" + maxImportPrice + " VND).");
+                // --- Validate import price ≤ 90% sale price ---
+                if (product.getPrice() != null) {
+                    BigDecimal maxImportPrice = product.getPrice().multiply(BigDecimal.valueOf(0.9));
+                    if (price.compareTo(maxImportPrice) >= 0) {
+                        session.setAttribute("error", "Import price must be less than 90% of sale price ("
+                                + maxImportPrice.toPlainString() + " VND).");
                         response.sendRedirect("ImportStock");
                         return;
                     }
                 }
 
-                ImportStockDetail detail = new ImportStockDetail();
-                detail.setProduct(product);
-                detail.setStock(quantity);
-                detail.setUnitPrice(price);
-
-
-                boolean isContained = false;
-                for (ImportStockDetail proDet : detailList) {
-                    if (proDet.getProduct().getProductID()) == productId) {
-                        isContained = true;
-                        break;
-                    }
-                }
+                // --- Kiểm tra trùng ---
+                boolean isContained = detailList.stream().anyMatch(d -> d.getProductID() == productId);
 
                 if (!isContained) {
+                    ImportStockDetail detail = new ImportStockDetail();
+                    detail.setProduct(product);
+                    detail.setProductID(productId);
+                    detail.setStock(quantity);
+                    detail.setStockLeft(quantity);
+                    detail.setUnitPrice(price); // BigDecimal
+
                     detailList.add(detail);
 
-                    int deleteIndex = -1;
-                    for (int i = 0; i < products.size(); ++i) {
-                        if (products.get(i).getProductID() == productId) {
-                            deleteIndex = i;
-                            break;
-                        }
-                    }
-                    if (deleteIndex != -1) {
-                        products.remove(deleteIndex);
-                    }
+                    products.removeIf(p -> p.getProductID() == productId);
+
+                    session.setAttribute("selectedProducts", detailList);
+                    session.setAttribute("products", products);
                 } else {
                     session.setAttribute("error", "Product already selected.");
                 }
 
-                session.setAttribute("selectedProducts", detailList);
-                session.setAttribute("products", products);
-
-                request.setAttribute("suppliers", supplierDAO.getAllSuppliers());
-                request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importStock.jsp").forward(request, response);
+                response.sendRedirect("ImportStock");
                 return;
 
             } catch (NumberFormatException e) {
@@ -183,55 +176,52 @@ public class ImportStockServlet extends HttpServlet {
             }
         }
 
+        // --- Xử lý action delete/save ---
         String action = request.getParameter("action");
         if (action != null) {
             try {
-                int productId = -1;
                 if ("delete".equals(action)) {
-                    productId = Integer.parseInt(request.getParameter("productId"));
-                    for (int i = 0; i < detailList.size(); i++) {
-                        if (detailList.get(i).getProduct().getProductID() == productId) {
-                            detailList.remove(i);
-                            Product temp = productDAO.getProductByID(productId);
-                            products.add(temp);
+                    int productId = Integer.parseInt(request.getParameter("productId"));
+                    Iterator<ImportStockDetail> iterator = detailList.iterator();
+                    while (iterator.hasNext()) {
+                        ImportStockDetail d = iterator.next();
+                        if (d.getProduct().getProductID() == productId) {
+                            products.add(productDAO.getProductByID(productId));
+                            iterator.remove();
                             break;
                         }
                     }
                 } else if ("save".equals(action)) {
-                    productId = Integer.parseInt(request.getParameter("productEditedId"));
+                    int productId = Integer.parseInt(request.getParameter("productEditedId"));
                     int quantity = Integer.parseInt(request.getParameter("quantity"));
-                    long price = Long.parseLong(request.getParameter("price"));
+
+                    String normalizedPrice = request.getParameter("price").replaceAll("[^\\d.]", "").trim();
+                    BigDecimal price = new BigDecimal(normalizedPrice);
 
                     Product product = productDAO.getProductByID(productId);
 
-                    if (product.getPrice() != null && product.getPrice().longValue() > 0) {
-                        if (price >= product.getPrice().longValue()) {
-                            session.setAttribute("error", "Import price (" + price + ") must be less than sale price (" + product.getPrice().longValue() + ").");
-                            response.sendRedirect("ImportStock");
-                            return;
-                        }
+                    if (product.getPrice() != null && price.compareTo(product.getPrice()) >= 0) {
+                        session.setAttribute("error", "Import price must be less than sale price (" + product.getPrice() + ").");
+                        response.sendRedirect("ImportStock");
+                        return;
                     }
 
-                    for (int i = 0; i < detailList.size(); i++) {
-                        if (detailList.get(i).getProduct().getProductID() == productId) {
-                            detailList.get(i).setStock(quantity);
-                            detailList.get(i).setUnitPrice(price);
-                            detailList.get(i).setQuantityLeft(quantity);
+                    for (ImportStockDetail d : detailList) {
+                        if (d.getProduct().getProductID() == productId) {
+                            d.setStock(quantity);
+                            d.setStockLeft(quantity);
+                            d.setUnitPrice(price);
                             break;
                         }
                     }
                 }
 
-                Collections.sort(products, new Comparator<Product>() {
-                    @Override
-                    public int compare(Product p1, Product p2) {
-                        return Integer.compare(p1.getProductID(), p2.getProductID());
-                    }
-                });
+                // --- Sắp xếp ---
+                detailList.sort(Comparator.comparingInt(ImportStockDetail::getProductID));
+                products.sort(Comparator.comparingInt(Product::getProductID));
 
                 session.setAttribute("selectedProducts", detailList);
                 session.setAttribute("products", products);
-
                 response.sendRedirect("ImportStock");
                 return;
 
@@ -242,22 +232,21 @@ public class ImportStockServlet extends HttpServlet {
             }
         }
 
+        // --- Lưu import stock vào DB ---
         Suppliers supplier = (Suppliers) session.getAttribute("supplier");
-        ArrayList<ImportStockDetail> selectedProducts = (ArrayList<ImportStockDetail>) session.getAttribute("selectedProducts");
+        if (supplier != null && !detailList.isEmpty()) {
 
-        if (supplier != null && selectedProducts != null && !selectedProducts.isEmpty()) {
-            long total = 0L;
-            for (ImportStockDetail detail : selectedProducts) {
-                total += detail.getStock()* detail.getUnitPrice();
+            BigDecimal totalAmount = BigDecimal.ZERO;
+            for (ImportStockDetail d : detailList) {
+                totalAmount = totalAmount.add(d.getUnitPrice().multiply(BigDecimal.valueOf(d.getStock())));
             }
 
             Staff staff = (Staff) session.getAttribute("staff");
-            int staffId = 0;
-            if (staff != null) {
-                staffId = staff.getStaffID();
-            }
+            int staffId = (staff != null) ? staff.getStaffID() : 0;
 
-            ImportStock importStock = new ImportStock(staffId, supplier.getSupplierID(), total);
+            // --- Tạo phiếu nhập ---
+            ImportStock importStock = new ImportStock(staffId, supplier.getSupplierID(), totalAmount);
+
             int importId = importStockDAO.createImportStock(importStock);
 
             if (importId <= 0) {
@@ -266,10 +255,14 @@ public class ImportStockServlet extends HttpServlet {
                 return;
             }
 
-            for (ImportStockDetail detail : selectedProducts) {
-                detail.setIoid(importId);
-                detail.setQuantityLeft(detail.getQuantity());
-                importStockDetailDAO.createImportStockDetail(detail);
+            // --- Lưu chi tiết nhập và cập nhật tồn kho ---
+            for (ImportStockDetail d : detailList) {
+                d.setImportID(importId);
+                importStockDetailDAO.createImportStockDetail(d);
+
+                Product p = d.getProduct();
+                int newStock = p.getQuantity() + d.getStock();
+                productDAO.increaseStock(p.getProductID(), newStock);
             }
 
             importStockDAO.importStock(importId);
@@ -280,11 +273,9 @@ public class ImportStockServlet extends HttpServlet {
 
             response.sendRedirect("ImportStock?success=imported");
             return;
-        } else {
-            response.sendRedirect("ImportStock?error=1");
-            return;
         }
 
+        response.sendRedirect("ImportStock?error=1");
     }
 
     @Override

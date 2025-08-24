@@ -49,8 +49,7 @@ public class StaffFilter implements Filter {
 
         // Lấy staff để kiểm tra role
         Staff staff = (Staff) session.getAttribute("staff");
-        if (!(staff.getRole().equalsIgnoreCase("staff") || staff.getRole().equalsIgnoreCase("admin"))) {
-            System.out.println("fail nè");
+        if (!(staff.getRole().equalsIgnoreCase("staff") || staff.getRole().equalsIgnoreCase("admin"))) {           
             res.sendRedirect(req.getContextPath() + "/LoginStaff");
             return;
         }

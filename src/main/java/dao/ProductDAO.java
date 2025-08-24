@@ -738,24 +738,25 @@ public class ProductDAO extends DBContext {
     }
 
     // Nguyễn Thế Vinh
-      public void increaseStock(int productID, int quantity) {
-    String sql = "UPDATE Products SET Quantity = Quantity + ? WHERE ProductID = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, quantity);
-        ps.setInt(2, productID);
-        ps.executeUpdate();
-    } catch (SQLException e) {
-        e.printStackTrace();
+    public void increaseStock(int productID, int quantity) {
+        String sql = "UPDATE Products SET Quantity = Quantity + ? WHERE ProductID = ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, quantity);
+            ps.setInt(2, productID);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-}     
-          public static void main(String[] args) {
 
-       List<Product> r = new ArrayList<>();
-    ProductDAO dao = new ProductDAO();
-     r = dao.getProductByBrandAndCategory(1, 1);
+    public static void main(String[] args) {
+
+        List<Product> r = new ArrayList<>();
+        ProductDAO dao = new ProductDAO();
+        r = dao.getProductByBrandAndCategory(1, 1);
         for (Product s : r) {
             System.out.println(s.toString());
         }
     }
-  
+
 }

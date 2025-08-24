@@ -20,7 +20,7 @@ public class ImportStockDetailDAO extends DBContext {
                 ps.setInt(1, d.getImportID());
                 ps.setInt(2, d.getProductID());
                 ps.setInt(3, d.getStock());
-                ps.setLong(4, d.getUnitPrice());
+                ps.setBigDecimal(4, d.getUnitPrice());
                 ps.setInt(5, d.getStockLeft());
                 ps.addBatch();
             }
@@ -39,7 +39,7 @@ public class ImportStockDetailDAO extends DBContext {
             ps.setInt(1, detail.getImportID());
             ps.setInt(2, detail.getProductID());
             ps.setInt(3, detail.getStock());
-            ps.setLong(4, detail.getUnitPrice());
+            ps.setBigDecimal(4, detail.getUnitPrice());
             ps.setInt(5, detail.getStockLeft());
             return ps.executeUpdate();
         } catch (SQLException e) {
@@ -64,7 +64,7 @@ public class ImportStockDetailDAO extends DBContext {
                 d.setProductID(rs.getInt("ProductID"));
                 d.setStock(rs.getInt("Stock"));
                 d.setStockLeft(rs.getInt("StockLeft"));
-                d.setUnitPrice(rs.getLong("UnitPrice"));
+                d.setUnitPrice(rs.getBigDecimal("UnitPrice"));
 
                 Product p = new Product();
                 p.setProductID(rs.getInt("ProductID"));
@@ -85,7 +85,7 @@ public class ImportStockDetailDAO extends DBContext {
                 + "WHERE ImportStockDetailsID = ?";
         try ( PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, d.getStock());
-            ps.setLong(2, d.getUnitPrice());
+            ps.setBigDecimal(2, d.getUnitPrice());
             ps.setInt(3, d.getStockLeft());
             ps.setInt(4, d.getImportStockDetailsID());
             return ps.executeUpdate();
@@ -139,7 +139,7 @@ public class ImportStockDetailDAO extends DBContext {
                 d.setProductID(rs.getInt("ProductID"));
                 d.setStock(rs.getInt("Stock"));
                 d.setStockLeft(rs.getInt("StockLeft"));
-                d.setUnitPrice(rs.getLong("UnitPrice"));
+                d.setUnitPrice(rs.getBigDecimal("UnitPrice"));
 
                 Product p = new Product();
                 p.setProductID(rs.getInt("ProductID"));

@@ -61,7 +61,7 @@ public class ImportStockDAO extends DBContext {
                     stock.setStaffID(rs.getInt("staffID"));
                     stock.setSupplierID(rs.getInt("supplierID"));
                     stock.setImportDate(rs.getTimestamp("importDate"));
-                    stock.setTotalAmount(rs.getLong("totalAmount"));
+                    stock.setTotalAmount(rs.getBigDecimal("totalAmount"));
                     stock.setFullName(rs.getString("fullName"));
 
                     Suppliers supplier = new Suppliers();
@@ -100,7 +100,7 @@ public class ImportStockDAO extends DBContext {
                         stock.setStaffID(rs.getInt("staffID"));
                         stock.setSupplierID(rs.getInt("supplierID"));
                         stock.setImportDate(rs.getTimestamp("importDate"));
-                        stock.setTotalAmount(rs.getLong("totalAmount"));
+                        stock.setTotalAmount(rs.getBigDecimal("totalAmount"));
                         stock.setFullName(rs.getString("fullName"));
 
                         Suppliers supplier = new Suppliers();
@@ -136,7 +136,7 @@ public class ImportStockDAO extends DBContext {
                             detail.setProductID(rs.getInt("ProductID"));
                             detail.setStock(rs.getInt("Stock"));
                             detail.setStockLeft(rs.getInt("StockLeft"));
-                            detail.setUnitPrice(rs.getLong("UnitPrice"));
+                            detail.setUnitPrice(rs.getBigDecimal("UnitPrice"));
 
                             Product product = new Product();
                             product.setProductID(rs.getInt("ProductID"));
@@ -153,6 +153,40 @@ public class ImportStockDAO extends DBContext {
             e.printStackTrace();
         }
         return stock;
+    }
+
+    public int createImportStock(ImportStock stock) {
+        String sql = "INSERT INTO ImportStocks(staffID, supplierID, importDate, totalAmount) VALUES (?, ?, ?, ?)";
+        try ( PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, stock.getStaffID());
+            ps.setInt(2, stock.getSupplierID());
+            ps.setTimestamp(3, stock.getImportDate());
+            ps.setBigDecimal(4, stock.getTotalAmount());
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                return -1;
+            }
+            try ( ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // importID vừa tạo
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public boolean importStock(int importID) {
+        String sql = "UPDATE ImportStocks SET isImported = 1 WHERE importID = ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, importID);
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

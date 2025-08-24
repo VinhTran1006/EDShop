@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.math.BigDecimal;
+
 /**
  *
  *
@@ -14,7 +16,7 @@ public class ImportStockDetail {
     private int importID;
     private int stock;
     private int stockLeft;
-    private long unitPrice;
+    private BigDecimal unitPrice;
     private int productID;
 
     // Join
@@ -23,7 +25,7 @@ public class ImportStockDetail {
     public ImportStockDetail() {
     }
 
-    public ImportStockDetail(int importStockDetailsID, int importID, int stock, int stockLeft, long unitPrice, int productID) {
+    public ImportStockDetail(int importStockDetailsID, int importID, int stock, int stockLeft, BigDecimal unitPrice, int productID) {
         this.importStockDetailsID = importStockDetailsID;
         this.importID = importID;
         this.stock = stock;
@@ -58,11 +60,11 @@ public class ImportStockDetail {
         this.stock = stock;
     }
 
-    public long getUnitPrice() {
+    public BigDecimal getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(long unitPrice) {
+    public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }
 
