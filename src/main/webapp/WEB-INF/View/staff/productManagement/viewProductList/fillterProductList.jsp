@@ -1,8 +1,3 @@
-<%-- 
-    Document   : fillterProductList
-    Created on : Jun 18, 2025, 9:30:11 PM
-    Author     : HP - Gia Khiêm
---%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
@@ -34,12 +29,9 @@
                 <select name="filter" id="filter" class="form-select" onchange="this.form.submit()" 
                         style="width: 250px; display: inline-block;">
                     <option value="All" <%= "All".equals(selectedFilter) ? "selected" : ""%>>All products</option>
-                    <option value="Active" <%= "Active".equals(selectedFilter) ? "selected" : ""%>>Active products</option>
-                    <option value="Hidden" <%= "Hidden".equals(selectedFilter) ? "selected" : ""%>>Hidden products</option>
                     <option value="Featured" <%= "Featured".equals(selectedFilter) ? "selected" : ""%>>Featured products</option>
                     <option value="Bestseller" <%= "Bestseller".equals(selectedFilter) ? "selected" : ""%>>Bestseller products</option>
                     <option value="New" <%= "New".equals(selectedFilter) ? "selected" : ""%>>New products</option>
-                    <option value="Discount" <%= "Discount".equals(selectedFilter) ? "selected" : ""%>>Discounted products</option>
                 </select>
             </form>
 

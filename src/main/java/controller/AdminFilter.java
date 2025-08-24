@@ -62,6 +62,7 @@ public class AdminFilter implements Filter {
             res.sendRedirect(req.getContextPath() + "/LoginAdmin");
             return;
         }
+        
 
         // Logged in as admin
         chain.doFilter(request, response);

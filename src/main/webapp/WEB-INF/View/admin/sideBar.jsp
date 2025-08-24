@@ -12,6 +12,7 @@
                 <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
             </a>
         </li>
+        
         <li class="nav-item">
 
             <a href="StaffList" class="nav-link">

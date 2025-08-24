@@ -116,20 +116,6 @@
                     <h4></h4>
                     <a href="ProductListForStaff" class="btn-back">Back</a>
                 </div>
-                <div class="checkbox-container">
-                    <div class="form-check">
-                        <input class="form-check-input rounded-circle" type="checkbox" id="isFeatured" name="isFeatured" <%= product != null && product.isIsFeatured() ? "checked" : ""%>>
-                        <label class="form-check-label" for="isFeatured">Is Featured</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input rounded-circle" type="checkbox" id="isNew" name="isNew" <%= product != null && product.isIsNew() ? "checked" : ""%>>
-                        <label class="form-check-label" for="isNew">Is New</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input rounded-circle" type="checkbox" id="isBestSeller" name="isBestSeller" <%= product != null && product.isIsBestSeller() ? "checked" : ""%>>
-                        <label class="form-check-label" for="isBestSeller">Is Best Seller</label>
-                    </div>
-                </div>
                 <div class="row">
                     <div class="col-left">
                         <jsp:include page="/WEB-INF/View/staff/productManagement/viewProductDetail/imageProductDetail.jsp" />
