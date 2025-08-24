@@ -19,6 +19,11 @@ public class ImportStock {
     private Timestamp importDate;
     private long totalAmount;
 
+    // Join
+    private String fullName;    // staff name
+    private Suppliers supplier; // supplier info
+    private List<ImportStockDetail> importStockDetails;
+
     public ImportStock() {
     }
 
@@ -28,8 +33,10 @@ public class ImportStock {
         this.supplierID = supplierID;
         this.importDate = importDate;
         this.totalAmount = totalAmount;
+        ;
     }
 
+    // getters & setters
     public int getImportID() {
         return importID;
     }
@@ -70,4 +77,27 @@ public class ImportStock {
         this.totalAmount = totalAmount;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public Suppliers getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Suppliers supplier) {
+        this.supplier = supplier;
+    }
+
+    public List<ImportStockDetail> getImportStockDetails() {
+        return importStockDetails;
+    }
+
+    public void setImportStockDetails(List<ImportStockDetail> importStockDetails) {
+        this.importStockDetails = importStockDetails;
+    }
 }

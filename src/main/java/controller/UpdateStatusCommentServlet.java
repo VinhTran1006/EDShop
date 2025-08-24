@@ -4,7 +4,7 @@
  */
 package controller;
 
-import dao.ProductRatingDAO;
+import dao.ProductFeedbackDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -73,11 +73,11 @@ public class UpdateStatusCommentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        int rateID = Integer.parseInt(request.getParameter("rateID"));
-        int isRead = Integer.parseInt(request.getParameter("isDeleted"));
+        int feedbackID = Integer.parseInt(request.getParameter("feedbackID"));
+        int isActive = Integer.parseInt(request.getParameter("isActive"));
 
-        ProductRatingDAO prDAO = new ProductRatingDAO();
-        boolean isOk = prDAO.updateStatusComment(rateID, isRead);
+        ProductFeedbackDAO prDAO = new ProductFeedbackDAO();
+        boolean isOk = prDAO.updateStatusComment(feedbackID, isActive);
     }
 
     /**

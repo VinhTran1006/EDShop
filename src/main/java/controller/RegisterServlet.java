@@ -67,6 +67,19 @@ public class RegisterServlet extends HttpServlet {
         CategoryDAO categoryDAO = new CategoryDAO();
         List<Category> categoryList = categoryDAO.getAllCategory(); // hoặc getAllCategory()
         request.setAttribute("categoryList", categoryList);
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            if (session.getAttribute("tempPhone") != null) {
+                request.setAttribute("phone", session.getAttribute("tempPhone"));
+            }
+            if (session.getAttribute("tempEmail") != null) {
+                request.setAttribute("email", session.getAttribute("tempEmail"));
+            }
+            if (session.getAttribute("tempFullName") != null) {
+                request.setAttribute("fullName", session.getAttribute("tempFullName"));
+            }
+        }
         request.getRequestDispatcher("WEB-INF/View/account/register.jsp").forward(request, response);
     }
 
@@ -88,7 +101,7 @@ public class RegisterServlet extends HttpServlet {
         String confirmPassword = request.getParameter("confirmPassword");
         String passwordPattern = "^.{9,}$";
         if (!password.matches(passwordPattern)) {
-             request.setAttribute("error", "Password must be at least 9 characters long.");
+            request.setAttribute("error", "Password must be at least 9 characters long.");
             request.setAttribute("phone", phone);
             request.setAttribute("fullName", fullName);
             request.setAttribute("email", email);

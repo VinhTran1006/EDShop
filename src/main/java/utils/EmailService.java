@@ -49,21 +49,21 @@ public class EmailService {
                 + "    <img src='https://drive.google.com/uc?export=view&id=1L_7sTrEP_dT2hM2oQyloOaZBRKJ8HjLB' alt='TShop' width='80'/>"
                 + "  </div>"
                 + "  <div style='font-size:13px; line-height: 1.5;'>"
-                + "    <div><span style='color:orange;'>T MOBILE</span></div>"
+                + "    <div><span style='color:orange;'>ED Shop</span></div>"
                 + "    <div><span style='color:green;'>| 600, Nguyen Van Cu Street, An Binh Ward, Ninh Kieu District, Can Tho City</span></div>"
                 + "    <div><span style='color:blue;'>| Hotline: 02927.30.30.88 | Email: <a href='mailto:erd.ct@fe.edu.vn'>erd.ct@fe.edu.vn</a></span></div>"
                 + "  </div>"
                 + "</div>";
 
         if ("REGISTER".equals(type)) {
-            subject = "TMobile - Email Verification";
-            htmlContent = "<h3>Welcome to TMobile!</h3>"
+            subject = "EDShop - Email Verification";
+            htmlContent = "<h3>Welcome to EDShop!</h3>"
                     + "<p>Your registration verification code is: <strong>" + code + "</strong></p>"
                     + "<p>Please enter this code to complete your registration.</p>"
                     + contactBlock;
 
         } else if ("RESET_PASSWORD".equals(type)) {
-            subject = "TMobile - Password Reset Code";
+            subject = "EDShop - Password Reset Code";
             htmlContent = "<h3>Reset Your Password</h3>"
                     + "<p>Your password reset OTP is: <strong>" + code + "</strong></p>"
                     + "<p>This code is valid for 5 minutes. If you did not request a password reset, ignore this email.</p>"
@@ -71,7 +71,7 @@ public class EmailService {
         }
 
         Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(senderEmail, "TMobile Support"));
+        message.setFrom(new InternetAddress(senderEmail, "EDShop Support"));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
         message.setSubject(subject);
         message.setContent(htmlContent, "text/html; charset=UTF-8");
@@ -111,7 +111,7 @@ public class EmailService {
         });
 
         try {
-            String subject = "Welcome to TMobile!";
+            String subject = "Welcome to EDShop!";
             String htmlContent = "<h3>Congratulations!</h3>"
                     + "<p>Your account has been successfully created.</p>"
                     + "<p>Now you can log in and enjoy our services.</p>"
@@ -120,14 +120,14 @@ public class EmailService {
                     + " <img src='https://drive.google.com/uc?export=view&id=1L_7sTrEP_dT2hM2oQyloOaZBRKJ8HjLB' alt='TShop' width='80'/>"
                     + "  </div>"
                     + "  <div style='font-size:13px; line-height: 1.5;'>"
-                    + "    <div><span style='color:orange;'>T MOBILE</span></div>"
+                    + "    <div><span style='color:orange;'>ED Shop</span></div>"
                     + "    <div><span style='color:green;'>| 600, Nguyen Van Cu Street, An Binh Ward, Ninh Kieu District, Can Tho City</span></div>"
                     + "    <div><span style='color:blue;'>| Hotline: 02927.30.30.88 | Email: <a href='mailto:erd.ct@fe.edu.vn'>erd.ct@fe.edu.vn</a></span></div>"
                     + "  </div>"
                     + "</div>";
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(senderEmail, "TMobile Support"));
+            message.setFrom(new InternetAddress(senderEmail, "EDShop Support"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
             message.setSubject(subject);
             message.setContent(htmlContent, "text/html; charset=UTF-8");

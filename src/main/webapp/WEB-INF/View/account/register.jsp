@@ -206,7 +206,7 @@
                     <div class="input-group">
                         <i class="bi bi-telephone-fill input-icon"></i>
                         <input type="tel" name="phone" class="form-control with-icon"
-                               pattern="\d{10,11}" placeholder="Enter your phone number"
+                               pattern="^\d{10}$" maxlength="10" placeholder="Enter your phone number"
                                required value="<%= request.getAttribute("phone") != null ? request.getAttribute("phone") : ""%>">
                     </div>
 
@@ -221,7 +221,7 @@
                     <div class="input-group">
                         <i class="bi bi-person-fill input-icon"></i>
                         <input type="text" name="fullName" class="form-control with-icon"
-                               placeholder="Enter your full name" required
+                               pattern="^[A-Za-z¿-?\s]+$" placeholder="Enter your full name" required
                                value="<%= request.getAttribute("fullName") != null ? request.getAttribute("fullName") : ""%>">
                     </div>
 
@@ -269,6 +269,8 @@
                 // Password strength indicator
                 const passwordInput = document.getElementById('password');
                 const strengthBar = document.getElementById('strengthBar');
+                const phoneInput = document.querySelector('input[name="phone"]');
+                const fullNameInput = document.querySelector('input[name="fullName"]');
 
                 if (passwordInput && strengthBar) {
                     passwordInput.addEventListener('input', function () {
@@ -319,6 +321,23 @@
                     });
                 }
 
+                const phonePattern = /^\d{10}$/;
+                if (!phonePattern.test(phoneInput.value)) {
+                    e.preventDefault();
+                    alert('Phone number must be exactly 10 digits and contain only numbers!');
+                    phoneInput.focus();
+                    return;
+                }
+
+                // Validate Full Name
+                const namePattern = /^[A-Za-z¿-?\s]+$/;
+                if (!namePattern.test(fullNameInput.value.trim())) {
+                    e.preventDefault();
+                    alert('Full name must not be empty and cannot contain numbers or special characters!');
+                    fullNameInput.focus();
+                    return;
+                }
+
                 // Real-time password match validation
                 const confirmPasswordInput = document.getElementById('confirmPassword');
                 if (confirmPasswordInput && passwordInput) {
@@ -339,6 +358,6 @@
                 }
             });
         </script>
-         <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
+        <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
     </body>
 </html>

@@ -43,9 +43,11 @@ public class ProductFeedbackDAO extends DBContext {
                 fb.setIsRead(rs.getBoolean("IsRead"));
                 fb.setReply(rs.getString("Reply"));
                 fb.setStaffID(rs.getInt("StaffID"));
-                if (rs.getTimestamp("ReplyDate") != null) {
-                    fb.setReplyDate(new DateTime(rs.getTimestamp("ReplyDate")));
+                java.sql.Timestamp replyDate = rs.getTimestamp("ReplyDate");
+                if (replyDate != null) {
+                    fb.setReplyDate(new java.util.Date(replyDate.getTime()));
                 }
+
                 list.add(fb);
             }
         } catch (Exception e) {
@@ -78,10 +80,9 @@ public class ProductFeedbackDAO extends DBContext {
                 fb.setReply(rs.getString("Reply"));
                 fb.setStaffID(rs.getInt("StaffID"));
 
-                // chú ý: ReplyDate trong DB có thể là DateTime SQL
                 java.sql.Timestamp replyDate = rs.getTimestamp("ReplyDate");
                 if (replyDate != null) {
-                    fb.setReplyDate(new com.google.api.client.util.DateTime(replyDate));
+                    fb.setReplyDate(new java.util.Date(replyDate.getTime()));
                 }
 
                 fb.setFullName(rs.getString("FullName"));
@@ -186,7 +187,7 @@ public class ProductFeedbackDAO extends DBContext {
 
                 java.sql.Timestamp replyDate = rs.getTimestamp("ReplyDate");
                 if (replyDate != null) {
-                    fb.setReplyDate(new com.google.api.client.util.DateTime(replyDate));
+                    fb.setReplyDate(new java.util.Date(replyDate.getTime()));
                 }
 
                 list.add(fb);
@@ -195,6 +196,166 @@ public class ProductFeedbackDAO extends DBContext {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public int insertFeedback(int customerID, int productID, int orderID, int star, String comment) {
+        int count = 0;
+        String sql = "INSERT INTO ProductFeedbacks (CustomerID, ProductID, OrderID, CreatedDate, Star, Comment, isDeleted, isRead) "
+                + "VALUES (?, ?, ?, GETDATE(), ?, ?, 0, 0)";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, customerID);
+            ps.setInt(2, productID);
+            ps.setInt(3, orderID);
+            ps.setInt(4, star);
+            ps.setString(5, comment);
+            count = ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    public boolean hasRatedProduct(int customerID, int productID, int orderID) {
+        String sql = "SELECT COUNT(*) FROM ProductFeedbacks WHERE CustomerID = ? AND ProductID = ? AND OrderID = ?";
+        try (
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, customerID);
+            ps.setInt(2, productID);
+            ps.setInt(3, orderID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int addProductRating(int customerId, int productId, int orderId, int star, String comment) {
+        int count = 0;
+        String query = "INSERT INTO ProductFeedbacks "
+                + "(CustomerID, ProductID, OrderID, CreatedDate, Star, Comment, IsActive, isRead) "
+                + "VALUES (?, ?, ?, GETDATE(), ?, ?, 1, 0)";
+        try {
+            PreparedStatement pre = conn.prepareStatement(query);
+            pre.setInt(1, customerId);
+            pre.setInt(2, productId);
+            pre.setInt(3, orderId);
+            pre.setInt(4, star);
+            pre.setString(5, comment);
+            count = pre.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    public boolean updateStatusComment(int feedbackID, int isActive) {
+        boolean isOk = false;
+        String query = "Update ProductFeedbacks SET IsActive = ? WHERE FeedbackID =?";
+        try {
+            PreparedStatement pre = conn.prepareStatement(query);
+            pre.setInt(1, isActive);
+            pre.setInt(2, feedbackID);
+            pre.executeUpdate();
+            isOk = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isOk;
+    }
+
+    public boolean addReply(int staffId, int feedbackId, String reply) {
+        String sql = "UPDATE ProductFeedbacks SET Reply = ?, StaffID = ?, ReplyDate = GETDATE(), IsRead = 0 WHERE FeedbackID = ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, reply);
+            ps.setInt(2, staffId);
+            ps.setInt(3, feedbackId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void updateisReadComment(int feedbackID) {
+        String query = "Update ProductRatings SET IsRead = 1  WHERE RateID =?";
+        try {
+            PreparedStatement pre = conn.prepareStatement(query);
+            pre.setInt(1, feedbackID);
+            pre.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ProductFeedback getReplyByFeedbackID(int replyID) {
+        List<ProductFeedback> list = new ArrayList<>();
+        ProductFeedback r = null;
+//        String query = "SELECT r.* FROM RatingReplies r JOIN ProductRatings pr ON r.rateID = pr.rateID WHERE pr.customerID = ? AND r.isRead = 0";
+        String query = "SELECT rr.* FROM ProductFeedbacks rr WHERE rr.FeedbackID =?";
+        try (
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, replyID);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                r = new ProductFeedback();
+                r.setFeedbackID(rs.getInt("FeedbackID"));
+                r.setStaffID(rs.getInt("StaffID"));
+                r.setReply(rs.getString("Reply"));
+                r.setIsRead(rs.getBoolean("IsRead"));
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+    
+     public int UpdateReply(ProductFeedback feedback, String reply) {
+        String query = "UPDATE ProductFeedbacks SET Reply= ? WHERE FeedbackID = ?";
+        int result = 0;
+
+        try {
+            if (conn == null) {
+                System.out.println("[ERROR] conn is null in UpdateReply!");
+                return 0;
+            }
+
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, reply);
+            stmt.setInt(2, feedback.getFeedbackID());
+
+            result = stmt.executeUpdate();
+            System.out.println("[DAO] Rows updated: " + result);
+
+        } catch (Exception e) {
+            System.out.println("[ERROR] UpdateReply failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+     
+        public boolean DeleteReply(int feedbackID) {
+        String query = "UPDATE ProductFeedbacks "
+                 + "SET Reply = NULL, StaffID = NULL, ReplyDate = NULL "
+                 + "WHERE FeedbackID = ?";
+
+        try (
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, feedbackID);
+            return stmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+
     }
 
     // Đếm số feedback chưa đọc

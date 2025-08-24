@@ -289,6 +289,11 @@
                         Verify Code
                     </button>
 
+                    <button type="button" class="btn btn-secondary hidden mt-2" id="resendBtn">
+                        <i class="bi bi-arrow-clockwise me-2"></i>
+                        Resend Code
+                    </button>
+
                     <div class="divider">
                         <span>Need help?</span>
                     </div>

@@ -94,6 +94,7 @@ public class ProductDetailServlet extends HttpServlet {
             double totalStars = 0;
             int visibleRatingCount = 0;
 
+
 //            for (ProductRating rating : productRatings) {
 //                if (!rating.isIsDeleted()) {  // <-- chỉ tính đánh giá chưa bị ẩn
 //                    totalStars += rating.getStar();

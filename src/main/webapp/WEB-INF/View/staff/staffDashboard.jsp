@@ -1,13 +1,13 @@
-<%@ page import="model.Account" %>
+
 <%@ page import="model.Staff" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%
-    Account acc = (Account) session.getAttribute("user");
+
     Staff staff = (Staff) session.getAttribute("staff");
-    if (acc == null || acc.getRoleID() != 2 || staff == null) {
+    if (!(staff.getRole().equalsIgnoreCase("staff") || staff.getRole().equalsIgnoreCase("admin"))) {
         response.sendRedirect("LoginStaff");
         return;
     }
@@ -16,7 +16,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Staff Dashboard - TShop Store</title>
+        <title>Staff Dashboard - EDShop Store</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

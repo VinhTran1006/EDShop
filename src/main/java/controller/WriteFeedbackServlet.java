@@ -4,8 +4,8 @@
  */
 package controller;
 
-import dao.FeedbackDAO;
-import dao.ProductRatingDAO;
+
+import dao.ProductFeedbackDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -118,7 +118,7 @@ public class WriteFeedbackServlet extends HttpServlet {
             int star = Integer.parseInt(starStr.trim());
 
             // Thử dùng ProductRatingDAO thay vì FeedbackDAO
-            ProductRatingDAO dao = new ProductRatingDAO();
+            ProductFeedbackDAO dao = new ProductFeedbackDAO();
             boolean alreadyRated = dao.hasRatedProduct(customerID, productID, orderID);
             if (alreadyRated) {
                 response.sendRedirect("CustomerOrderDetail?orderID=" + orderID + "&error=alreadyRated");
