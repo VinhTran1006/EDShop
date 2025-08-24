@@ -1,14 +1,9 @@
-<%@page import="model.Account"%>
+
 <%@page import="java.util.Locale"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.Voucher" %>
 <%@ page import="java.text.NumberFormat" %>
 <%
-    Account acc = (Account) session.getAttribute("admin");
-    if (acc == null || acc.getRoleID() != 1) {
-        response.sendRedirect("LoginAdmin");
-        return;
-    }
     Voucher v = (Voucher) request.getAttribute("voucher");
     NumberFormat currencyVN = NumberFormat.getInstance(new Locale("vi", "VN"));
 %>

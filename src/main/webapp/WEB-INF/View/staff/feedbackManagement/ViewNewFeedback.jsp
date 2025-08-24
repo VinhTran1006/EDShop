@@ -493,7 +493,7 @@
                         text: 'Your reply was sent successfully.',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        window.location.href = '/TMobile/ViewFeedBackForStaff?feedbackID=<%=feedbackID%>';
+                        window.location.href = '/TMobile/ViewFeedbackForStaff?feedbackID=<%=feedbackID%>';
                     });
                 <% } else if ("failed".equals(success)) { %>
                     Swal.fire({
@@ -511,7 +511,7 @@
                         text: 'Something went wrong while processing your reply.',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        window.location.href = '/TMobile/ViewFeedBackForStaff?feedbackID=<%=feedbackID%>';
+                        window.location.href = '/TMobile/ViewFeedbackForStaff?feedbackID=<%=feedbackID%>';
                     });
                 <% } else if ("nostaff".equals(success)) {%>
                     Swal.fire({
@@ -520,7 +520,7 @@
                         text: 'Staff ID not found for this account.',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        window.location.href = '/TMobile/ViewFeedBackForStaff?feedbackID=<%=feedbackID%>';
+                        window.location.href = '/TMobile/ViewFeedbackForStaff?feedbackID=<%=feedbackID%>';
                     });
                 <% }%>
                 };

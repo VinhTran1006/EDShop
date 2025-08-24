@@ -107,7 +107,7 @@ public class VoucherServlet extends HttpServlet {
             int usageLimit = Integer.parseInt(request.getParameter("usageLimit"));
             boolean isActive = "true".equals(request.getParameter("isActive"));
             Date createdAt = new Date();
-            String description = request.getParameter("description");       
+            String description = request.getParameter("description");
 
             int usedCount = 0; // Default when creating new
             if (id != 0) {
@@ -133,8 +133,15 @@ public class VoucherServlet extends HttpServlet {
             if (expiry.before(new Date())) {
                 throw new IllegalArgumentException("Expiry date must be today or later.");
             }
+            if (maxDiscount >= minAmount) {
+                throw new IllegalArgumentException("The maximum discount amount cannot be greater than or equal the minimum order value.");
+            }
+            if (maxDiscount > (discount / 100.0) * minAmount) {
+                throw new IllegalArgumentException("Max discount is unrealistic for the given percent and minimum order.");
+            }
+
             if (usedCount >= usageLimit) {
-                isActive = false;
+                isActive = false; // hết lượt => ngừng hoạt động
             }
 
             Voucher v = new Voucher(id, code, discount, expiry, minAmount, maxDiscount,
@@ -160,7 +167,7 @@ public class VoucherServlet extends HttpServlet {
                 double minAmount = Double.parseDouble(request.getParameter("minOrderAmount"));
                 double maxDiscount = Double.parseDouble(request.getParameter("maxDiscountAmount"));
                 int usageLimit = Integer.parseInt(request.getParameter("usageLimit"));
-                boolean isActive = request.getParameter("isActive") != null;
+                boolean isActive = "true".equals(request.getParameter("isActive"));
                 Date createdAt = new Date();
                 String description = request.getParameter("description");
                 int usedCount = 0;

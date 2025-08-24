@@ -1,16 +1,10 @@
-<%@page import="model.Account"%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, model.Voucher" %>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.util.Locale" %>
 <!DOCTYPE html>
-<%
-    Account acc = (Account) session.getAttribute("admin");
-    if (acc == null || acc.getRoleID() != 1) {
-        response.sendRedirect("LoginAdmin");
-        return;
-    }
-%>
+
 <html lang="en">
     <head>
         <title>Voucher List</title>
