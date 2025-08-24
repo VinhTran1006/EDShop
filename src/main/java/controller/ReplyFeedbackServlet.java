@@ -4,10 +4,9 @@
  */
 package controller;
 
-import dao.ProductRatingDAO;
-import dao.RatingRepliesDAO;
+import dao.ProductFeedbackDAO;
 import model.Staff;
-import model.RatingReplies;
+import model.ProductFeedback;
 import dao.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,7 +16,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Account;
 
 /**
  *
@@ -83,26 +81,25 @@ public class ReplyFeedbackServlet extends HttpServlet {
 
         if (staff != null) {
             try {
-                int rateID = Integer.parseInt(request.getParameter("rateID"));
+                int feedbackID = Integer.parseInt(request.getParameter("feedbackID"));
                 String answer = request.getParameter("Answer");
 
                 int stID = staff.getStaffID(); // Lấy trực tiếp từ object Staff
 
-                RatingRepliesDAO rrDAO = new RatingRepliesDAO();              
-                int count = rrDAO.addRatingReply(stID, rateID, answer);
-                rrDAO.updateisReadComment(rateID);
-
-                if (count > 0) {
-                    response.sendRedirect("ViewFeedBackForStaff?rateID=" + rateID + "&success=success");
+                ProductFeedbackDAO rrDAO = new ProductFeedbackDAO();
+                boolean success = rrDAO.addReply(stID, feedbackID, answer);
+                 rrDAO.updateisReadComment(feedbackID);  
+                if (success) {
+                    response.sendRedirect("ViewFeedBackForStaff?feedbackID=" + feedbackID + "&success=success");
                 } else {
-                    response.sendRedirect("ViewFeedBackForStaff?rateID=" + rateID + "&success=failed");
+                    response.sendRedirect("ViewFeedBackForStaff?feedbackID=" + feedbackID + "&success=failed");
                 }
+
+               
             } catch (Exception e) {
                 e.printStackTrace();
-                response.sendRedirect("ViewFeedBackForStaff?rateID=" + request.getParameter("rateID") + "&success=error");
+                response.sendRedirect("ViewFeedBackForStaff?feedbackID=" + request.getParameter("feedbackID") + "&success=error");
             }
-        } else {
-            response.sendRedirect("LoginStaff");
         }
     }
 

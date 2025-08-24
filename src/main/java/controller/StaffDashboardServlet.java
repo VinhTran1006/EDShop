@@ -7,7 +7,7 @@ package controller;
 import dao.CustomerDAO;
 import dao.OrderDAO;
 import dao.ProductDAO;
-import dao.ProductRatingDAO;
+import dao.ProductFeedbackDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -63,7 +63,7 @@ public class StaffDashboardServlet extends HttpServlet {
             throws ServletException, IOException {
         // Tạo instance các DAO
         OrderDAO orderDAO = new OrderDAO();
-        ProductRatingDAO productRatingDAO = new ProductRatingDAO();
+        ProductFeedbackDAO productRatingDAO = new ProductFeedbackDAO();
         CustomerDAO customerDAO = new CustomerDAO();
         ProductDAO productDAO = new ProductDAO();
         int todayOrders = orderDAO.countTodayOrders();

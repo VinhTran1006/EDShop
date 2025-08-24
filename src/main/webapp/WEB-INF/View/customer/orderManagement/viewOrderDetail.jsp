@@ -18,26 +18,44 @@
                 font-size: 14px;
                 font-weight: 600;
             }
-            .status-1 {
+
+            .status-Waiting {
                 background-color: #f59e0b;
                 color: #fff;
-            } /* Waiting */
-            .status-2 {
+            }
+            .status-Packing {
                 background-color: #0d6efd;
                 color: #fff;
-            } /* Packaging */
-            .status-3 {
+            }
+            .status-Waiting for Delivery {
                 background-color: #6366f1;
                 color: #fff;
-            } /* Waiting for Delivery */
-            .status-4 {
+            }
+            .status-Delivered {
                 background-color: #22c55e;
                 color: #fff;
-            } /* Delivered */
-            .status-5 {
+            }
+            .status-Cancelled {
                 background-color: #ef4444;
                 color: #fff;
-            } /* Cancelled */
+            }
+            .total-amount {
+                font-size: 1.2rem;       /* chữ to hơn */
+                font-weight: bold;       /* chữ đậm */
+                color: #d9534f;          /* màu đỏ nhấn mạnh */
+                background: #f9f9f9;     /* nền nhạt */
+                padding: 10px 15px;      /* khoảng cách bên trong */
+                border-radius: 8px;      /* bo tròn góc */
+                border: 1px solid #eee;  /* viền mảnh */
+                display: inline-block;   /* ô gọn lại */
+                margin-top: 10px;
+            }
+
+            .total-amount span {
+                color: #000;             /* số tiền màu đen rõ ràng */
+                margin-left: 8px;
+            }
+
         </style>
     </head>
     <body class="d-flex flex-column min-vh-100">
@@ -59,23 +77,39 @@
                         <div class="mb-4 p-4" style="background: #fff; border-radius: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.08);">
                             <div class="profile-body">
                                 <p><strong><i class="bi bi-calendar-date me-1"></i>Order Date:</strong> ${data.orderDate}</p>
-                                <p><strong><i class="bi bi-pencil-square me-1"></i>Last Updated:</strong> ${data.updatedDate}</p>
+                                <p><strong><i class="bi bi-pencil-square me-1"></i>Last Updated:</strong> ${data.updatedAt}</p>
                                 <p><strong><i class="bi bi-bar-chart-line me-1"></i>Status:</strong>
                                     <span class="badge status-${data.status}">
                                         <c:choose>
-                                            <c:when test="${data.status == 1}">Waiting</c:when>
-                                            <c:when test="${data.status == 2}">Packaging</c:when>
-                                            <c:when test="${data.status == 3}">Waiting for Delivery</c:when>
-                                            <c:when test="${data.status == 4}">Delivered</c:when>
+                                            <c:when test="${data.status eq 'Waiting'}">Waiting</c:when>
+                                            <c:when test="${data.status eq 'Packing'}">Packing</c:when>
+                                            <c:when test="${data.status eq 'Waiting for Delivery'}">Waiting for Delivery</c:when>
+                                            <c:when test="${data.status eq 'Delivered'}">Delivered</c:when>
                                             <c:otherwise>Cancelled</c:otherwise>
                                         </c:choose>
                                     </span>
                                 </p>
-                                <p><strong><i class="bi bi-person-lines-fill me-1"></i>Recipient:</strong> ${data.fullName} - ${data.phone}</p>
+                                <p><strong><i class="bi bi-person-lines-fill me-1"></i>Recipient:</strong> ${data.customer.fullName} - ${data.customer.phoneNumber}</p>
                                 <p><strong><i class="bi bi-geo-alt-fill me-1"></i>Address:</strong> ${data.addressSnapshot}</p>
-                                <p><strong><i class="bi bi-currency-exchange me-1"></i>Total Amount:</strong>
-                                    <fmt:formatNumber value="${data.totalAmount}" type="number" groupingUsed="true"/>₫
+                                <c:set var="subtotal" value="0" />
+                                <c:forEach var="item" items="${dataDetail}">
+                                    <c:set var="subtotal" value="${subtotal + (item.price * item.quantity)}" />
+                                </c:forEach>
+                                <p>
+                                    <strong><i class="bi bi-cart4 me-1"></i>Subtotal:</strong>
+                                    <fmt:formatNumber value="${subtotal}" type="number" groupingUsed="true"/>₫
                                 </p>
+                                <p>
+                                    <strong><i class="bi bi-cash-coin me-1"></i>Discount:</strong>
+                                    - <fmt:formatNumber value="${subtotal * data.discount / 100}" type="number" groupingUsed="true"/>₫
+                                    (giảm ${data.discount}%)
+                                </p>
+
+                                <p class="total-amount">
+                                    <strong><i class="bi bi-currency-exchange me-1"></i>Total Amount:</strong>
+                                    <span><fmt:formatNumber value="${data.totalAmount}" type="number" groupingUsed="true"/>₫</span>
+                                </p>
+
 
                                 <h5 class="mb-3"><i class="bi bi-box-seam me-1"></i> Products</h5>
                                 <table class="table table-bordered detail-table">
@@ -83,10 +117,10 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Product Name</th>
-                                            <th>Category</th>
                                             <th>Quantity</th>
                                             <th>Price (₫)</th>
-                                            <th>Subtotal (₫)</th>
+                                            <th>Total product price (₫)</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -94,13 +128,11 @@
                                             <tr>
                                                 <td>${loop.index + 1}</td>
                                                 <td>${item.productName}</td>
-                                                <td>${item.category}</td>
                                                 <td>${item.quantity}</td>
-                                                <td><fmt:formatNumber value="${item.price}" type="number" groupingUsed="true"/></td>
-                                                <td><fmt:formatNumber value="${item.price * item.quantity}" type="number" groupingUsed="true"/></td>
-                                                <td>
-                                                <td>
-                                                    <c:if test="${data.status == 4}">
+                                                <td><fmt:formatNumber value="${item.price}" type="number" groupingUsed="true"/>đ</td>
+                                                <td><fmt:formatNumber value="${item.price * item.quantity}" type="number" groupingUsed="true"/>đ</td>
+                                                 <td>
+                                                    <c:if test="${data.status eq 'Delivered'}">
                                                         <button type="button"
                                                                 class="btn btn-outline-primary btn-sm"
                                                                 onclick="openFeedbackModal('${item.productID}', '${fn:escapeXml(item.productName)}', '${data.orderID}')">
@@ -109,14 +141,13 @@
                                                     </c:if>
                                                 </td>
 
-                                                </td>
-
                                             </tr>
+
                                         </c:forEach>
                                     </tbody>
                                 </table>
                                 <!-- Feedback Modal -->
-                                <!-- Feedback Modal -->
+
                                 <div class="modal fade" id="feedbackModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <form class="modal-content" method="post" action="WriteFeedback">
@@ -129,7 +160,7 @@
                                                 <c:choose>
                                                     <c:when test="${not empty sessionScope.cus}">
                                                         <!-- ✅ Sử dụng sessionScope.cus.id thay vì customerID -->
-                                                        <input type="hidden" name="customerID" value="${sessionScope.cus.id}" />
+                                                        <input type="hidden" name="customerID" value="${sessionScope.cus.customerID}" />
 
                                                     </c:when>
                                                     <c:otherwise>
@@ -170,7 +201,7 @@
 
 
                                 <div class="action-buttons mt-3">
-                                    <c:if test="${data.status == 1 || data.status == 2}">
+                                    <c:if test="${data.status eq 'Waiting' || data.status eq 'Packing'}">
                                         <form class="cancel-form" action="CancelOrder" method="POST">
                                             <input type="hidden" name="orderID" value="${data.orderID}" />
                                             <button type="button" class="btn btn-outline-danger cancel-btn">
@@ -179,102 +210,100 @@
                                         </form>
                                     </c:if>
                                 </div>
-                            </div>
-                        </div>
 
-                    </c:when>
-                </c:choose>
-            </div>
-        </div>
+                            </c:when>
+                        </c:choose>
+                    </div>
+                </div>
 
-        <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-        <!-- SweetAlert on success/error -->
-        <c:if test="${not empty param.success || not empty param.error}">
-            <script>
-    window.onload = function () {
-                <c:if test="${param.success == 'feedback'}">
-        Swal.fire({
-            icon: 'success',
-            title: 'Feedback Submitted',
-            text: 'Your feedback has been submitted successfully!',
-            timer: 3000,
-            confirmButtonText: 'OK'
-        });
-                </c:if>
-                <c:if test="${param.error == 'feedback'}">
-        Swal.fire({
-            icon: 'error',
-            title: 'Feedback Failed',
-            text: 'There was a problem submitting your feedback. Please try again.',
-            timer: 3000,
-            confirmButtonText: 'Close'
-        });
-                </c:if>
+                <!-- SweetAlert on success/error -->
+                <c:if test="${not empty param.success || not empty param.error}">
+                    <script>
+                        window.onload = function () {
+                        <c:if test="${param.success == 'feedback'}">
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Feedback Submitted',
+                                text: 'Your feedback has been submitted successfully!',
+                                timer: 3000,
+                                confirmButtonText: 'OK'
+                            });
+                        </c:if>
+                        <c:if test="${param.error == 'feedback'}">
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Feedback Failed',
+                                text: 'There was a problem submitting your feedback. Please try again.',
+                                timer: 3000,
+                                confirmButtonText: 'Close'
+                            });
+                        </c:if>
 
-        if (window.history.replaceState) {
-            const url = new URL(window.location);
-            url.searchParams.delete('success');
-            url.searchParams.delete('error');
-            window.history.replaceState({}, document.title, url.pathname + url.search);
-        }
-
-    };
-            </script>
-
-        </c:if>
-
-        <c:if test="${param.error == 'alreadyRated'}">
-            <script>
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Feedback Exists',
-                    text: 'You have already rated this product for this order.'
-                });
-            </script>
-        </c:if>
-
-
-        <!-- SweetAlert cancel confirmation -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.cancel-btn').forEach(function (button) {
-                    button.addEventListener('click', function () {
-                        const form = button.closest('form');
-                        Swal.fire({
-                            title: 'Are you sure?',
-                            text: "Do you want to cancel this order?",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#d33',
-                            cancelButtonColor: '#3085d6',
-                            confirmButtonText: 'Yes, cancel it!',
-                            cancelButtonText: 'No'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                form.submit();
+                            if (window.history.replaceState) {
+                                const url = new URL(window.location);
+                                url.searchParams.delete('success');
+                                url.searchParams.delete('error');
+                                window.history.replaceState({}, document.title, url.pathname + url.search);
                             }
+
+                        };
+                    </script>
+
+                </c:if>
+
+                <c:if test="${param.error == 'alreadyRated'}">
+                    <script>
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Feedback Exists',
+                            text: 'You have already rated this product for this order.'
+                        });
+                    </script>
+                </c:if>
+
+
+                <!-- SweetAlert cancel confirmation -->
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        document.querySelectorAll('.cancel-btn').forEach(function (button) {
+                            button.addEventListener('click', function () {
+                                const form = button.closest('form');
+                                Swal.fire({
+                                    title: 'Are you sure?',
+                                    text: "Do you want to cancel this order?",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#d33',
+                                    cancelButtonColor: '#3085d6',
+                                    confirmButtonText: 'Yes, cancel it!',
+                                    cancelButtonText: 'No'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        form.submit();
+                                    }
+                                });
+                            });
                         });
                     });
-                });
-            });
-        </script>
+                </script>
 
-        <script>
-            function openFeedbackModal(productID, productName, orderID) {
-                document.getElementById('feedbackProductID').value = productID;
-                document.getElementById('feedbackProductName').value = productName;
-                document.getElementById('feedbackOrderID').value = orderID;
+                <script>
+                    function openFeedbackModal(productID, productName, orderID) {
+                        document.getElementById('feedbackProductID').value = productID;
+                        document.getElementById('feedbackProductName').value = productName;
+                        document.getElementById('feedbackOrderID').value = orderID;
 
-                const modalElement = document.getElementById('feedbackModal');
-                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-                modal.show();
-            }
-        </script>
+                        const modalElement = document.getElementById('feedbackModal');
+                        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                        modal.show();
+                    }
+                </script>
 
 
-    </body>
-</html>
+                </body>
+                </html>

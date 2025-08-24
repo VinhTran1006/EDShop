@@ -16,10 +16,12 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import javax.enterprise.inject.spi.Producer;
 import model.Customer;
 
 import model.Order;
 import model.OrderDetail;
+import model.Product;
 
 /**
  *

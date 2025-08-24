@@ -84,12 +84,12 @@ public class ProductDetailServlet extends HttpServlet {
             List<ProductDetail> productDetailList = proDao.getProductDetailByProductId(productId);
 
             // Lấy danh sách đánh giá và phản hồi
-            ProductRatingDAO ratingDAO = new ProductRatingDAO();
-            CustomerDAO customerDAO = new CustomerDAO();
-            RatingRepliesDAO repliesDAO = new RatingRepliesDAO();
-           // List<ProductRating> productRatings = ratingDAO.getProductRatingsByProductId(productId);
-            double totalStars = 0;
-            int visibleRatingCount = 0;
+//            ProductRatingDAO ratingDAO = new ProductRatingDAO();
+//            CustomerDAO customerDAO = new CustomerDAO();
+//            RatingRepliesDAO repliesDAO = new RatingRepliesDAO();
+//           // List<ProductRating> productRatings = ratingDAO.getProductRatingsByProductId(productId);
+//            double totalStars = 0;
+//            int visibleRatingCount = 0;
 
 //            for (ProductRating rating : productRatings) {
 //                if (!rating.isIsDeleted()) {  // <-- chỉ tính đánh giá chưa bị ẩn
