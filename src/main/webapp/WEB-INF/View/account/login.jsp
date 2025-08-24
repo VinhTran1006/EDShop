@@ -163,6 +163,18 @@
                 </h1>
 
                 <form method="post" action="Login">
+                    <%
+                        String successMsg = (String) session.getAttribute("registerSuccess");
+                        if (successMsg != null) {
+                    %>
+                    <div class="alert alert-success text-center" role="alert" style="border-radius:10px; font-weight:500;">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <%= successMsg%>
+                    </div>
+                    <%
+                            session.removeAttribute("registerSuccess");
+                        }
+                    %>
                     <div class="mb-3">
                         <label for="email" class="form-label">
                             <i class="bi bi-envelope me-2"></i>Email

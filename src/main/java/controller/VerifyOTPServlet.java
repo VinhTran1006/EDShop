@@ -24,7 +24,8 @@ import utils.OTPManager;
 public class VerifyOTPServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -111,7 +112,7 @@ public class VerifyOTPServlet extends HttpServlet {
             return;
         }
 
-        if (EmailService.verifyOTP(email, enteredOtp)) {
+        if (otpManager.getOtpCode() != enteredOtp) {
             request.setAttribute("error", "Incorrect OTP.");
             request.getRequestDispatcher("WEB-INF/View/account/verify.jsp").forward(request, response);
             return;
@@ -139,6 +140,8 @@ public class VerifyOTPServlet extends HttpServlet {
                 session.removeAttribute("otpPurpose");
 
                 EmailService.sendSuccessEmail(email);
+                session.setAttribute("registerSuccess", "Chúc mừng bạn đã đăng ký thành công, hãy đăng nhập ngay!");
+
                 response.sendRedirect("Login");
             } else {
                 request.setAttribute("error", "Account creation failed.");
