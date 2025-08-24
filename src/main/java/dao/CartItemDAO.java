@@ -178,4 +178,53 @@ public class CartItemDAO extends DBContext {
         }
     }
 
+    public List<CartItem> getCartItemsByIds(List<Integer> cartItemIds) {
+        List<CartItem> cartItems = new ArrayList<>();
+        if (cartItemIds.isEmpty()) {
+            return cartItems;
+        }
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT ci.*, p.* FROM CartItems ci ");
+        sql.append("JOIN Products p ON ci.productID = p.productID ");
+        sql.append("WHERE ci.cartItemID IN (");
+
+        for (int i = 0; i < cartItemIds.size(); i++) {
+            sql.append("?");
+            if (i < cartItemIds.size() - 1) {
+                sql.append(",");
+            }
+        }
+        sql.append(")");
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql.toString());
+            for (int i = 0; i < cartItemIds.size(); i++) {
+                ps.setInt(i + 1, cartItemIds.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                CartItem cartItem = new CartItem();
+                cartItem.setCartItemID(rs.getInt("cartItemID"));
+                cartItem.setProductID(rs.getInt("productID"));
+                cartItem.setQuantity(rs.getInt("quantity"));
+                cartItem.setCustomerID(rs.getInt("customerID"));
+
+                Product product = new Product();
+                product.setProductID(rs.getInt("productID"));
+                product.setProductName(rs.getString("productName"));
+                product.setPrice(rs.getBigDecimal("price"));
+                product.setQuantity(rs.getInt("quantity"));
+                product.setImageUrl1(rs.getString("imageUrl1"));
+
+                cartItem.setProduct(product);
+                cartItems.add(cartItem);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return cartItems;
+    }
 }

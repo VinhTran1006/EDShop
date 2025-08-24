@@ -20,10 +20,9 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.regex.Pattern;
 
-@WebServlet(name = "CreateOrderServlet", urlPatterns = {"/CreateOrderServlet"})
-public class CreateOrderServlet extends HttpServlet {
+@WebServlet(name = "CreateOrderController", urlPatterns = {"/CreateOrderController"})
+public class CreateOrderController extends HttpServlet {
     
     private CartItemDAO cartItemDAO;
     private AddressDAO addressDAO;
@@ -76,7 +75,7 @@ public class CreateOrderServlet extends HttpServlet {
             // Get customer addresses
             List<Address> addresses = addressDAO.getAllAddressesByCustomerId(customer.getCustomerID());
             
-            // Get customer vouchers (chỉ lấy voucher chưa dùng)
+            // Get customer vouchers
             List<Voucher> availableVouchers = voucherDAO.getAvailableVouchersForCustomer(customer.getCustomerID());
             
             // Calculate total amount
@@ -90,7 +89,7 @@ public class CreateOrderServlet extends HttpServlet {
             request.setAttribute("availableVouchers", availableVouchers);
             request.setAttribute("totalAmount", totalAmount);
             
-            request.getRequestDispatcher("/WEB-INF/View/customer/orderManagement/CreateOrder.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/View/customer/homePage/orderManagement/CreateOrder.jsp").forward(request, response);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,83 +126,26 @@ public class CreateOrderServlet extends HttpServlet {
         }
         
         try {
-            // Validate input
-            if (voucherCode == null || voucherCode.trim().isEmpty()) {
-                response.getWriter().write("error:empty_code");
-                return;
-            }
-            
-            // Clean and validate voucher code (chỉ cho phép chữ cái, số và một số ký tự đặc biệt)
-            voucherCode = voucherCode.trim().toUpperCase();
-            if (!isValidVoucherCode(voucherCode)) {
-                response.getWriter().write("error:invalid_format");
-                return;
-            }
-            
-            if (totalAmountStr == null || totalAmountStr.trim().isEmpty()) {
-                response.getWriter().write("error:invalid_amount");
-                return;
-            }
-            
             long totalAmount = Long.parseLong(totalAmountStr);
-            if (totalAmount <= 0) {
-                response.getWriter().write("error:invalid_amount");
-                return;
+            Voucher voucher = voucherDAO.validateVoucherForCustomer(voucherCode, customer.getCustomerID(), totalAmount);
+            
+            if (voucher != null) {
+                // Calculate discount
+                long discount = Math.min(
+                    (totalAmount * voucher.getDiscountPercent()) / 100,
+                    (long) voucher.getMaxDiscountAmount()
+                );
+                long finalAmount = totalAmount - discount;
+                
+                response.getWriter().write("success:" + discount + ":" + finalAmount + ":" + voucher.getVoucherID());
+            } else {
+                response.getWriter().write("error:invalid_voucher");
             }
             
-            // 1. Kiểm tra voucher có tồn tại không
-            Voucher voucher = voucherDAO.getVoucherByCode(voucherCode);
-            if (voucher == null) {
-                response.getWriter().write("error:voucher_not_found");
-                return;
-            }
-            
-            // 2. Kiểm tra khách hàng đã sử dụng voucher này chưa
-            if (customerVoucherDAO.hasCustomerUsedVoucher(customer.getCustomerID(), voucher.getVoucherID())) {
-                response.getWriter().write("error:voucher_already_used");
-                return;
-            }
-            
-            // 3. Validate voucher cho đơn hàng (kiểm tra các điều kiện khác)
-            Voucher validVoucher = voucherDAO.validateVoucherForOrder(voucherCode, customer.getCustomerID(), totalAmount);
-            if (validVoucher == null) {
-                // Kiểm tra cụ thể lý do không hợp lệ
-                if (!voucher.isActive()) {
-                    response.getWriter().write("error:voucher_inactive");
-                } else if (voucher.getExpiryDate().before(new java.util.Date())) {
-                    response.getWriter().write("error:voucher_expired");
-                } else if (voucher.getUsedCount() >= voucher.getUsageLimit()) {
-                    response.getWriter().write("error:voucher_limit_reached");
-                } else if (totalAmount < voucher.getMinOrderAmount()) {
-                    response.getWriter().write("error:min_order_not_met:" + String.format("%.0f", voucher.getMinOrderAmount()));
-                } else {
-                    response.getWriter().write("error:voucher_invalid");
-                }
-                return;
-            }
-            
-            // Calculate discount
-            long discount = Math.min(
-                (totalAmount * voucher.getDiscountPercent()) / 100,
-                (long) voucher.getMaxDiscountAmount()
-            );
-            long finalAmount = totalAmount - discount;
-            
-            // Trả về: discount_amount:final_amount:voucher_id:discount_percent
-            response.getWriter().write("success:" + discount + ":" + finalAmount + ":" + voucher.getVoucherID() + ":" + voucher.getDiscountPercent());
-            
-        } catch (NumberFormatException e) {
-            response.getWriter().write("error:invalid_amount");
         } catch (Exception e) {
             e.printStackTrace();
             response.getWriter().write("error:system_error");
         }
-    }
-    
-    // Validate voucher code format
-    private boolean isValidVoucherCode(String code) {
-        // Cho phép chữ cái, số, dấu gạch ngang và underscore, độ dài từ 3-20 ký tự
-        return Pattern.matches("^[A-Z0-9_-]{3,20}$", code);
     }
     
     private void createOrder(HttpServletRequest request, HttpServletResponse response) 
@@ -221,9 +163,8 @@ public class CreateOrderServlet extends HttpServlet {
             // Get form data
             int addressId = Integer.parseInt(request.getParameter("addressId"));
             String voucherIdStr = request.getParameter("voucherId");
-            String discountPercentStr = request.getParameter("discountPercent");
             long finalAmount = Long.parseLong(request.getParameter("finalAmount"));
-            long discountAmount = Long.parseLong(request.getParameter("discountAmount"));
+            long discount = Long.parseLong(request.getParameter("discount"));
             
             // Get selected cart items
             String selectedItemIds = (String) session.getAttribute("selectedCartItemIds");
@@ -244,14 +185,7 @@ public class CreateOrderServlet extends HttpServlet {
             Order order = new Order();
             order.setCustomerID(customer.getCustomerID());
             order.setTotalAmount(finalAmount);
-            
-            // Set discount percent từ voucher (không phải discount amount)
-            int discountPercent = 0;
-            if (discountPercentStr != null && !discountPercentStr.isEmpty()) {
-                discountPercent = Integer.parseInt(discountPercentStr);
-            }
-            order.setDiscount(discountPercent);
-            
+            order.setDiscount((int) discount);
             order.setAddressSnapshot(addressSnapshot);
             order.setAddressID(addressId);
             order.setStatus("Pending");
@@ -283,18 +217,18 @@ public class CreateOrderServlet extends HttpServlet {
                 // Clear cart
                 cartItemDAO.clearCartByCustomerId(customer.getCustomerID());
                 
-                session.setAttribute("message", "Order created successfully!");
+                session.setAttribute("message", "Order created successfully! Order ID: " + orderId);
                 response.sendRedirect("Home");
                 
             } else {
                 session.setAttribute("message", "Failed to create order");
-                response.sendRedirect("CreateOrderServlet");
+                response.sendRedirect("CreateOrderController");
             }
             
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("message", "Error creating order");
-            response.sendRedirect("CreateOrderServlet");
+            response.sendRedirect("CreateOrderController");
         }
     }
 }

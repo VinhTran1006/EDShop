@@ -158,37 +158,20 @@ public class OrderDetailDAO extends DBContext {
         return list;
     }
 
-//    public boolean addOrderDetails(int orderId, List<CartItem> cartItems) {
-//        String sql = "INSERT INTO OrderDetails (OrderID, ProductID, Quantity, Price) VALUES (?, ?, ?, ?)";
-//        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-//            conn.setAutoCommit(false);
-//            try {
-//                for (CartItem item : cartItems) {
-//                    Product product = item.getProduct();
-//                    BigDecimal unitPrice = product.getPrice();
-//                    BigDecimal discount = BigDecimal.valueOf(product.getDiscount());
-//                    BigDecimal discountFactor = BigDecimal.ONE.subtract(discount.divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP));
-//                    BigDecimal discountedPrice = unitPrice.multiply(discountFactor);
-//
-//                    ps.setInt(1, orderId);
-//                    ps.setInt(2, item.getProductID());
-//                    ps.setInt(3, item.getQuantity());
-//                    ps.setBigDecimal(4, discountedPrice);
-//                    ps.addBatch();
-//                }
-//                ps.executeBatch();
-//                conn.commit();
-//                return true;
-//            } catch (SQLException e) {
-//                conn.rollback();
-//                e.printStackTrace();
-//                return false;
-//            } finally {
-//                conn.setAutoCommit(true);
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//    }
+    public boolean createOrderDetail(OrderDetail orderDetail) {
+        String sql = "INSERT INTO OrderDetails (orderID, productID, quantity, price) VALUES (?, ?, ?, ?)";
+        
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, orderDetail.getOrderID());
+            ps.setInt(2, orderDetail.getProductID());
+            ps.setInt(3, orderDetail.getQuantity());
+            ps.setLong(4, orderDetail.getPrice());
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

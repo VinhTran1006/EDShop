@@ -1,4 +1,3 @@
-
 package dao;
 
 import java.math.BigDecimal;
@@ -23,7 +22,6 @@ import utils.DBContext;
  *
  */
 public class ProductDAO extends DBContext {
-
 
     public List<Product> getProductIsNew() {
         List<Product> list = new ArrayList<>();
@@ -100,7 +98,7 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
-   public List<Product> getProductIsBestSeller() {
+    public List<Product> getProductIsBestSeller() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT TOP 30\n"
                 + "    p.ProductID,p.ProductName,p.Description,p.Price,p.SupplierID,p.ImageURL1,p.ImageURL2,p.ImageURL3,p.ImageURL4,p.AddedAt,p.Quantity,p.CategoryID,p.BrandID,p.WarrantyPeriod, p.isActive,SUM(od.Quantity) AS TotalSold\n"
@@ -250,10 +248,10 @@ public class ProductDAO extends DBContext {
         String sql = "SELECT *"
                 + "FROM Products p "
                 + "WHERE p.ProductID = ?";
-      
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, productID);
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
 
                     int productId = rs.getInt("ProductID");
@@ -294,31 +292,29 @@ public class ProductDAO extends DBContext {
         }
     }
 
-
-  public List<ProductDetail> getProductDetailByProductId(int productId) {
-    List<ProductDetail> productDetailList = new ArrayList<>();
-    String sql = "SELECT * FROM ProductDetails p WHERE p.ProductID = ?";
-    try {
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setInt(1, productId);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            int productDetailId = rs.getInt("ProductDetailID");
-            int productID = rs.getInt("ProductID");
-            int attributeID = rs.getInt("AttributeID"); 
-            String attributeValue = rs.getString("AttributeValue");
-            boolean isActive = rs.getBoolean("IsActive"); 
-            ProductDetail productDetail = new ProductDetail(
-                productDetailId, productID, attributeID, attributeValue, isActive
-            );
-            productDetailList.add(productDetail);
+    public List<ProductDetail> getProductDetailByProductId(int productId) {
+        List<ProductDetail> productDetailList = new ArrayList<>();
+        String sql = "SELECT * FROM ProductDetails p WHERE p.ProductID = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, productId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int productDetailId = rs.getInt("ProductDetailID");
+                int productID = rs.getInt("ProductID");
+                int attributeID = rs.getInt("AttributeID");
+                String attributeValue = rs.getString("AttributeValue");
+                boolean isActive = rs.getBoolean("IsActive");
+                ProductDetail productDetail = new ProductDetail(
+                        productDetailId, productID, attributeID, attributeValue, isActive
+                );
+                productDetailList.add(productDetail);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace(); 
+        return productDetailList;
     }
-    return productDetailList;
-}
-
 
     public boolean updateProduct(int id, String productName, String description, BigDecimal price, int supplierid, int categoryid, int brandid, int warranty, Date addedat, int quantity, String url1, String url2, String url3, String url4) {
         String sql1 = "UPDATE Products SET ProductName = ?,Description=?, Price = ?, SupplierID = ?, CategoryID = ?, "
@@ -442,24 +438,24 @@ public class ProductDAO extends DBContext {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                 int productId = rs.getInt("ProductID");
-                    String productName = rs.getString("ProductName");
-                    String description = rs.getString("Description");
-                    BigDecimal price = rs.getBigDecimal("Price");
-                    int supplierId = rs.getInt("SupplierID");
-                    int categoryId = rs.getInt("CategoryID");
-                    int warrantyPeriod = rs.getInt("WarrantyPeriod");
-                    Date addedAt = rs.getDate("AddedAt");
-                    boolean isActive = rs.getBoolean("isActive");
-                    String imageUrl1 = rs.getString("ImageURL1");
-                    String imageUrl2 = rs.getString("ImageURL2");
-                    String imageUrl3 = rs.getString("ImageURL3");
-                    String imageUrl4 = rs.getString("ImageURL4");
-                    int quantity = rs.getInt("Quantity");
+                int productId = rs.getInt("ProductID");
+                String productName = rs.getString("ProductName");
+                String description = rs.getString("Description");
+                BigDecimal price = rs.getBigDecimal("Price");
+                int supplierId = rs.getInt("SupplierID");
+                int categoryId = rs.getInt("CategoryID");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Date addedAt = rs.getDate("AddedAt");
+                boolean isActive = rs.getBoolean("isActive");
+                String imageUrl1 = rs.getString("ImageURL1");
+                String imageUrl2 = rs.getString("ImageURL2");
+                String imageUrl3 = rs.getString("ImageURL3");
+                String imageUrl4 = rs.getString("ImageURL4");
+                int quantity = rs.getInt("Quantity");
 
-                    Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
+                Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
 
-                    list.add(product);
+                list.add(product);
             }
         } catch (SQLException e) {
             System.out.println("Error in getProductByKeyword: " + e.getMessage());
@@ -482,24 +478,24 @@ public class ProductDAO extends DBContext {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                 int productId = rs.getInt("ProductID");
-                    String productName = rs.getString("ProductName");
-                    String description = rs.getString("Description");
-                    BigDecimal price = rs.getBigDecimal("Price");
-                    int supplierId = rs.getInt("SupplierID");
-                    int brandId = rs.getInt("BrandID");
-                    int warrantyPeriod = rs.getInt("WarrantyPeriod");
-                    Date addedAt = rs.getDate("AddedAt");
-                    boolean isActive = rs.getBoolean("isActive");
-                    String imageUrl1 = rs.getString("ImageURL1");
-                    String imageUrl2 = rs.getString("ImageURL2");
-                    String imageUrl3 = rs.getString("ImageURL3");
-                    String imageUrl4 = rs.getString("ImageURL4");
-                    int quantity = rs.getInt("Quantity");
+                int productId = rs.getInt("ProductID");
+                String productName = rs.getString("ProductName");
+                String description = rs.getString("Description");
+                BigDecimal price = rs.getBigDecimal("Price");
+                int supplierId = rs.getInt("SupplierID");
+                int brandId = rs.getInt("BrandID");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Date addedAt = rs.getDate("AddedAt");
+                boolean isActive = rs.getBoolean("isActive");
+                String imageUrl1 = rs.getString("ImageURL1");
+                String imageUrl2 = rs.getString("ImageURL2");
+                String imageUrl3 = rs.getString("ImageURL3");
+                String imageUrl4 = rs.getString("ImageURL4");
+                int quantity = rs.getInt("Quantity");
 
-                    Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
+                Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
 
-                    list.add(product);
+                list.add(product);
             }
         } catch (SQLException e) {
             System.out.println("Error in getProductByKeyword: " + e.getMessage());
@@ -526,25 +522,25 @@ public class ProductDAO extends DBContext {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-               int productId = rs.getInt("ProductID");
-                    String productName = rs.getString("ProductName");
-                    String description = rs.getString("Description");
-                    BigDecimal price = rs.getBigDecimal("Price");
-                    int supplierId = rs.getInt("SupplierID");
-                    int categoryId = rs.getInt("CategoryID");
-                    int brandId = rs.getInt("BrandID");
-                    int warrantyPeriod = rs.getInt("WarrantyPeriod");
-                    Date addedAt = rs.getDate("AddedAt");
-                    boolean isActive = rs.getBoolean("isActive");
-                    String imageUrl1 = rs.getString("ImageURL1");
-                    String imageUrl2 = rs.getString("ImageURL2");
-                    String imageUrl3 = rs.getString("ImageURL3");
-                    String imageUrl4 = rs.getString("ImageURL4");
-                    int quantity = rs.getInt("Quantity");
+                int productId = rs.getInt("ProductID");
+                String productName = rs.getString("ProductName");
+                String description = rs.getString("Description");
+                BigDecimal price = rs.getBigDecimal("Price");
+                int supplierId = rs.getInt("SupplierID");
+                int categoryId = rs.getInt("CategoryID");
+                int brandId = rs.getInt("BrandID");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Date addedAt = rs.getDate("AddedAt");
+                boolean isActive = rs.getBoolean("isActive");
+                String imageUrl1 = rs.getString("ImageURL1");
+                String imageUrl2 = rs.getString("ImageURL2");
+                String imageUrl3 = rs.getString("ImageURL3");
+                String imageUrl4 = rs.getString("ImageURL4");
+                int quantity = rs.getInt("Quantity");
 
-                    Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
+                Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
 
-                    list.add(product);
+                list.add(product);
             }
         } catch (SQLException e) {
             System.out.println("Error in getProductByKeyword: " + e.getMessage());
@@ -564,23 +560,23 @@ public class ProductDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int productId = rs.getInt("ProductID");
-                    String productName = rs.getString("ProductName");
-                    String description = rs.getString("Description");
-                    BigDecimal price = rs.getBigDecimal("Price");
-                    int supplierId = rs.getInt("SupplierID");
-                    int categoryId = rs.getInt("CategoryID");
-                    int warrantyPeriod = rs.getInt("WarrantyPeriod");
-                    Date addedAt = rs.getDate("AddedAt");
-                    boolean isActive = rs.getBoolean("isActive");
-                    String imageUrl1 = rs.getString("ImageURL1");
-                    String imageUrl2 = rs.getString("ImageURL2");
-                    String imageUrl3 = rs.getString("ImageURL3");
-                    String imageUrl4 = rs.getString("ImageURL4");
-                    int quantity = rs.getInt("Quantity");
+                String productName = rs.getString("ProductName");
+                String description = rs.getString("Description");
+                BigDecimal price = rs.getBigDecimal("Price");
+                int supplierId = rs.getInt("SupplierID");
+                int categoryId = rs.getInt("CategoryID");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Date addedAt = rs.getDate("AddedAt");
+                boolean isActive = rs.getBoolean("isActive");
+                String imageUrl1 = rs.getString("ImageURL1");
+                String imageUrl2 = rs.getString("ImageURL2");
+                String imageUrl3 = rs.getString("ImageURL3");
+                String imageUrl4 = rs.getString("ImageURL4");
+                int quantity = rs.getInt("Quantity");
 
-                    Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
+                Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
 
-                    list.add(product);
+                list.add(product);
             }
             return list;
         } catch (SQLException e) {
@@ -600,24 +596,24 @@ public class ProductDAO extends DBContext {
             ps.setInt(1, categoryId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-               int productId = rs.getInt("ProductID");
-                    String productName = rs.getString("ProductName");
-                    String description = rs.getString("Description");
-                    BigDecimal price = rs.getBigDecimal("Price");
-                    int supplierId = rs.getInt("SupplierID");
-                    int brandId = rs.getInt("BrandID");
-                    int warrantyPeriod = rs.getInt("WarrantyPeriod");
-                    Date addedAt = rs.getDate("AddedAt");
-                    boolean isActive = rs.getBoolean("isActive");
-                    String imageUrl1 = rs.getString("ImageURL1");
-                    String imageUrl2 = rs.getString("ImageURL2");
-                    String imageUrl3 = rs.getString("ImageURL3");
-                    String imageUrl4 = rs.getString("ImageURL4");
-                    int quantity = rs.getInt("Quantity");
+                int productId = rs.getInt("ProductID");
+                String productName = rs.getString("ProductName");
+                String description = rs.getString("Description");
+                BigDecimal price = rs.getBigDecimal("Price");
+                int supplierId = rs.getInt("SupplierID");
+                int brandId = rs.getInt("BrandID");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Date addedAt = rs.getDate("AddedAt");
+                boolean isActive = rs.getBoolean("isActive");
+                String imageUrl1 = rs.getString("ImageURL1");
+                String imageUrl2 = rs.getString("ImageURL2");
+                String imageUrl3 = rs.getString("ImageURL3");
+                String imageUrl4 = rs.getString("ImageURL4");
+                int quantity = rs.getInt("Quantity");
 
-                    Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
+                Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
 
-                    list.add(product);
+                list.add(product);
             }
             return list;
         } catch (SQLException e) {
@@ -625,7 +621,7 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
-    
+
     public int countLowStockDynamic(int threshold) {
         String sql = "SELECT COUNT(*) AS LowStockCount FROM ( "
                 + "SELECT p.ProductID, "
@@ -666,7 +662,7 @@ public class ProductDAO extends DBContext {
         return stockMap;
     }
 
-      public ProductDetail getOneProductDetailById(int productId) {
+    public ProductDetail getOneProductDetailById(int productId) {
         ProductDetail productDetail = null;
         String sql = "SELECT *"
                 + "FROM ProductDetails p "
@@ -676,29 +672,41 @@ public class ProductDAO extends DBContext {
             ps.setInt(1, productId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                 int productDetailId = rs.getInt("ProductDetailID");
+                int productDetailId = rs.getInt("ProductDetailID");
                 int productID = rs.getInt("ProductID");
                 int attributeID = rs.getInt("AttribiteID");
                 String attributeValue = rs.getString("AttributeValue");
                 boolean isActive = rs.getBoolean("isAvtive");
-                 productDetail = new ProductDetail(productDetailId, productID, attributeID, attributeValue, isActive);
-}
+                productDetail = new ProductDetail(productDetailId, productID, attributeID, attributeValue, isActive);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return productDetail;
     }
-      
-          public static void main(String[] args) {
 
-       List<ProductDetail> r = new ArrayList<>();
-    ProductDAO dao = new ProductDAO();
-     r = dao.getProductDetailByProductId(1);
+    public static void main(String[] args) {
+
+        List<ProductDetail> r = new ArrayList<>();
+        ProductDAO dao = new ProductDAO();
+        r = dao.getProductDetailByProductId(1);
         for (ProductDetail s : r) {
             System.out.println(s.toString());
         }
     }
-    
+
+    public boolean updateProductQuantity(int productId, int quantityChange) {
+        String sql = "UPDATE Products SET quantity = quantity + ? WHERE productID = ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, quantityChange); // Use negative value to decrease
+            ps.setInt(2, productId);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
-
-

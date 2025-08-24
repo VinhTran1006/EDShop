@@ -3,6 +3,18 @@
 
 <body>
     <jsp:include page="/WEB-INF/View/customer/homePage/header.jsp" />
+    <!-- Display notification -->
+            <%
+                String message = (String) session.getAttribute("message");
+                if (message != null) {
+            %>
+            <div class="alert alert-info text-center">
+                <%= message%>
+            </div>
+            <%
+                    session.removeAttribute("message");
+                }
+            %>
     <jsp:include page="/WEB-INF/View/customer/homePage/section.jsp" />
     <jsp:include page="/WEB-INF/View/customer/homePage/banner.jsp" />
     <jsp:include page="/WEB-INF/View/customer/homePage/smallBanner.jsp" />

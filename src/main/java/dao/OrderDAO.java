@@ -202,65 +202,6 @@ public class OrderDAO extends DBContext {
         }
         return count;
     }
-// Ai làm thanh toán Sửa nha
-
-    public int createOrder(Order order) {
-        String sql = "INSERT INTO Orders (CustomerID, StaffID, AddressSnapshot, OrderedDate, DeliveredDate, Status, TotalAmount, Discount, AddressID, UpdatedAt) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, DATEADD(HOUR, 7, GETUTCDATE()))";
-
-        try ( PreparedStatement pre = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pre.setInt(1, order.getCustomerID());
-            pre.setInt(2, order.getStaffID());
-            pre.setString(3, order.getAddressSnapshot());
-
-            // OrderedDate
-            if (order.getOrderDate() != null && !order.getOrderDate().trim().isEmpty()) {
-                try {
-                    pre.setTimestamp(4, Timestamp.valueOf(order.getOrderDate()));
-                } catch (IllegalArgumentException e) {
-                    Logger.getLogger(OrderDAO.class.getName()).log(Level.SEVERE,
-                            "Invalid OrderedDate format: {0}", order.getOrderDate());
-                    return -1;
-                }
-            } else {
-                pre.setNull(4, java.sql.Types.TIMESTAMP);
-            }
-
-            // DeliveredDate
-            if (order.getDeliveredDate() != null && !order.getDeliveredDate().trim().isEmpty()) {
-                try {
-                    pre.setTimestamp(5, Timestamp.valueOf(order.getDeliveredDate()));
-                } catch (IllegalArgumentException e) {
-                    Logger.getLogger(OrderDAO.class.getName()).log(Level.SEVERE,
-                            "Invalid DeliveredDate format: {0}", order.getDeliveredDate());
-                    return -1;
-                }
-            } else {
-                pre.setNull(5, java.sql.Types.TIMESTAMP);
-            }
-
-            pre.setString(6, order.getStatus());
-            pre.setLong(7, order.getTotalAmount());
-            pre.setInt(8, order.getDiscount());
-            pre.setInt(9, order.getAddressID());
-
-            int affectedRows = pre.executeUpdate();
-
-            if (affectedRows > 0) {
-                try ( ResultSet rs = pre.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        return rs.getInt(1); // Trả về OrderID vừa insert
-                    }
-                }
-            }
-            return -1;
-        } catch (SQLException e) {
-            Logger.getLogger(OrderDAO.class.getName()).log(Level.SEVERE,
-                    "SQL Error creating order: Message={0}, SQLState={1}, ErrorCode={2}",
-                    new Object[]{e.getMessage(), e.getSQLState(), e.getErrorCode()});
-            return -1;
-        }
-    }
 
     ////-------------Tai------///
     public int countTodayOrders() {
@@ -274,5 +215,31 @@ public class OrderDAO extends DBContext {
         }
         return 0;
     }
-
+    
+    public int createOrder(Order order) {
+        String sql = "INSERT INTO Orders (customerID, totalAmount, orderedDate, status, discount, addressSnapshot, addressID) " +
+                    "VALUES (?, ?, GETDATE(), ?, ?, ?, ?)";
+        
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, order.getCustomerID());
+            ps.setLong(2, order.getTotalAmount());
+            ps.setString(3, order.getStatus());
+            ps.setInt(4, order.getDiscount());
+            ps.setString(5, order.getAddressSnapshot());
+            ps.setInt(6, order.getAddressID());
+            
+            int result = ps.executeUpdate();
+            if (result > 0) {
+                ResultSet generatedKeys = ps.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
 }
