@@ -19,6 +19,7 @@
     NumberFormat nf = NumberFormat.getInstance(new Locale("vi", "VN"));
 %>
 
+
 <!DOCTYPE html>
 <html lang="en">
     <head>

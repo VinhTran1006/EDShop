@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import model.Attribute;
 import model.CategoryDetail;
 import model.CategoryDetailGroup;
 import model.Product;
@@ -61,15 +62,13 @@ public class ProductListForStaffDetail extends HttpServlet {
             ProductDAO proDAO = new ProductDAO();
             CategoryDAO cateDAO = new CategoryDAO();
 
-            Product product = proDAO.getProductById(productId);
-            List<ProductDetail> productDetailList = proDAO.getProductDetailById(productId);
-            List<CategoryDetailGroup> categporyGroupList = cateDAO.getCategoryDetailGroupById(product.getCategoryId());
-            List<CategoryDetail> categporyDetailList = cateDAO.getCategoryDetailById(product.getCategoryId());
+            Product product = proDAO.getProductByID(productId);
+            List<ProductDetail> productDetailList = proDAO.getProductDetailByProductId(productId);
+            List<Attribute> attributeList = cateDAO.getAttributeByCategoryID(product.getCategoryID());
             
             request.setAttribute("product", product);
             request.setAttribute("productDetailList", productDetailList);
-            request.setAttribute("categoryGroupList", categporyGroupList);
-            request.setAttribute("categoryDetailList", categporyDetailList);
+            request.setAttribute("attributeList", attributeList);
             request.setAttribute("productId", productId);
 
             request.getRequestDispatcher("/WEB-INF/View/staff/productManagement/viewProductDetail/adminProductDetail.jsp").forward(request, response);

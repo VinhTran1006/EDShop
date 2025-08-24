@@ -95,6 +95,7 @@ public class LoginStaffServlet extends HttpServlet {
             session.setAttribute("staff", staff);
             session.setAttribute("role", staff.getRole());
 
+            
             // Log thông tin login
             System.out.println("========== [LOGIN SUCCESS] ==========");
             System.out.println("Time: " + loginTime);

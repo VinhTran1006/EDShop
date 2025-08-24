@@ -15,7 +15,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
+import model.Attribute;
 import model.Brand;
 import model.Category;
 import model.CategoryDetail;
@@ -60,66 +62,35 @@ public class ProductListForStaff extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ProductDAO dao = new ProductDAO();
-        String action = request.getParameter("action");
-        if (action == null) {
-            action = "list";
+        ProductDAO proDAO = new ProductDAO();
+        CategoryDAO cateDAO = new CategoryDAO();
+        BrandDAO brandDAO = new BrandDAO();
+        String filter = request.getParameter("filter");
+        List<Product> productList = new ArrayList<>();
+        List<Category> cateList = new ArrayList<>();
+        List<Brand> brandList = new ArrayList<>();
+
+        if (filter == null || filter.equals("All")) {
+            productList = proDAO.getProductListAdmin();
+        } else if (filter.equals("Featured")) {
+            productList = proDAO.getProductIsFeatured();
+        } else if (filter.equals("Bestseller")) {
+            productList = proDAO.getProductIsBestSeller();
+        } else if (filter.equals("New")) {
+            productList = proDAO.getProductIsNew();
+        }
+        cateList = cateDAO.getAllCategory();
+        brandList = brandDAO.getAllBrand();
+        String keyword = request.getParameter("keyword");
+        if (keyword != null) {
+            productList = proDAO.getProductByKeyword(keyword);
         }
 
-        if (action.equalsIgnoreCase("list")) {
-            List<Product> products = dao.getProductList();
-            request.setAttribute("products", products);
-            request.getRequestDispatcher("/WEB-INF/View/staff/productManagement/productList.jsp").forward(request, response);
-        } else if (action.equalsIgnoreCase("search")) {
-            String keyword = request.getParameter("keyword");
-            List<Product> products;
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                products = dao.searchProductByName(keyword);
-            } else {
-                products = dao.getProductList();
-            }
-            request.setAttribute("products", products);
-            if (products.isEmpty()) {
-                request.setAttribute("message", "No product found.");
-            }
-            request.getRequestDispatcher("/WEB-INF/View/staff/productManagement/productList.jsp").forward(request, response);
-        } else if (action.equalsIgnoreCase("detail")) {
-            String idRaw = request.getParameter("id");
-            try {
-                int id = Integer.parseInt(idRaw);
-
-                if (id != -1) {
-                    ProductDAO proDAO = new ProductDAO();
-                    CategoryDAO cateDAO = new CategoryDAO();
-                    SupplierDAO supDAO = new SupplierDAO();
-                    BrandDAO brandDAO = new BrandDAO();
-
-                    Product product = proDAO.getProductById(id);
-                    List<ProductDetail> productDetailList = proDAO.getProductDetailById(id);
-                    List<CategoryDetailGroup> categporyGroupList = cateDAO.getCategoryDetailGroupById(product.getCategoryId());
-                    List<CategoryDetail> categporyDetailList = cateDAO.getCategoryDetailById(product.getCategoryId());
-                    List<Suppliers> supList = supDAO.getAllSuppliers();
-                    List<Brand> brandList = brandDAO.getAllBrand();
-
-                    List<Category> categoryList = cateDAO.getAllCategory();
-
-                    request.setAttribute("product", product);
-                    request.setAttribute("productDetailList", productDetailList);
-                    request.setAttribute("categoryGroupList", categporyGroupList);
-                    request.setAttribute("categoryDetailList", categporyDetailList);
-                    request.setAttribute("productId", id);
-                    request.setAttribute("supList", supList);
-                    request.setAttribute("categoryList", categoryList);
-                    request.setAttribute("brandList", brandList);
-                    request.getRequestDispatcher("/WEB-INF/View/staff/productManagement/updateProduct/updateInfo/update.jsp").forward(request, response);
-
-                }
-            } catch (NumberFormatException e) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid product ID");
-            } catch (Exception e) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            }
-        }
+        request.setAttribute("productList", productList);
+        request.setAttribute("cateList", cateList);
+        request.setAttribute("brandList", brandList);
+        request.setAttribute("selectedFilter", filter);
+        request.getRequestDispatcher("/WEB-INF/View/staff/productManagement/productList.jsp").forward(request, response);
     }
 
     /**

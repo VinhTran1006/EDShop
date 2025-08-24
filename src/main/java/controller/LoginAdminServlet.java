@@ -89,6 +89,7 @@ public class LoginAdminServlet extends HttpServlet {
 
         if (staff != null) {
             
+            
             if ("Admin".equalsIgnoreCase(staff.getRole())) {
                 session.setAttribute("admin", staff);
                 session.setAttribute("role", staff.getRole());

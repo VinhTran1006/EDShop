@@ -61,12 +61,12 @@
                                     for (Product product : products) {
                             %>
                             <tr>
-                                <td><%= product.getProductId()%></td>
+                                <td><%= product.getProductID()%></td>
                                 <td><%= product.getProductName()%></td>
                                 <td><%= product.getPrice()%></td>
-                                <td><%= product.getStock()%></td>
+                                <td><%= product.getQuantity()%></td>
                                 <td class="action-col">
-                                    <a href="ProductListForStaffDetail?productId=<%= product.getProductId()%>" class="btn btn-primary">Detail</a>
+                                    <a href="ProductListForStaffDetail?productId=<%= product.getProductID()%>" class="btn btn-primary">Detail</a>
 
                                 </td>
                             </tr>

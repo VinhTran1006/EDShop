@@ -1,9 +1,7 @@
-<%-- 
-    Document   : productList
-    Created on : Jun 18, 2025, 1:04:12 PM
-    Author     : HP - Gia Khiêm
---%>
 
+
+<%@page import="dao.BrandDAO"%>
+<%@page import="dao.CategoryDAO"%>
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
 <%@page import="java.util.List"%>
@@ -26,19 +24,15 @@
         <jsp:include page="/WEB-INF/View/staff/productManagement/deleteProduct/staffDeleteProduct.jsp" />
         <div class = "" style = "width: 80%; margin-left: 18.9%">
 
-            <%                if (productList != null) {
-            %>
+            <%if (productList != null) {%>
             <div style="overflow-x: auto; width: 100%;">
                 <table class="table table-striped table-hover">
                     <tr class = "tableRow">
                         <td class ="tieuDe" style = "text-align: center">ID</td>
                         <td class ="tieuDe" style = "text-align: center">Product Name</td>
                         <td class ="tieuDe" style = "text-align: center">Price</td>
-                        <td class ="tieuDe" style = "text-align: center">Discount</td>
-                        <td class ="tieuDe" style = "text-align: center">status</td>
                         <td class ="tieuDe" style = "text-align: center">Category</td>
                         <td class ="tieuDe" style = "text-align: center">Brand</td>
-                        <td class ="tieuDe" style = "text-align: center">Active</td>
                         <td class ="tieuDe" style = "text-align: center">Image</td>
                         <td class ="tieuDe" style = "text-align: center">Action</td>
                     </tr>
@@ -46,30 +40,28 @@
                         Locale localeVN = new Locale("vi", "VN");
                         NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
 
+                        CategoryDAO catedao = new CategoryDAO();
+                        BrandDAO branddao = new BrandDAO();
                         for (Product product : productList) {
-
-                            String giaFormatted = currencyVN.format(product.getPrice());
+                            String brandname = branddao.getBrandNameByBrandId(product.getBrandID());
+                            String CategoryName = catedao.getCategoryNameByCategoryId(product.getCategoryID());
+                            if (product != null) {
+                                String giaFormatted = "______";
+                                if (product.getPrice() != null) {
+                                    giaFormatted = currencyVN.format(product.getPrice());
+                                }
                     %>
                     <tr>
-                        <td><%= product.getProductId()%></td>
+                        <td><%= product.getProductID()%></td>
                         <td><%= product.getProductName()%></td>
                         <td><%=giaFormatted%></td>
-                        <td><%= product.getDiscount()%>%</td>
-                        <td><%= product.getStatus()%></td>
+                        <td><%= CategoryName%></td>
+                        <td><%= brandname%></td>
 
-                        <td><%= product.getCategoryName()%></td>
-                        <td><%= product.getBrandName()%></td>
-
-                        <td>
-                            <div class="pretty-checkbox">
-                                <input type="checkbox" id="active-<%= product.getProductId()%>" disabled <%= product.isIsActive() ? "checked" : ""%> />
-                                <label for="active-<%= product.getProductId()%>"></label>
-                            </div>
-                        </td>
 
 
                         <%
-                            String img = product.getImageUrl();
+                            String img = product.getImageUrl1();
                         %>
                         <td>
                             <img style = "width: 80%" src = "<%= (img != null) ? img : ""%>">
@@ -77,15 +69,14 @@
 
                         <td>
                             <div class="d-flex gap-1">
-                                <a style = "text-align: center" href="StaffViewProductDetail?productId=<%= product.getProductId()%>" class="btn btn-warning" style="color: white;"><i class="bi bi-tools"></i> Detail</a>
-                                <a style = "text-align: center" href="StaffUpdateInfo?productId=<%= product.getProductId()%>" class="btn btn-primary" ><i class="bi bi-tools"></i> Edit</a>
-                                <button style = "text-align: center" class="btn btn-danger" onclick="confirmDelete(<%= product.getProductId()%>)">Delete</button>
+                                <a style = "text-align: center" href="StaffViewProductDetail?productId=<%= product.getProductID()%>" class="btn btn-warning" style="color: white;"><i class="bi bi-tools"></i> Detail</a>
                             </div>
                         </td>
                     </tr>
 
                     <%
 
+                            }
                         }
                     %>
                 </table>
