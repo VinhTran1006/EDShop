@@ -3,7 +3,6 @@ package controller;
 import dao.ImportStockDAO;
 import dao.ImportStockDetailDAO;
 import dao.ProductDAO;
-import dao.StaffDAO;
 import dao.SupplierDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import model.Account;
 import model.ImportStock;
 import model.ImportStockDetail;
 import model.Product;
@@ -71,13 +69,13 @@ public class ImportStockServlet extends HttpServlet {
             return;
         }
 
-        List<Suppliers> suppliers = supplierDAO.getAllActivatedSuppliers();
+        List<Suppliers> suppliers = supplierDAO.getAllSuppliers();
         request.setAttribute("suppliers", suppliers);
         session.setAttribute("suppliers", suppliers);
 
         ArrayList<Product> products = (ArrayList<Product>) session.getAttribute("products");
         if (products == null) {
-            products = (ArrayList<Product>) productDAO.getProductList();
+            products = (ArrayList<Product>) productDAO.getProductListAdmin();
             session.setAttribute("products", products);
         }
 
@@ -96,7 +94,7 @@ public class ImportStockServlet extends HttpServlet {
 
         ArrayList<Product> products = (ArrayList<Product>) session.getAttribute("products");
         if (products == null) {
-            products = (ArrayList<Product>) productDAO.getProductList();
+            products = (ArrayList<Product>) productDAO.getProductListAdmin();
             session.setAttribute("products", products);
         }
 
@@ -107,7 +105,7 @@ public class ImportStockServlet extends HttpServlet {
                 Suppliers supplier = supplierDAO.getSupplierById(supplierId);
                 session.setAttribute("supplier", supplier);
 
-                ArrayList<Product> allProducts = (ArrayList<Product>) productDAO.getProductList();
+                ArrayList<Product> allProducts = (ArrayList<Product>) productDAO.getProductListAdmin();
                 session.setAttribute("products", allProducts);
 
                 session.setAttribute("selectedProducts", new ArrayList<ImportStockDetail>());
@@ -142,13 +140,13 @@ public class ImportStockServlet extends HttpServlet {
 
                 ImportStockDetail detail = new ImportStockDetail();
                 detail.setProduct(product);
-                detail.setQuantity(quantity);
+                detail.setStock(quantity);
                 detail.setUnitPrice(price);
-                detail.setQuantityLeft(quantity);
+
 
                 boolean isContained = false;
                 for (ImportStockDetail proDet : detailList) {
-                    if (proDet.getProduct().getProductId() == productId) {
+                    if (proDet.getProduct().getProductID()) == productId) {
                         isContained = true;
                         break;
                     }
@@ -159,7 +157,7 @@ public class ImportStockServlet extends HttpServlet {
 
                     int deleteIndex = -1;
                     for (int i = 0; i < products.size(); ++i) {
-                        if (products.get(i).getProductId() == productId) {
+                        if (products.get(i).getProductID() == productId) {
                             deleteIndex = i;
                             break;
                         }
@@ -192,7 +190,7 @@ public class ImportStockServlet extends HttpServlet {
                 if ("delete".equals(action)) {
                     productId = Integer.parseInt(request.getParameter("productId"));
                     for (int i = 0; i < detailList.size(); i++) {
-                        if (detailList.get(i).getProduct().getProductId() == productId) {
+                        if (detailList.get(i).getProduct().getProductID() == productId) {
                             detailList.remove(i);
                             Product temp = productDAO.getProductByID(productId);
                             products.add(temp);
@@ -215,8 +213,8 @@ public class ImportStockServlet extends HttpServlet {
                     }
 
                     for (int i = 0; i < detailList.size(); i++) {
-                        if (detailList.get(i).getProduct().getProductId() == productId) {
-                            detailList.get(i).setQuantity(quantity);
+                        if (detailList.get(i).getProduct().getProductID() == productId) {
+                            detailList.get(i).setStock(quantity);
                             detailList.get(i).setUnitPrice(price);
                             detailList.get(i).setQuantityLeft(quantity);
                             break;
@@ -227,7 +225,7 @@ public class ImportStockServlet extends HttpServlet {
                 Collections.sort(products, new Comparator<Product>() {
                     @Override
                     public int compare(Product p1, Product p2) {
-                        return Integer.compare(p1.getProductId(), p2.getProductId());
+                        return Integer.compare(p1.getProductID(), p2.getProductID());
                     }
                 });
 
@@ -250,7 +248,7 @@ public class ImportStockServlet extends HttpServlet {
         if (supplier != null && selectedProducts != null && !selectedProducts.isEmpty()) {
             long total = 0L;
             for (ImportStockDetail detail : selectedProducts) {
-                total += detail.getQuantity() * detail.getUnitPrice();
+                total += detail.getStock()* detail.getUnitPrice();
             }
 
             Staff staff = (Staff) session.getAttribute("staff");

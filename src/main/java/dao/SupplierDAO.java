@@ -11,7 +11,7 @@ public class SupplierDAO extends DBContext {
     // Lấy toàn bộ danh sách Suppliers
     public List<Suppliers> getAllSuppliers() {
         List<Suppliers> list = new ArrayList<>();
-        String sql = "SELECT SupplierID, TaxID, Name, Email, PhoneNumber, Address, ContactPerson, Description, IsActive FROM Suppliers";
+        String sql = "SELECT SupplierID, TaxID, Name, Email, PhoneNumber, Address, ContactPerson, Description, IsActive = 'true' FROM Suppliers";
         try ( PreparedStatement st = conn.prepareStatement(sql);  ResultSet rs = st.executeQuery()) {
 
             while (rs.next()) {
@@ -180,5 +180,36 @@ public class SupplierDAO extends DBContext {
         }
         return list;
     }
+    // Lấy tất cả supplier đang active
+
+    public List<Suppliers> getAllActiveSuppliers() {
+        List<Suppliers> list = new ArrayList<>();
+        String sql = "SELECT supplierID, taxID, name, email, phoneNumber, address, contactPerson, description, isActive "
+                + "FROM Suppliers WHERE isActive = 1";
+
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Suppliers s = new Suppliers();
+                s.setSupplierID(rs.getInt("supplierID"));
+                s.setTaxID(rs.getString("taxID"));
+                s.setName(rs.getString("name"));
+                s.setEmail(rs.getString("email"));
+                s.setPhoneNumber(rs.getString("phoneNumber"));
+                s.setAddress(rs.getString("address"));
+                s.setContactPerson(rs.getString("contactPerson"));
+                s.setDescription(rs.getString("description"));
+                s.setIsActive(rs.getBoolean("isActive"));
+
+                list.add(s);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // hoặc dùng logger
+        }
+
+        return list;
+    }
+
 
 }

@@ -67,12 +67,12 @@ public class StaffDashboardServlet extends HttpServlet {
         CustomerDAO customerDAO = new CustomerDAO();
         ProductDAO productDAO = new ProductDAO();
         int todayOrders = orderDAO.countTodayOrders();
-        int newFeedback = productRatingDAO.countUnreadFeedback();
+//        int newFeedback = productRatingDAO.countUnreadFeedback();
         int totalCustomers = customerDAO.countTotalCustomers();
         int lowStockAlerts = productDAO.countLowStockDynamic(5); // 5 là mức cảnh báo bạn muốn
 
         request.setAttribute("todayOrders", todayOrders);
-        request.setAttribute("newFeedback", newFeedback);
+//        request.setAttribute("newFeedback", newFeedback);
         request.setAttribute("totalCustomers", totalCustomers);
         request.setAttribute("lowStockAlerts", lowStockAlerts);
         request.getRequestDispatcher("/WEB-INF/View/staff/staffDashboard.jsp").forward(request, response);

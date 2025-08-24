@@ -3,11 +3,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%
-   // Staff staff = (Staff) session.getAttribute("staff");
-   // if (staff == null) {
-       // response.sendRedirect("LoginStaff");
-      //  return;
-   // }
+    Staff staff = (Staff) session.getAttribute("staff");
+    if (!(staff.getRole().equalsIgnoreCase("staff") || staff.getRole().equalsIgnoreCase("admin"))) {
+        response.sendRedirect("LoginStaff");
+        return;
+    }
 %>
 
 <style>
@@ -52,23 +52,23 @@
         font-weight: 500;
         color: #212529;
     }
-.header-container {
-    position: fixed;
-    top: 0;
-    left: 250px;
-    width: calc(100% - 250px);
-    background: white;
-    border-bottom: 1px solid #e9ecef;
-    padding: 16px 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    z-index: 1000;
-}
-main.main-content {
-    margin-left: 250px;
-    padding: 30px;
-    padding-top: 100px; /* tránh b? header che */
-    width: calc(100% - 250px);
-}
+    .header-container {
+        position: fixed;
+        top: 0;
+        left: 250px;
+        width: calc(100% - 250px);
+        background: white;
+        border-bottom: 1px solid #e9ecef;
+        padding: 16px 24px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        z-index: 1000;
+    }
+    main.main-content {
+        margin-left: 250px;
+        padding: 30px;
+        padding-top: 100px; /* tránh b? header che */
+        width: calc(100% - 250px);
+    }
 
     .user-details small {
         color: #6c757d;
@@ -188,10 +188,9 @@ main.main-content {
             </div>
             <div class="user-details">
                 <h5>${staff.fullName}</h5>
-                <small>${staff.position}</small>
             </div>
         </div>
-        
+
         <div class="header-actions">           
             <form action="${pageContext.request.contextPath}/Logout" method="get" style="margin: 0;">
                 <button type="submit" class="logout-btn">

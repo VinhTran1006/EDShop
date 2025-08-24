@@ -14,7 +14,7 @@
             <jsp:include page="../sideBar.jsp" />
             <div class="wrapper">
                 <main class="main-content">
-                                        <jsp:include page="/WEB-INF/View/staff/header.jsp" />
+                    <jsp:include page="/WEB-INF/View/staff/header.jsp" />
 
                     <h1 class="mb-4">Import Stock Detail</h1>
                     <div class="d-flex justify-content-end mb-4 btn-group-custom">
@@ -22,11 +22,14 @@
                     </div>
                     <form class="search-form mb-4" method="get" style="min-height: 52px;">
                     </form>
+
                     <c:if test="${not empty error}">
                         <div class="alert alert-danger">${error}</div>
                     </c:if>
+
+                    <!-- Thông tin phiếu nhập -->
                     <div class="table-container mb-4" style="max-width: 1100px; margin: 0 auto;">
-                        <table aria-label="Suppliers table">
+                        <table aria-label="Import Stock Info table">
                             <thead>
                                 <tr>
                                     <th>Import ID</th>
@@ -39,8 +42,8 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>${importStock.ioid}</td>
-                                    <td>${importStock.staffId}</td>
+                                    <td>${importStock.importID}</td>
+                                    <td>${importStock.staffID}</td>
                                     <td>${importStock.fullName}</td>
                                     <td>
                                         <fmt:formatDate value="${importStock.importDate}" pattern="yyyy-MM-dd HH:mm" />
@@ -53,23 +56,27 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Chi tiết nhập kho -->
                     <div class="table-container mb-4" style="max-width: 1100px; margin: 0 auto;">
                         <h3 style="margin-bottom: 18px;">Details</h3>
-                        <table aria-label="Suppliers table">
+                        <table aria-label="Import Stock Details table">
                             <thead>
                                 <tr>
                                     <th>Product ID</th>
                                     <th>Product Name</th>
                                     <th>Quantity</th>
+                                    <th>Quantity Left</th>
                                     <th>Import Price</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <c:forEach items="${details}" var="d">
                                     <tr>
-                                        <td>${d.product.productId}</td>
+                                        <td>${d.product.productID}</td>
                                         <td>${d.product.productName}</td>
-                                        <td>${d.quantity}</td>
+                                        <td>${d.stock}</td>
+                                        <td>${d.stockLeft}</td>
                                         <td class="text-center">
                                             <fmt:formatNumber value="${d.unitPrice}" type="currency" currencySymbol="₫" groupingUsed="true" minFractionDigits="0"/>
                                         </td>
@@ -78,6 +85,7 @@
                             </tbody>
                         </table>
                     </div>
+
                     <div class="text-end" style="max-width: 1100px; margin: 0 auto;">
                         <a href="ImportStockHistory" class="btn btn-secondary">Back</a>
                     </div>
@@ -86,3 +94,4 @@
         </div>
     </body>
 </html>
+

@@ -12,7 +12,6 @@ import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import model.Attribute;
 import model.Product;
 import model.ProductDetail;
 

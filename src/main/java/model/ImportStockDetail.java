@@ -6,27 +6,34 @@ package model;
 
 /**
  *
- * 
+ *
  */
 public class ImportStockDetail {
 
     private int importStockDetailsID;
     private int importID;
     private int stock;
+    private int stockLeft;
     private long unitPrice;
     private int productID;
+
+    // Join
+    private Product product; // set sau khi JOIN
 
     public ImportStockDetail() {
     }
 
-    public ImportStockDetail(int importStockDetailsID, int importID, int stock, long unitPrice, int productID) {
+    public ImportStockDetail(int importStockDetailsID, int importID, int stock, int stockLeft, long unitPrice, int productID) {
         this.importStockDetailsID = importStockDetailsID;
         this.importID = importID;
         this.stock = stock;
+        this.stockLeft = stockLeft;
         this.unitPrice = unitPrice;
         this.productID = productID;
+
     }
 
+    // getters & setters
     public int getImportStockDetailsID() {
         return importStockDetailsID;
     }
@@ -66,5 +73,19 @@ public class ImportStockDetail {
     public void setProductID(int productID) {
         this.productID = productID;
     }
-  
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+    public int getStockLeft() {
+        return stockLeft;
+    }
+
+    public void setStockLeft(int stockLeft) {
+        this.stockLeft = stockLeft;
+    }
 }
