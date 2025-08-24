@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controller;
+import java.util.Arrays;
 
 import dao.CategoryDAO;
 import java.io.IOException;
@@ -78,6 +79,7 @@ public class CreateCategoryServlet extends HttpServlet {
 
         String categoryName = request.getParameter("categoryName");
         String ImgURLLogo = request.getParameter("ImgURLLogo");
+        int groupCount = Integer.parseInt(request.getParameter("groupCount"));
 
         CategoryDAO dao = new CategoryDAO();
         int categoryId = dao.addCategory(categoryName, ImgURLLogo);
@@ -87,13 +89,11 @@ public class CreateCategoryServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/createCategory/createCategory.jsp").forward(request, response);
             return;
         }
-
-        for (int i = 1;; i++) {
+        for (int i = 1; i <= groupCount; i++) {
             String groupName = request.getParameter("groups[" + i + "][name]");
-            if (groupName == null) {
-                break;
+            if (groupName == null || groupName.trim().isEmpty()) {
+                continue;
             }
-
             int attributeID = dao.addAttribute(groupName, categoryId);
             if (attributeID == -1) {
                 request.setAttribute("createError", "1");
@@ -102,9 +102,12 @@ public class CreateCategoryServlet extends HttpServlet {
             }
         }
 
+        request.getParameterMap().forEach((k, v) -> {
+            System.out.println(k + " = " + Arrays.toString(v));
+        });
+
         // Thành công
-        request.setAttribute("createSuccess", "1");
-        response.sendRedirect("CategoryView");
+        response.sendRedirect("CategoryView?createSuccess=1");
 
     }
 

@@ -19,20 +19,6 @@
         <title>JSP Page</title>
         <link rel="stylesheet" href="Css/productDetail1.css">
 
-        <script>
-            function toggleDetails(index) {
-                const detailGroup = document.getElementById("detailGroup" + index);
-                const arrowIcon = document.getElementById("arrow" + index);
-
-                if (detailGroup.classList.contains("hidden")) {
-                    detailGroup.classList.remove("hidden");
-                    arrowIcon.innerText = "▲"; // hoặc dùng ▾ nếu thích
-                } else {
-                    detailGroup.classList.add("hidden");
-                    arrowIcon.innerText = "▼";
-                }
-            }
-        </script>
     </head>
     <body>
         <div class = "container col-md-12" style = "background-color: #FFFFFF; border-radius: 15px;">
@@ -58,7 +44,7 @@
                                     %>
                                     <input type="text" 
                                            class="attribute-input"
-                                           name="attribute_<%= proDetail.getAttributeValue()%>" 
+                                           name="attribute_<%= proDetail.getAttibuteID()%>" 
                                            value="<%= proDetail.getAttributeValue()%>" 
                                            oninput="this.size = this.value.length || 1;" required>
 

@@ -30,17 +30,6 @@ import model.Product;
 @WebServlet(name = "AdminAddProductDetailServlet", urlPatterns = {"/AdminAddProductDetail"})
 public class AdminAddProductDetailServlet extends HttpServlet {
 
-    private Cloudinary cloudinary;
-
-    @Override
-    public void init() {
-        cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "dgnyskpc3",
-                "api_key", "398517693378845",
-                "api_secret", "ho0bvkCgpHDBFoUW3M9bG8apAKk",
-                "secure", true
-        ));
-    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -127,7 +116,7 @@ public class AdminAddProductDetailServlet extends HttpServlet {
 
             }
             if (checkInsertValue) {
-                response.sendRedirect("AdminCreateProduct?success=1");
+                response.sendRedirect("AdminProduct?success=1");
             } else {
                 response.sendRedirect("AdminCreateProduct?error=1");
 

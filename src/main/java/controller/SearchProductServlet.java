@@ -21,7 +21,7 @@ import model.Product;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 @WebServlet(name = "SearchProductServlet", urlPatterns = {"/SearchProduct"})
 public class SearchProductServlet extends HttpServlet {
@@ -67,16 +67,15 @@ public class SearchProductServlet extends HttpServlet {
         String keyword = request.getParameter("keyword");
         if (keyword != null) {
             ProductDAO proDao = new ProductDAO();
+            BrandDAO brDao = new BrandDAO();
             List<Product> productList = proDao.getProductByKeyword(keyword);
-
+            List<Brand> brandList = brDao.getAllBrand();
             if (!productList.isEmpty()) {
                 Product product = productList.get(0);
-                BrandDAO brandDao = new BrandDAO();
-                List<Brand> brandList = brandDao.getBrandByCategoryId(product.getCategoryId());
                 request.setAttribute("productList", productList);
                 request.setAttribute("brandList", brandList);
-                request.setAttribute("categoryId", product.getCategoryId());
-                request.setAttribute("brandId", product.getBrandId());
+                request.setAttribute("categoryId", product.getCategoryID());
+                request.setAttribute("brandId", product.getBrandID());
                 CategoryDAO categoryDAO = new CategoryDAO();
                 List<Category> categoryList = categoryDAO.getAllCategory(); // hoặc getAllCategory()
                 request.setAttribute("categoryList", categoryList);

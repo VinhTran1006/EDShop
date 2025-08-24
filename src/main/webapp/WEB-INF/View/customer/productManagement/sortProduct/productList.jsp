@@ -29,85 +29,74 @@
                 max-width: 100%;
                 scroll-snap-type: x mandatory;
                 gap: 10px;
+                scrollbar-width: none;       /* Firefox */
+                -ms-overflow-style: none;    /* IE/Edge */
+            }
+            #product-scroll-new::-webkit-scrollbar {
+                display: none; /* Chrome, Safari */
             }
 
-            .product-scroll-wrapper {
-                position: relative;
-                margin-left: 2%;
-                margin-right: 2%;
-                overflow: visible; /* Nếu bạn muốn nút nhô ra ngoài một chút */
-                width: 100%;
-                min-height: 300px; /* hoặc chiều cao vừa đủ chứa sản phẩm + nút */
-            }
-
-            .scroll-btn {
-                background-color: white;
-                border: 1px solid #ccc;
-                padding: 8px;
-                width: 40px;
-                height: 40px;
-                cursor: pointer;
-                border-radius: 50%;
-                font-size: 20px;
-                font-weight: bold;
-                color: #333;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                position: absolute;
-                top: 40%;
-                z-index: 10;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .scroll-btn:hover {
-                background-color: #f0f0f0;
-                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-                transform: scale(1.1);
-            }
-
-            .scroll-left-new {
-                left: 0;
-            }
-
-            .scroll-right-new {
-                right: 0;
-            }
-
-            #product-scroll-new {
-                display: flex;
-                overflow-x: auto;
-                scroll-behavior: smooth;
-                padding-bottom: 10px;
-            }
-
-            .sanPhamMoi {
+            .divProduct {
                 box-sizing: border-box;
-                margin-left: 6px;
-
-                border-radius: 12px;                 /* bo góc */
-                padding: 10px;
-                background-color: #fff;              /* nền trắng (nếu cần) */
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* đậm hơn */
+                border-radius: 12px;
+                background-color: #fff;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
                 transition: transform 0.2s ease, box-shadow 0.2s ease;
-
                 flex-shrink: 0;
                 scroll-snap-align: start;
+                padding: 10px;
+                margin: 6px;
             }
 
             .divProduct:hover {
                 transform: translateY(-3px);
-                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);  /* hiệu ứng khi hover */
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
             }
 
-            #product-scroll-new {
-                scrollbar-width: none; /* Firefox */
-                -ms-overflow-style: none; /* IE/Edge */
+            .divHinh {
+                width: 100%;
+                height: 200px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                border-radius: 8px;
+                background-color: #f9f9f9;
             }
 
-            #product-scroll-new::-webkit-scrollbar {
-                display: none; /* Chrome, Safari */
+            .divHinh img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+
+            /* Thêm style text */
+            .productName {
+                font-size: 14px;
+                font-weight: 500;
+                color: #222;
+                margin: 8px 0 4px;
+                line-height: 1.4;
+                height: 40px;
+                overflow: hidden;
+            }
+
+            .giaMoi {
+                font-size: 15px;
+                font-weight: 600;
+                color: #e63946;
+                margin-bottom: 6px;
+            }
+
+            .divTraGop {
+                margin-top: 4px;
+            }
+            .traGop {
+                font-size: 12px;
+                font-weight: 500;
+                color: #0077cc;
+                margin: 0;
             }
 
         </style>

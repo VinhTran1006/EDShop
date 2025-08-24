@@ -10,44 +10,60 @@
         <title>JSP Page</title>
         <style>
 
-            body{
-                padding: 15px;
+            /* commitSection.jsp */
+            body {
+                font-family: "Segoe UI", Tahoma, sans-serif;
+                background-color: #f9fafb;
+                color: #333;
+                margin: 0;
+                padding: 20px;
             }
 
-            .committed {
-                font-size: 14px;
-                margin-left: 10px;
-                align-self: center;
-            }
-
-            .committedImg {
-                width: 40px;
-                height: 40px;
-                object-fit: contain;
-            }
-
-            .committedRow {
-                width: 50%;
-                display: flex;
-                align-items: center;
-                margin-bottom: 10px;
+            h1 {
+                font-size: 20px;
+                font-weight: 600;
+                color: #222;
+                margin-bottom: 16px;
+                text-align: center;
             }
 
             .committedWrapper {
                 display: flex;
                 flex-wrap: wrap;
-                padding: 10px;
+                gap: 12px;
+                justify-content: center;
+                margin-top: 20px;
             }
 
-            .committedImgWrapper {
-                width: 40px;
-                height: 40px;
-                flex-shrink: 0;
+            .committedRow {
+                background: #fff;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 14px;
+                border-radius: 10px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                min-width: 260px;
+                max-width: 350px;
+                transition: transform 0.2s ease;
             }
 
-            h1 {
-                font-size: 16px;
+            .committedRow:hover {
+                transform: translateY(-2px);
             }
+
+            .committedImg {
+                width: 36px;
+                height: 36px;
+                object-fit: contain;
+            }
+
+            .committed {
+                font-size: 14px;
+                margin: 0;
+                color: #444;
+            }
+
         </style>
     </head>
     <body>
