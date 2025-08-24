@@ -13,14 +13,14 @@ import utils.DBContext;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 public class BrandDAO extends DBContext {
-    
+
     public BrandDAO() {
         super();
     }
-    
+
     public List<Brand> getAllBrand() {
         List<Brand> brandList = new ArrayList<>();
         String sql = "SELECT BrandID, BrandName, ImgURLLogo, IsActive FROM Brands";
@@ -42,29 +42,24 @@ public class BrandDAO extends DBContext {
         }
         return brandList;
     }
-    
-    public List<Brand> getBrandByCategoryId(int categoryId) {
-        List<Brand> brandList = new ArrayList<>();
-        
 
-        String sql = "SELECT BrandID, BrandName, ImgURLLogo, IsActive FROM Brands WHERE CategoryID = ?";
 
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, categoryId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int brandId = rs.getInt("BrandID");
-                String brandName = rs.getString("BrandName");
-                String imgUrlLogo = rs.getString("ImgURLLogo");
-                boolean isActive = rs.getBoolean("IsActive");
-
-                Brand brand = new Brand(brandId, brandName, imgUrlLogo, isActive);
-                brandList.add(brand);
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+public String getBrandNameByBrandId(int brandID) {
+    String brandName = null;
+    String sql = "SELECT BrandName FROM Brands WHERE BrandID = ? AND IsActive != 0";
+    try {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, brandID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) { // phải gọi rs.next() trước
+            brandName = rs.getString("BrandName");
         }
-        return brandList;
+        rs.close();
+        ps.close();
+    } catch (Exception e) {
+        System.out.println(e.getMessage());
     }
+    return brandName;
+}
+
 }

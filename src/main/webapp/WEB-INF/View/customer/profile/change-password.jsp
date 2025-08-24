@@ -1,5 +1,4 @@
 <%@page import="model.Customer"%>
-<%@page import="model.Account"%>
 <%@page import="model.Staff"%>
 <%
     Integer accountId = (Integer) session.getAttribute("accountId");

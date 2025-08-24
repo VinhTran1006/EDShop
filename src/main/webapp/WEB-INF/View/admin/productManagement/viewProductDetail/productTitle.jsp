@@ -1,8 +1,4 @@
-<%-- 
-    Document   : productDetail
-    Created on : Jun 19, 2025, 4:39:39 PM
-    Author     : HP - Gia Khiêm
---%>
+
 
 <%@page import="model.Product"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>

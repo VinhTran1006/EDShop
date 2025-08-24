@@ -1,16 +1,16 @@
-<%@page import="model.Account"%>
+
 <%@page import="model.Customer"%>
+<%@page import= "java.sql.Date"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    Customer sta = (Customer) request.getAttribute("cus");
-    session.setAttribute("customer", sta);
-
-    Account acc = (Account) session.getAttribute("user");
+    Customer cus = (Customer) request.getAttribute("cus");
     boolean hasPassword = false;
-    if (acc.getPasswordHash() != null && !acc.getPasswordHash().isEmpty()) {
+
+    if (cus != null && cus.getPasswordHash() != null && !cus.getPasswordHash().isEmpty()) {
         hasPassword = true;
     }
 %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -40,44 +40,45 @@
                         <table class="table profile-table">
                             <tr>
                                 <th><i class="bi bi-hash profile-icon"></i> ID:</th>
-                                <td class="profile-value"><%= sta.getId()%></td>
+                                <td class="profile-value"><%= cus.getCustomerID()%></td>
                             </tr>
                             <tr>
                                 <th><i class="bi bi-person profile-icon"></i> Full Name:</th>
-                                <td class="profile-value"><%= sta.getFullName()%></td>
+                                <td class="profile-value"><%= cus.getFullName()%></td>
                             </tr>
                             <tr>
                                 <th><i class="bi bi-telephone profile-icon"></i> Phone Number:</th>
                                 <td>
-                                    <%= (sta.getPhone() == null || sta.getPhone().isEmpty())
+                                    <%= (cus.getPhoneNumber() == null || cus.getPhoneNumber().isEmpty())
                                             ? "<span class='error-message'><i class='bi bi-exclamation-triangle me-1'></i>Please enter your phone number</span>"
-                                            : "<span class='profile-value'>" + sta.getPhone() + "</span>"%>
+                                            : "<span class='profile-value'>" + cus.getPhoneNumber() + "</span>"%>
                                 </td>
                             </tr>
                             <tr>
                                 <th><i class="bi bi-envelope profile-icon"></i> Email:</th>
-                                <td class="profile-value"><%= sta.getEmail()%></td>
+                                <td class="profile-value"><%= cus.getEmail()%></td>
                             </tr>
                             <tr>
                                 <th><i class="bi bi-calendar profile-icon"></i> Date of Birth:</th>
                                 <td>
                                     <%
-                                        String birth = sta.getBirthDay();
+                                        java.util.Date birth = cus.getBirthDate();
                                         String birthFormatted = "";
-                                        if (birth != null && !birth.isEmpty()) {
+
+                                        if (birth != null) {
                                             try {
-                                                java.text.SimpleDateFormat inputFormat = new java.text.SimpleDateFormat("yyyy-MM-dd");
                                                 java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("dd/MM/yyyy");
-                                                java.util.Date birthDate = inputFormat.parse(birth);
-                                                birthFormatted = outputFormat.format(birthDate);
+                                                birthFormatted = outputFormat.format(birth);
                                             } catch (Exception e) {
                                                 birthFormatted = "Your birthday is invalid";
                                             }
                                         }
                                     %>
-                                    <%= (birth == null || birth.isEmpty())
+
+                                    <%= (birth == null)
                                             ? "<span class='error-message'><i class='bi bi-exclamation-triangle me-1'></i>Please enter your date of birth</span>"
                                             : "<span class='profile-value'>" + birthFormatted + "</span>"%>
+
                                 </td>
                             </tr>
                             <tr>
@@ -86,16 +87,16 @@
                                     <div class="gender-options">
                                         <div class="gender-option">
                                             <input type="radio" class="form-check-input" name="sex" value="male"
-                                                   <%= ("male".equalsIgnoreCase(sta.getGender()) ? "checked" : "")%> disabled />
+                                                   <%= ("male".equalsIgnoreCase(cus.getGender()) ? "checked" : "")%> disabled />
                                             <span>Male</span>
                                         </div>
                                         <div class="gender-option">
                                             <input type="radio" class="form-check-input" name="sex" value="female"
-                                                   <%= ("female".equalsIgnoreCase(sta.getGender()) ? "checked" : "")%> disabled />
+                                                   <%= ("female".equalsIgnoreCase(cus.getGender()) ? "checked" : "")%> disabled />
                                             <span>Female</span>
                                         </div>
                                     </div>
-                                    <% if (sta.getGender() == null || sta.getGender().trim().isEmpty()) { %>
+                                    <% if (cus.getGender() == null || cus.getGender().trim().isEmpty()) { %>
                                     <div class="mt-2">
                                         <span class="error-message">
                                             <i class="bi bi-exclamation-triangle me-1"></i>

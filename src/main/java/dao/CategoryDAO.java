@@ -8,9 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.List;
 import model.Category;
 import model.Attribute;
 import utils.DBContext;
@@ -27,7 +25,7 @@ public class CategoryDAO extends DBContext {
 
     public ArrayList<Category> getAllCategory() {
         ArrayList<Category> categoryList = new ArrayList<>();
-        String sql = "SELECT CategoryID, CategoryName, ImgURLLogo, isActive FROM Categories";
+        String sql = "SELECT CategoryID, CategoryName, ImgURLLogo, isActive FROM Categories WHERE IsActive != 0";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -48,7 +46,7 @@ public class CategoryDAO extends DBContext {
 
     public ArrayList<Attribute> getAttributeByCategoryID(int categoryId) {
         ArrayList<Attribute> categoryDetailGroupList = new ArrayList<>();
-        String sql = "SELECT * from Attributes where CategoryID = ?";
+        String sql = "SELECT * from Attributes where CategoryID = ? AND IsActive != 0";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, categoryId);
@@ -70,7 +68,7 @@ public class CategoryDAO extends DBContext {
     
     public Category getCategoryById(int categoryID) {
         Category category = null;
-        String sql = "SELECT CategoryID, CategoryName, ImgURLLogo, isActive FROM Categories where categoryID = ?";
+        String sql = "SELECT CategoryID, CategoryName, ImgURLLogo, isActive FROM Categories where categoryID = ? AND IsActive != 0";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, categoryID);
@@ -105,7 +103,7 @@ public class CategoryDAO extends DBContext {
     }
 
     public boolean updateCategory(int categoryId, String categoryName, String imageUML) {
-        String sql = "UPDATE Categories SET CategoryName = ?, imgURLogo =? WHERE CategoryID = ?";
+        String sql = "UPDATE Categories SET CategoryName = ?, ImgURLLogo =?, IsActive = 1 WHERE CategoryID = ?";
         try ( PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, categoryName);
             pstmt.setString(2, imageUML);
@@ -132,6 +130,21 @@ public class CategoryDAO extends DBContext {
             return false;
         }
     }
+    
+        
+     public boolean deleteAttribute(int attributeID) {
+        String sql = "UPDATE Attributes SET isActive = 0 WHERE AttributeID = ?";
+        try ( PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, attributeID);
+
+            int affectedRows = stmt.executeUpdate();
+
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+    
     
     public int addCategory(String categoryName , String ImgURLLogo) {
         int categoryId = -1;
@@ -176,6 +189,32 @@ public class CategoryDAO extends DBContext {
         }
         return attributeID; // Trả về -1 nếu lỗi
     }
+    
+    
+    
+    
+    public String getCategoryNameByCategoryId(int cateID) {
+    String CategoryName = null;
+    String sql = "SELECT CategoryName FROM Categories WHERE CategoryID = ? AND IsActive != 0";
+    try {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, cateID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) { // phải gọi rs.next() trước
+            CategoryName = rs.getString("CategoryName");
+        }
+        rs.close();
+        ps.close();
+    } catch (Exception e) {
+        System.out.println(e.getMessage());
+    }
+    return CategoryName;
+}
+
+    
+    
+    
+    
           
     public static void main(String[] args) {
 //       Category result;
@@ -185,6 +224,6 @@ public class CategoryDAO extends DBContext {
 //        for (Attribute s : r) {
 //            System.out.println(s.toString());
 //        }
-    dao.addAttribute("dayladulieuinsert", 1);
+    dao.updateCategory(23,"bbbbbbb","bbbbbbbbb");
     }
 }

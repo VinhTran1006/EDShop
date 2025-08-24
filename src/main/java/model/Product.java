@@ -29,14 +29,6 @@ public class Product {
     private String imageUrl3;
     private String imageUrl4;
 
-    private double discount = 0.0;
-    public double getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(double discount) {
-        this.discount = discount;
-    }
     public Product() {
     }
 

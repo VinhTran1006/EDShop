@@ -4,7 +4,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%
 
+    Staff staff = (Staff) session.getAttribute("staff");
+    if (!(staff.getRole().equalsIgnoreCase("staff") || staff.getRole().equalsIgnoreCase("admin"))) {
+        response.sendRedirect("LoginStaff");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
     <head>

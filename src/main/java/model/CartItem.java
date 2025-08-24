@@ -59,7 +59,4 @@ public class CartItem {
         this.customerID = customerID;
     }
 
-
-
-  
 }

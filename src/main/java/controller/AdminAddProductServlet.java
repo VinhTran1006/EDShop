@@ -18,21 +18,25 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import model.Brand;
 import model.Category;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import model.Product;
 import model.Suppliers;
 
 /**
  *
- * @author HP - Gia Khiêm
+ *
  */
 @MultipartConfig
 @WebServlet(name = "AdminAddProductServlet", urlPatterns = {"/AdminCreateProduct"})
@@ -96,10 +100,10 @@ public class AdminAddProductServlet extends HttpServlet {
 
         request.setAttribute("categoryList", categoryList);
         request.setAttribute("brandList", brandList);
-        
+
         SupplierDAO supDAO = new SupplierDAO();
         List<Suppliers> supList = supDAO.getAllSuppliers();
-        
+
         request.setAttribute("supList", supList);
         request.getRequestDispatcher("/WEB-INF/View/admin/productManagement/addProduct/addProductInfo/adminAddProduct.jsp").forward(request, response);
     }
@@ -116,59 +120,130 @@ public class AdminAddProductServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ProductDAO proDAO = new ProductDAO();
-
+        HttpSession session = request.getSession();
+        session.removeAttribute("errorProductName");
+        session.removeAttribute("errorDescription");
+        session.removeAttribute("errorPrice");
+        session.removeAttribute("errorWarranty");
+        session.removeAttribute("errorQuantity");
         String productName = request.getParameter("productName");
-        
-        String discription = request.getParameter("discription");
-        
-//        BigDecimal price = new BigDecimal(priceFormatted);
+        if (productName == null || productName.trim().isEmpty()) {
+            session.setAttribute("errorProductName", "Product name cannot be empty.");
+        } else if (!productName.matches("[a-zA-Z0-9/\\.\\- ]+")) {
+            session.setAttribute("errorProductName", "Product name contains invalid characters.");
+        }
+        String discription = request.getParameter("description");
+        if (discription == null || discription.trim().isEmpty()) {
+            session.setAttribute("errorDescription", "Description cannot be empty.");
+        } else if (!discription.matches("[a-zA-Z0-9/\\.\\- ]+")) {
+            session.setAttribute("errorDescription", "Description contains invalid characters.");
+        }
+
+        String priceRaw = request.getParameter("price");
+        BigDecimal price = null;
+        if (priceRaw == null || priceRaw.trim().isEmpty()) {
+            session.setAttribute("errorPrice", "Price cannot be empty.");
+        } else {
+            try {
+                price = new BigDecimal(priceRaw);
+                if (price.compareTo(BigDecimal.ZERO) < 0) {
+                    session.setAttribute("errorPrice", "Price must be non-negative.");
+                }
+            } catch (NumberFormatException e) {
+                session.setAttribute("errorPrice", "Price must be a valid number.");
+            }
+        }
 
         int Category = Integer.parseInt(request.getParameter("category"));
         int Brand = Integer.parseInt(request.getParameter("brand"));
-        int Suppliers = Integer.parseInt(request.getParameter("suppliers"));
-        
-        int stock = 0;
+        int Suppliers = Integer.parseInt(request.getParameter("supplier"));
 
-        boolean isFeatured = request.getParameter("isFeatured") != null;
-        boolean isBestSeller = request.getParameter("isBestSeller") != null;
-        boolean isNew = request.getParameter("isNew") != null;
-        boolean isActive = request.getParameter("isActive") != null;
+        int warranty = 0;
+        int quantity = 0;
+        String warrantyRaw = request.getParameter("warranty");
 
+        if (warrantyRaw == null || warrantyRaw.trim().isEmpty()) {
+            session.setAttribute("errorWarranty", "Warranty cannot be empty.");
+        } else {
+            try {
+                warranty = Integer.parseInt(warrantyRaw);
+                if (warranty <= 0) {
+                    session.setAttribute("errorWarranty", "Warranty must be a positive integer.");
+                }
+            } catch (NumberFormatException e) {
+                session.setAttribute("errorWarranty", "Warranty must be a valid integer.");
+            }
+        }
+        String quantityRaw = request.getParameter("quantity");
+
+        if (quantityRaw == null || quantityRaw.trim().isEmpty()) {
+            session.setAttribute("errorQuantity", "Quantity cannot be empty.");
+        } else {
+            try {
+                quantity = Integer.parseInt(quantityRaw);
+                if (quantity <= 0) {
+                    session.setAttribute("errorQuantity", "Quantity must be a positive integer.");
+                }
+            } catch (NumberFormatException e) {
+                session.setAttribute("errorQuantity", "Quantity must be a valid integer.");
+            }
+        }
 //        <====================================== Xử lý ảnh ===========================================>
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
+// ⚡ Khai báo map chứa 4 ảnh (1 chính, 3 phụ)
         Map<String, String> imageUrlMap = new LinkedHashMap<>();
         imageUrlMap.put("fileMain", null);
+        imageUrlMap.put("fileSub1", null);
+        imageUrlMap.put("fileSub2", null);
+        imageUrlMap.put("fileSub3", null);
+
+// tạo danh sách future
+        Map<String, CompletableFuture<String>> futures = new LinkedHashMap<>();
 
         for (String key : imageUrlMap.keySet()) {
             Part part = request.getPart(key);
+
             if (part != null && part.getSize() > 0) {
-                InputStream is = part.getInputStream();
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                byte[] data = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = is.read(data, 0, data.length)) != -1) {
-                    buffer.write(data, 0, bytesRead);
-                }
-                byte[] fileBytes = buffer.toByteArray();
+                futures.put(key, CompletableFuture.supplyAsync(() -> {
+                    try ( InputStream is = part.getInputStream();  ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
 
-                Map uploadResult = cloudinary.uploader().upload(fileBytes,
-                        ObjectUtils.asMap("resource_type", "auto"));
+                        byte[] data = new byte[1024];
+                        int bytesRead;
+                        while ((bytesRead = is.read(data)) != -1) {
+                            buffer.write(data, 0, bytesRead);
+                        }
+                        byte[] fileBytes = buffer.toByteArray();
 
-                String url = (String) uploadResult.get("secure_url");
-                if (url != null) {
-                    imageUrlMap.put(key, url); // ⚡ Update lại value
-                } else {
-                    imageUrlMap.put(key, "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
-                }
+                        Map uploadResult = cloudinary.uploader().upload(fileBytes,
+                                ObjectUtils.asMap("resource_type", "auto"));
+
+                        return (String) uploadResult.get("secure_url");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png";
+                    }
+                }));
             } else {
+                // nếu ko có file thì set mặc định ngay
                 imageUrlMap.put(key, "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
             }
         }
 
+// đợi tất cả upload xong
+        for (String key : futures.keySet()) {
+            try {
+                String url = futures.get(key).get(); // lấy kết quả upload
+                imageUrlMap.put(key, url != null ? url
+                        : "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                imageUrlMap.put(key, "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
+            }
+        }
 //        <====================================== Xử lý anh ===========================================>
-        int productId = proDAO.insertProduct(productName, discription, Suppliers, stock, Category, Brand, isFeatured, isBestSeller, isNew, isActive, imageUrlMap.get("fileMain"));
+        int productId = proDAO.insertProduct(productName, discription, price, Suppliers, Category, Brand, warranty, quantity, imageUrlMap.get("fileMain"), imageUrlMap.get("fileSub1"), imageUrlMap.get("fileSub2"), imageUrlMap.get("fileSub3"));
 
         if (productId > 0) {
             response.sendRedirect("AdminAddProductDetail?productId=" + productId + "&categoryId=" + Category);

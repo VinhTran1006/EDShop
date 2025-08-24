@@ -5,7 +5,6 @@
 package controller;
 
 import dao.AccountDAO;
-import dao.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -93,7 +92,7 @@ public class LoginStaffServlet extends HttpServlet {
             }
 
             // Lưu staff vào session
-            session.setAttribute("user", staff);
+            session.setAttribute("staff", staff);
             session.setAttribute("role", staff.getRole());
 
             // Log thông tin login
@@ -110,7 +109,7 @@ public class LoginStaffServlet extends HttpServlet {
             System.out.println("SessionID: " + session.getId());
             System.out.println("CreatedAt: " + new java.util.Date(session.getCreationTime()));
             System.out.println("LastAccessed: " + new java.util.Date(session.getLastAccessedTime()));
-            System.out.println("User in session: " + session.getAttribute("user"));
+            System.out.println("Staff in session: " + session.getAttribute("staff"));
             System.out.println("Role in session: " + session.getAttribute("role"));
             System.out.println("====================================");
 
