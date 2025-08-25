@@ -64,21 +64,14 @@ public class ViewProfileServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         // check đăng nhập
-        Integer id = (Integer) session.getAttribute("customerId");
-        if (id == null) {
-            response.sendRedirect("Login");
-            return;
-        }
-
-        Customer cus = dao.getCustomerById(id);
+        Customer cus = (Customer)session.getAttribute("user");
         if (cus == null) {
             response.sendRedirect("Login");
             return;
         }
 
         // set vào cả request và session cho tiện
-        request.setAttribute("cus", cus);
-        session.setAttribute("customer", cus);
+        request.setAttribute("user", cus);
 
         request.getRequestDispatcher("/WEB-INF/View/customer/profile/view-profile.jsp")
                 .forward(request, response);

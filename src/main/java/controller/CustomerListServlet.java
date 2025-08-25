@@ -76,7 +76,7 @@ public class CustomerListServlet extends HttpServlet {
             int id = 0;
             try {
                 id = Integer.parseInt(idRaw);
-                Customer cus = dao.getCustomerbyID(id);
+                Customer cus = dao.getCustomerById(id);
                 request.setAttribute("data", cus);
                 request.getRequestDispatcher("WEB-INF/View/staff/customerManagement/view-customer-detail.jsp").forward(request, response);
             } catch (Exception e) {

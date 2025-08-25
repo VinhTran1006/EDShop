@@ -63,11 +63,9 @@ public class UpdateProfileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        CustomerDAO dao = new CustomerDAO();
         HttpSession session = request.getSession();
 
-        int id = (Integer) session.getAttribute("customerId");
-        Customer cus = dao.getCustomerById(id);
+        Customer cus = (Customer) session.getAttribute("user");
         request.setAttribute("cus", cus);
         request.getRequestDispatcher("/WEB-INF/View/customer/profile/update-profile.jsp").forward(request, response);
 
@@ -84,6 +82,8 @@ public class UpdateProfileServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        CustomerDAO cusDao = new CustomerDAO();
         int id = Integer.parseInt(request.getParameter("id"));
         String fullName = request.getParameter("fullname");
         String phone = request.getParameter("phone");
@@ -95,13 +95,14 @@ public class UpdateProfileServlet extends HttpServlet {
         boolean success = dao.updateProfileCustomer(id, fullName, phone, birthDate, gender);
 
         if (success) {
-            int accountId = dao.getAccountIDByCustomerID(id); // truy ngược
-            if (accountId != -1) {
-                response.sendRedirect("ViewProfile");
-            } else {
-                request.setAttribute("error", "Update failed!");
-                request.getRequestDispatcher("/WEB-INF/View/customer/profile/update-profile.jsp").forward(request, response);
-            }
+            Customer updatedCus = cusDao.getCustomerById(id);
+            session.setAttribute("user", updatedCus); // cập nhật lại session
+            response.sendRedirect("ViewProfile");
+        } else {
+            Customer cus = cusDao.getCustomerById(id);
+            request.setAttribute("cus", cus);
+            request.setAttribute("error", "Update failed!");
+            request.getRequestDispatcher("/WEB-INF/View/customer/profile/update-profile.jsp").forward(request, response);
         }
     }
 

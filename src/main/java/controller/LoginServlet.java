@@ -63,9 +63,20 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         CategoryDAO categoryDAO = new CategoryDAO();
         List<Category> categoryList = categoryDAO.getAllCategory(); // hoặc getAllCategory()
         request.setAttribute("categoryList", categoryList);
+
+        String error = (String) session.getAttribute("errorMessage");
+        session.setAttribute("errorMessage", error);
+
+        String resetPasswordSuccess = (String) session.getAttribute("resetPasswordSuccess");
+        if (resetPasswordSuccess != null) {
+            request.setAttribute("resetPasswordSuccess", resetPasswordSuccess);
+            session.removeAttribute("resetPasswordSuccess");
+        }
+
         request.getRequestDispatcher("WEB-INF/View/account/login.jsp").forward(request, response);
     }
 

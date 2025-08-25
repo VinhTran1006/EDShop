@@ -1,7 +1,7 @@
 <%@page import="model.Customer"%>
 <%@page import="model.Staff"%>
 <%
-    Integer accountId = (Integer) session.getAttribute("accountId");
+    Customer cus = (Customer) session.getAttribute("user");
 %>
 <!DOCTYPE html>
 <html>

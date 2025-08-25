@@ -3,7 +3,7 @@
 <%@page import= "java.sql.Date"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    Customer cus = (Customer) request.getAttribute("cus");
+    Customer cus = (Customer) request.getAttribute("user");
     boolean hasPassword = false;
 
     if (cus != null && cus.getPasswordHash() != null && !cus.getPasswordHash().isEmpty()) {

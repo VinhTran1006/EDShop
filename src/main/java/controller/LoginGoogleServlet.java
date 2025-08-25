@@ -26,8 +26,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import model.Account;
 import model.Customer;
+import model.Staff;
 import utils.GoogleOAuthService;
 
 /**
@@ -103,21 +103,43 @@ public class LoginGoogleServlet extends HttpServlet {
             return;
         }
 
-        Account acc = dao.getAccountByEmail(email);
-        int role = dao.getRoleByEmail(email);
+        Object acc = dao.getAccountByEmail(email);
+        boolean isActive = true;
+        if (acc instanceof Customer) {
+            isActive = ((Customer) acc).isActive();
+        } else if (acc instanceof Staff) {
+            isActive = ((Staff) acc).isActive();
+        }
+
+        if (!isActive) {
+            session.setAttribute("errorMessage", "Tài khoản của bạn hiện tại đã bị khóa và không thể đăng nhập được!");
+            response.sendRedirect("Login");
+            return;
+        }
+        String role = dao.getRoleByEmail(email);
         session.setAttribute("user", acc);
         session.setAttribute("role", role);
-        session.setAttribute("accountId", acc.getAccountID());
-        
-        Customer cus = CusDao.getCustomerByAccountId(acc.getAccountID());
-        session.setAttribute("cus", cus);
-
-        if (role == 1) {
-            response.sendRedirect("AdminDashboard");
-        } else if (role == 2) {
-            response.sendRedirect("StaffDashboard");
-        } else {
+//        session.setAttribute("accountId", acc.getAccountID());
+//        
+//        Customer cus = CusDao.getCustomerByAccountId(acc.getAccountID());
+//        session.setAttribute("cus", cus);
+//
+//        if (role == 1) {
+//            response.sendRedirect("AdminDashboard");
+//        } else if (role == 2) {
+//            response.sendRedirect("StaffDashboard");
+//        } else {
+//            response.sendRedirect("Home");
+//        }
+        if (acc instanceof Customer) {
+            Customer c = (Customer) acc;
+            // xử lý cho customer
+            session.setAttribute("user", c);
             response.sendRedirect("Home");
+        } else if (acc instanceof Staff) {
+            session.removeAttribute("user");
+            session.setAttribute("errorMessage", "Tài khoản này không thể đăng nhập vì role không phù hợp với trang!");
+            response.sendRedirect("Login");
         }
     }
 
@@ -148,13 +170,13 @@ public class LoginGoogleServlet extends HttpServlet {
             }
             // ✅ Tạo mới account Google
             dao.addNewAccountGoogle(email, name, phone); // 👈 sửa để có phone
-            Account acc = dao.getAccountByEmail(email);
-            int role = dao.getRoleByEmail(email);
+            Object acc = dao.getAccountByEmail(email);
+            String role = dao.getRoleByEmail(email);
 
             // Lưu session
             session.setAttribute("user", acc);
             session.setAttribute("role", role);
-            session.setAttribute("accountId", acc.getAccountID());
+//            session.setAttribute("accountId", acc.getAccountID());
 
             response.sendRedirect("Home");
         } else {

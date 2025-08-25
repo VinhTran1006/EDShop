@@ -113,7 +113,7 @@ public class ResetPasswordServlet extends HttpServlet {
             session.removeAttribute("otpPurpose");
 
             // Chuyển đến trang login với thông báo
-            session.setAttribute("message", "Password reset successfully. Please login.");
+            session.setAttribute("resetPasswordSuccess", "Password reset successfully. Please login.");
             response.sendRedirect("Login");
         } else {
             request.setAttribute("error", "Failed to reset password. Try again later.");

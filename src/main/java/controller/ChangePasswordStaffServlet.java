@@ -94,7 +94,7 @@ public class ChangePasswordStaffServlet extends HttpServlet {
         }
 
         AccountDAO dao = new AccountDAO();
-        boolean success = dao.adminResetPassword(staffId, newPassword);
+        boolean success = dao.adminResetStaffPassword(staffId, newPassword);
 
         if (success) {
             request.setAttribute("success", "Password changed successfully!");

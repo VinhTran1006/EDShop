@@ -2,7 +2,6 @@
 <%@page import="model.Staff"%>
 <%
     Customer cus = (Customer) request.getAttribute("cus");
-    Integer accountId = (Integer) session.getAttribute("accountId");
 %>
 <!DOCTYPE html>
 <html>
