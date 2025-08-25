@@ -1,4 +1,3 @@
-
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
 <%@page import="java.math.BigDecimal"%>
@@ -68,6 +67,55 @@
                         String giaCuFormatted = currencyVN.format(oldPrice);%>
                     <p class="giaMoi" style="font-size: 20px">Price: <%= giaCuFormatted%></p>
 
+                    <!-- ADD TO CART BUTTON -->
+                    <div style="margin: 20px 0;">
+                        <c:choose>
+                            <c:when test="${sessionScope.user != null}">
+                                <!-- Người dùng đã đăng nhập -->
+                                <c:choose>
+                                    <c:when test="${product.quantity > 0}">
+                                        <!-- Còn hàng -->
+                                        <form action="AddToCartServlet" method="post" style="display: inline-block;">
+                                            <input type="hidden" name="productId" value="<%= product.getProductID() %>" />
+                                            <input type="hidden" name="categoryId" value="<%= product.getCategoryID() %>" />
+                                            <button type="submit" 
+                                                    style="background: linear-gradient(45deg, #ff6b6b, #ee5a52); 
+                                                           color: white; 
+                                                           border: none; 
+                                                           padding: 12px 30px; 
+                                                           font-size: 16px; 
+                                                           font-weight: bold; 
+                                                           border-radius: 8px; 
+                                                           cursor: pointer; 
+                                                           transition: all 0.3s ease; 
+                                                           box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);"
+                                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 107, 0.4)';"
+                                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255, 107, 107, 0.3)';">
+                                                <i class="fas fa-cart-plus" style="margin-right: 8px;"></i>
+                                                Add to Cart
+                                            </button>
+                                        </form>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <!-- Hết hàng -->
+                                        <button disabled 
+                                                style="background: #ccc; 
+                                                       color: #666; 
+                                                       border: none; 
+                                                       padding: 12px 30px; 
+                                                       font-size: 16px; 
+                                                       font-weight: bold; 
+                                                       border-radius: 8px; 
+                                                       cursor: not-allowed;">
+                                            <i class="fas fa-times-circle" style="margin-right: 8px;"></i>
+                                            Out of Stock
+                                        </button>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:when>
+                        </c:choose>
+                    </div>
+
                     <div class="customerDivCommitted">
                         <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/committed.jsp" />
                     </div>
@@ -130,13 +178,13 @@
     <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
     <% String successcreate = request.getParameter("successcreate"); %>
     <% String checkquantity = request.getParameter("checkquantity");%> 
-
-
+    <% String error = request.getParameter("error");%>
 
     <script>
         window.onload = function () {
             var success = '<%= successcreate%>';
             var error = '<%= checkquantity%>';
+            var generalError = '<%= error%>';
 
             if (success === '1') {
                 Swal.fire({
@@ -152,9 +200,22 @@
                     text: 'The quantity of product in stock is not enough to order.',
                     timer: 2000
                 });
+            } else if (generalError === 'add_failed') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed!',
+                    text: 'Failed to add product to cart. Please try again.',
+                    timer: 2000
+                });
+            } else if (generalError === 'product_not_found') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Product not found or no longer available.',
+                    timer: 2000
+                });
             }
         };
     </script>
-
 
 </html>
