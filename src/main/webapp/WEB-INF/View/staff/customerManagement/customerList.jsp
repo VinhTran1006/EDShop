@@ -48,23 +48,23 @@
                             for (Customer cus : cusList) {
                         %>
                         <tr>
-                            <td><%= cus.getId()%></td>
+                            <td><%= cus.getCustomerID()%></td>
                             <td><%= cus.getEmail()%></td>
                             <td><%= cus.getFullName()%></td>
-                            <td><%= cus.getPhone()%></td>
+                            <td><%= cus.getPhoneNumber()%></td>
                             <%
-                                Date createdAt = cus.getCreateAt();
+                                Date createdAt = cus.getCreatedAt();
                                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
                                 String formattedDate = sdf.format(createdAt);
                             %>
                             <td><%= formattedDate%></td>
                             <td><%= cus.isActive() ? "Active" : "Block"%></td>
                             <td class="action-col">
-                                <a href="CustomerList?action=changeStatus&id=<%= cus.getId()%>" 
+                                <a href="CustomerList?action=changeStatus&id=<%= cus.getCustomerID()%>" 
                                    class="btn btn-warning">
                                     <%= cus.isActive() ? "Block" : "Unblock"%>
                                 </a>
-                                <a href="CustomerList?action=detail&id=<%= cus.getId()%>" class="btn btn-primary">Detail</a>                               
+                                <a href="CustomerList?action=detail&id=<%= cus.getCustomerID()%>" class="btn btn-primary">Detail</a>                               
                             </td>
                         </tr>
                         <%

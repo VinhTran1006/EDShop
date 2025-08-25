@@ -114,7 +114,7 @@ public class CustomerListServlet extends HttpServlet {
             if (list.isEmpty()) {
                 request.setAttribute("error", "No staff found.");
             }
-            request.getRequestDispatcher("customerList.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/View/staff/customerManagement/customerList.jsp").forward(request, response);
             return;
         }
 

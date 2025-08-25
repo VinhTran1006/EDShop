@@ -44,7 +44,7 @@
                                         <table class="table table-borderless">
                                             <tr>
                                                 <th>Customer ID:</th>
-                                                <td><%= custo.getId()%></td>
+                                                <td><%= custo.getCustomerID()%></td>
                                             </tr>
                                             <tr>
                                                 <th>Full Name:</th>
@@ -52,7 +52,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Phone Number:</th>
-                                                <td><%= custo.getPhone()%></td>
+                                                <td><%= custo.getPhoneNumber()%></td>
                                             </tr>
                                             <tr>
                                                 <th>Email:</th>
@@ -64,7 +64,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Date of Birth:</th>
-                                                <td><%= custo.getBirthDay()%></td>
+                                                <td><%= custo.getBirthDate()%></td>
                                             </tr>
                                             <tr>
                                                 <th>Sex:</th>
