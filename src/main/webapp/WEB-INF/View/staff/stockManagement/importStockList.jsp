@@ -20,6 +20,7 @@
 
                     <h1>Import Stock History</h1>
                     <button class="btn btn-success mb-2 float-end" onclick="location.href = 'ImportStock'">+ New Import</button>
+                    <button id="exportExcelBtn" class="btn btn-success mb-3 float-end">Export Excel</button>
 
                     <form class="search-form mb-3" method="get" action="">
                         <input type="date" name="from" value="${from != null ? from : ''}" />
@@ -89,49 +90,128 @@
         }
     </style>
     <script>
-                document.getElementById('exportExcelBtn').onclick = function (e) {
-                    e.preventDefault();
-                    Swal.fire({
-                        icon: 'question',
-                        title: 'Export Excel',
-                        text: 'Do you want to export the import stock history to Excel?',
-                        showCancelButton: true,
-                        confirmButtonText: 'Yes, export',
-                        cancelButtonText: 'Cancel',
-                        customClass: {
-                            confirmButton: 'swal2-confirm-green'
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            const exportForm = document.createElement('form');
-                            exportForm.method = 'post';
-                            exportForm.action = 'ExportToFileExcelServlet';
+                        document.getElementById('exportExcelBtn').onclick = function (e) {
+                            e.preventDefault();
+                            Swal.fire({
+                                icon: 'question',
+                                title: 'Export Excel',
+                                text: 'Do you want to export the import stock history to Excel?',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, export',
+                                cancelButtonText: 'Cancel',
+                                customClass: {
+                                    confirmButton: 'swal2-confirm-green'
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    const exportForm = document.createElement('form');
+                                    exportForm.method = 'post';
+                                    exportForm.action = 'ExportToFileExcelServlet';
 
-                            const originalForm = this.form;
-                            const inputs = originalForm.querySelectorAll('input, select');
-                            inputs.forEach(input => {
-                                if (input.name && input.value) {
-                                    const hiddenInput = document.createElement('input');
-                                    hiddenInput.type = 'hidden';
-                                    hiddenInput.name = input.name;
-                                    hiddenInput.value = input.value;
-                                    exportForm.appendChild(hiddenInput);
+                                    const originalForm = this.form;
+                                    const inputs = originalForm.querySelectorAll('input, select');
+                                    inputs.forEach(input => {
+                                        if (input.name && input.value) {
+                                            const hiddenInput = document.createElement('input');
+                                            hiddenInput.type = 'hidden';
+                                            hiddenInput.name = input.name;
+                                            hiddenInput.value = input.value;
+                                            exportForm.appendChild(hiddenInput);
+                                        }
+                                    });
+
+                                    const actionInput = document.createElement('input');
+                                    actionInput.type = 'hidden';
+                                    actionInput.name = 'action';
+                                    actionInput.value = 'export';
+                                    exportForm.appendChild(actionInput);
+
+                                    document.body.appendChild(exportForm);
+                                    exportForm.submit();
+                                    document.body.removeChild(exportForm);
                                 }
                             });
+                            return false;
+                        }
+                        document.getElementById('exportExcelBtn').onclick = function (e) {
+                            e.preventDefault();
+                            Swal.fire({
+                                icon: 'question',
+                                title: 'Export Excel',
+                                text: 'Do you want to export the import stock history to Excel?',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, export',
+                                cancelButtonText: 'Cancel',
+                                customClass: {confirmButton: 'swal2-confirm-green'}
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Lấy form filter hiện tại
+                                    const filterForm = document.querySelector('.search-form');
+                                    const inputs = filterForm.querySelectorAll('input, select');
 
-                            const actionInput = document.createElement('input');
-                            actionInput.type = 'hidden';
-                            actionInput.name = 'action';
-                            actionInput.value = 'export';
-                            exportForm.appendChild(actionInput);
+                                    // Tạo form POST để export
+                                    const exportForm = document.createElement('form');
+                                    exportForm.method = 'post';
+                                    exportForm.action = 'ExportToFileExcelServlet';
 
-                            document.body.appendChild(exportForm);
-                            exportForm.submit();
-                            document.body.removeChild(exportForm);
+                                    inputs.forEach(input => {
+                                        if (input.name && input.value) {
+                                            const hiddenInput = document.createElement('input');
+                                            hiddenInput.type = 'hidden';
+                                            hiddenInput.name = input.name;
+                                            hiddenInput.value = input.value;
+                                            exportForm.appendChild(hiddenInput);
+                                        }
+                                    });
+
+                                    document.body.appendChild(exportForm);
+                                    exportForm.submit();
+                                    document.body.removeChild(exportForm);
+                                }
+                            });
+                            return false;
+                        }
+    </script>
+    <script>
+        document.getElementById('exportExcelBtn').onclick = function (e) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'question',
+                title: 'Export Excel',
+                text: 'Do you want to export the import stock history to Excel?',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, export',
+                cancelButtonText: 'Cancel',
+                customClass: {confirmButton: 'swal2-confirm-green'}
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Lấy form filter hiện tại
+                    const filterForm = document.querySelector('.search-form');
+                    const inputs = filterForm.querySelectorAll('input, select');
+
+                    // Tạo form POST để export
+                    const exportForm = document.createElement('form');
+                    exportForm.method = 'post';
+                    exportForm.action = 'ExportToFileExcelServlet';
+
+                    inputs.forEach(input => {
+                        if (input.name && input.value) {
+                            const hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = input.name;
+                            hiddenInput.value = input.value;
+                            exportForm.appendChild(hiddenInput);
                         }
                     });
-                    return false;
+
+                    document.body.appendChild(exportForm);
+                    exportForm.submit();
+                    document.body.removeChild(exportForm);
                 }
+            });
+            return false;
+        }
     </script>
+
 
 </html>
