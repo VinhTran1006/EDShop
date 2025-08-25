@@ -117,7 +117,7 @@ public class ImportStockServlet extends HttpServlet {
             return;
         }
 
-        // --- Thêm sản phẩm ---
+// --- Thêm sản phẩm ---
         String productIdRaw = request.getParameter("productId");
         String quantityRaw = request.getParameter("importQuantity");
         String priceRaw = request.getParameter("unitPrice");
@@ -128,24 +128,31 @@ public class ImportStockServlet extends HttpServlet {
                 int productId = Integer.parseInt(productIdRaw.trim());
                 int quantity = Integer.parseInt(quantityRaw.trim());
 
-                // --- Parse unitPrice an toàn ---
+                // Parse price an toàn
                 String normalizedPrice = priceRaw.replaceAll("[^\\d.]", "").trim();
                 BigDecimal price = new BigDecimal(normalizedPrice);
 
                 Product product = productDAO.getProductByID(productId);
 
-                // --- Validate import price ≤ 90% sale price ---
+                // Validate import price < 90% sale price
                 if (product.getPrice() != null) {
                     BigDecimal maxImportPrice = product.getPrice().multiply(BigDecimal.valueOf(0.9));
                     if (price.compareTo(maxImportPrice) >= 0) {
                         session.setAttribute("error", "Import price must be less than 90% of sale price ("
                                 + maxImportPrice.toPlainString() + " VND).");
+
+                        // luôn tính lại totalAmount
+                        BigDecimal totalAmount = detailList.stream()
+                                .map(d -> d.getUnitPrice().multiply(BigDecimal.valueOf(d.getStock())))
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                        session.setAttribute("totalAmount", totalAmount);
                         response.sendRedirect("ImportStock");
                         return;
                     }
                 }
 
-                // --- Kiểm tra trùng ---
+                // Kiểm tra trùng
                 boolean isContained = detailList.stream().anyMatch(d -> d.getProductID() == productId);
 
                 if (!isContained) {
@@ -154,14 +161,21 @@ public class ImportStockServlet extends HttpServlet {
                     detail.setProductID(productId);
                     detail.setStock(quantity);
                     detail.setStockLeft(quantity);
-                    detail.setUnitPrice(price); // BigDecimal
+                    detail.setUnitPrice(price);
 
                     detailList.add(detail);
-
                     products.removeIf(p -> p.getProductID() == productId);
 
                     session.setAttribute("selectedProducts", detailList);
                     session.setAttribute("products", products);
+
+                    // ✅ luôn tính lại totalAmount sau khi thêm
+                    BigDecimal totalAmount = detailList.stream()
+                            .map(d -> d.getUnitPrice().multiply(BigDecimal.valueOf(d.getStock())))
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    session.setAttribute("totalAmount", totalAmount);
+
                 } else {
                     session.setAttribute("error", "Product already selected.");
                 }
@@ -176,7 +190,7 @@ public class ImportStockServlet extends HttpServlet {
             }
         }
 
-        // --- Xử lý action delete/save ---
+// --- Xử lý action delete/save ---
         String action = request.getParameter("action");
         if (action != null) {
             try {
@@ -200,10 +214,15 @@ public class ImportStockServlet extends HttpServlet {
 
                     Product product = productDAO.getProductByID(productId);
 
-                    if (product.getPrice() != null && price.compareTo(product.getPrice()) >= 0) {
-                        session.setAttribute("error", "Import price must be less than sale price (" + product.getPrice() + ").");
-                        response.sendRedirect("ImportStock");
-                        return;
+                    // Validate lại rule < 90% sale price
+                    if (product.getPrice() != null) {
+                        BigDecimal maxImportPrice = product.getPrice().multiply(BigDecimal.valueOf(0.9));
+                        if (price.compareTo(maxImportPrice) >= 0) {
+                            session.setAttribute("error", "Import price must be less than 90% of sale price ("
+                                    + maxImportPrice.toPlainString() + " VND).");
+                            response.sendRedirect("ImportStock");
+                            return;
+                        }
                     }
 
                     for (ImportStockDetail d : detailList) {
@@ -216,12 +235,19 @@ public class ImportStockServlet extends HttpServlet {
                     }
                 }
 
-                // --- Sắp xếp ---
+                // Sắp xếp
                 detailList.sort(Comparator.comparingInt(ImportStockDetail::getProductID));
                 products.sort(Comparator.comparingInt(Product::getProductID));
 
                 session.setAttribute("selectedProducts", detailList);
                 session.setAttribute("products", products);
+
+                // tính lại totalAmount sau mỗi thao tác
+                BigDecimal totalAmount = detailList.stream()
+                        .map(d -> d.getUnitPrice().multiply(BigDecimal.valueOf(d.getStock())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                session.setAttribute("totalAmount", totalAmount);
+
                 response.sendRedirect("ImportStock");
                 return;
 
