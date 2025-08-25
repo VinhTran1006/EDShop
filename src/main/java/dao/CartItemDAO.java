@@ -227,4 +227,46 @@ public class CartItemDAO extends DBContext {
 
         return cartItems;
     }
+
+    /**
+     * Lấy tổng số lượng của một sản phẩm trong giỏ hàng của customer
+     */
+    public int getTotalQuantityInCart(int customerId, int productId) {
+        String sql = "SELECT COALESCE(SUM(quantity), 0) as totalQuantity FROM CartItems WHERE customerID = ? AND productID = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, customerId);
+            ps.setInt(2, productId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("totalQuantity");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * Kiểm tra xem có thể thêm số lượng vào giỏ hàng không
+     */
+    public boolean canAddToCart(int customerId, int productId, int quantityToAdd, int productStockQuantity) {
+        int currentQuantityInCart = getTotalQuantityInCart(customerId, productId);
+        return (currentQuantityInCart + quantityToAdd) <= productStockQuantity;
+    }
+
+    /**
+     * Thêm sản phẩm vào giỏ hàng với kiểm tra số lượng tồn kho
+     */
+    public boolean addToCartWithStockCheck(int customerId, int productId, int quantity, int maxStockQuantity) {
+        // Kiểm tra số lượng trước khi thêm
+        if (!canAddToCart(customerId, productId, quantity, maxStockQuantity)) {
+            return false;
+        }
+
+        // Gọi method addToCart hiện tại
+        return addToCart(customerId, productId, quantity);
+    }
+
 }
