@@ -41,7 +41,7 @@ public class ProductFeedbackDAO extends DBContext {
                 fb.setStar(rs.getInt("Star"));
                 fb.setComment(rs.getString("Comment"));
                 fb.setIsActive(rs.getBoolean("IsActive"));
-                fb.setIsRead(rs.getBoolean("IsRead"));
+                fb.setIsRead(rs.getBoolean("isVisible"));
                 fb.setReply(rs.getString("Reply"));
                 fb.setStaffID(rs.getInt("StaffID"));
                 java.sql.Timestamp replyDate = rs.getTimestamp("ReplyDate");
@@ -77,7 +77,7 @@ public class ProductFeedbackDAO extends DBContext {
                 fb.setStar(rs.getInt("Star"));
                 fb.setComment(rs.getString("Comment"));
                 fb.setIsActive(rs.getBoolean("IsActive"));
-                fb.setIsRead(rs.getBoolean("IsRead"));
+                fb.setIsRead(rs.getBoolean("isVisible"));
                 fb.setReply(rs.getString("Reply"));
                 fb.setStaffID(rs.getInt("StaffID"));
 
@@ -98,7 +98,7 @@ public class ProductFeedbackDAO extends DBContext {
     // Thêm feedback
     public boolean addFeedback(ProductFeedback fb) {
         String sql = "INSERT INTO ProductFeedbacks "
-                + "(CustomerID, ProductID, OrderID, Star, Comment, CreatedDate, IsActive, IsRead) "
+                + "(CustomerID, ProductID, OrderID, Star, Comment, CreatedDate, IsActive, isVisible) "
                 + "VALUES (?, ?, ?, ?, ?, GETDATE(), 1, 0)";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, fb.getCustomerID());
@@ -115,7 +115,7 @@ public class ProductFeedbackDAO extends DBContext {
 
     // Staff reply feedback
     public boolean replyFeedback(int feedbackID, int staffID, String reply) {
-        String sql = "UPDATE ProductFeedbacks SET Reply = ?, StaffID = ?, ReplyDate = GETDATE(), IsRead = 0 WHERE FeedbackID = ?";
+        String sql = "UPDATE ProductFeedbacks SET Reply = ?, StaffID = ?, ReplyDate = GETDATE(), isVisible = 0 WHERE FeedbackID = ?";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, reply);
             ps.setInt(2, staffID);
@@ -132,7 +132,7 @@ public class ProductFeedbackDAO extends DBContext {
         String query = "SELECT f.*, c.FullName "
                 + "FROM ProductFeedbacks f "
                 + "JOIN Customers c ON f.CustomerID = c.CustomerID "
-                + "ORDER BY f.IsRead ASC";
+                + "ORDER BY f.isVisible ASC";
 
         try ( PreparedStatement ps = conn.prepareStatement(query);  ResultSet rs = ps.executeQuery()) {
 
@@ -146,7 +146,7 @@ public class ProductFeedbackDAO extends DBContext {
                 fb.setStar(rs.getInt("Star"));
                 fb.setComment(rs.getString("Comment"));
                 fb.setIsActive(rs.getBoolean("IsActive"));
-                fb.setIsRead(rs.getBoolean("IsRead"));
+                fb.setIsRead(rs.getBoolean("isVisible"));
                 fb.setReply(rs.getString("Reply"));
                 fb.setStaffID(rs.getInt("StaffID"));
                 java.sql.Timestamp replyDate = rs.getTimestamp("ReplyDate");
@@ -182,7 +182,7 @@ public class ProductFeedbackDAO extends DBContext {
                 fb.setStar(rs.getInt("Star"));
                 fb.setComment(rs.getString("Comment"));
                 fb.setIsActive(rs.getBoolean("IsActive"));
-                fb.setIsRead(rs.getBoolean("IsRead"));
+                fb.setIsRead(rs.getBoolean("isVisible"));
                 fb.setReply(rs.getString("Reply"));
                 fb.setStaffID(rs.getInt("StaffID"));
 
@@ -201,7 +201,7 @@ public class ProductFeedbackDAO extends DBContext {
 
     public int insertFeedback(int customerID, int productID, int orderID, int star, String comment) {
         int count = 0;
-        String sql = "INSERT INTO ProductFeedbacks (CustomerID, ProductID, OrderID, CreatedDate, Star, Comment, isDeleted, isRead) "
+        String sql = "INSERT INTO ProductFeedbacks (CustomerID, ProductID, OrderID, CreatedDate, Star, Comment, isActive, isVisible) "
                 + "VALUES (?, ?, ?, GETDATE(), ?, ?, 0, 0)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -237,7 +237,7 @@ public class ProductFeedbackDAO extends DBContext {
     public int addProductRating(int customerId, int productId, int orderId, int star, String comment) {
         int count = 0;
         String query = "INSERT INTO ProductFeedbacks "
-                + "(CustomerID, ProductID, OrderID, CreatedDate, Star, Comment, IsActive, isRead) "
+                + "(CustomerID, ProductID, OrderID, CreatedDate, Star, Comment, IsActive, isVisible) "
                 + "VALUES (?, ?, ?, GETDATE(), ?, ?, 1, 0)";
         try {
             PreparedStatement pre = conn.prepareStatement(query);
@@ -269,7 +269,7 @@ public class ProductFeedbackDAO extends DBContext {
     }
 
     public boolean addReply(int staffId, int feedbackId, String reply) {
-        String sql = "UPDATE ProductFeedbacks SET Reply = ?, StaffID = ?, ReplyDate = GETDATE(), IsRead = 0 WHERE FeedbackID = ?";
+        String sql = "UPDATE ProductFeedbacks SET Reply = ?, StaffID = ?, ReplyDate = GETDATE(), isVisible = 0 WHERE FeedbackID = ?";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, reply);
             ps.setInt(2, staffId);
@@ -282,7 +282,7 @@ public class ProductFeedbackDAO extends DBContext {
     }
 
     public void updateisReadComment(int feedbackID) {
-        String query = "UPDATE ProductFeedbacks SET IsRead = 1  WHERE FeedbackID =?";
+        String query = "UPDATE ProductFeedbacks SET isVisible = 1  WHERE FeedbackID =?";
         try {
             PreparedStatement pre = conn.prepareStatement(query);
             pre.setInt(1, feedbackID);
@@ -294,7 +294,7 @@ public class ProductFeedbackDAO extends DBContext {
 
     public ProductFeedback getReplyByFeedbackID(int feedbackID) {
     ProductFeedback reply = null;
-    String sql = "SELECT StaffID, Reply, ReplyDate, IsRead FROM ProductFeedbacks WHERE FeedbackID = ?";
+    String sql = "SELECT StaffID, Reply, ReplyDate, isVisible FROM ProductFeedbacks WHERE FeedbackID = ?";
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
         ps.setInt(1, feedbackID);
         ResultSet rs = ps.executeQuery();
@@ -303,7 +303,7 @@ public class ProductFeedbackDAO extends DBContext {
             reply.setStaffID(rs.getInt("StaffID"));
             reply.setReply(rs.getString("Reply"));
             reply.setReplyDate(rs.getTimestamp("ReplyDate"));
-            reply.setIsRead(rs.getBoolean("IsRead"));
+            reply.setIsRead(rs.getBoolean("isVisible"));
         }
     } catch (Exception e) {
         e.printStackTrace();
@@ -377,7 +377,7 @@ public class ProductFeedbackDAO extends DBContext {
                     rating.setStar(rs.getInt("Star"));
                     rating.setComment(rs.getString("Comment"));
                     rating.setIsActive(rs.getBoolean("IsActive"));
-                    rating.setIsRead(rs.getBoolean("IsRead"));
+                    rating.setIsRead(rs.getBoolean("isVisible"));
                     rating.setFullName(rs.getString("FullName"));
                     list.add(rating);
                 }
@@ -399,7 +399,7 @@ public class ProductFeedbackDAO extends DBContext {
             while (rs.next()) {
                 ProductFeedback fb = new ProductFeedback();
                 fb.setFeedbackID(rs.getInt("FeedbackID"));
-                fb.setIsRead(rs.getBoolean("IsRead"));
+                fb.setIsRead(rs.getBoolean("isVisible"));
                 fb.setReply(rs.getString("Reply"));
                 fb.setStaffID(rs.getInt("StaffID"));
 
@@ -434,7 +434,7 @@ public class ProductFeedbackDAO extends DBContext {
 
        int i;
         ProductFeedbackDAO dao = new ProductFeedbackDAO();
-       i = dao.countUnreadFeedback();
+       i = dao.insertFeedback(1, 2, 2, 2, "ok");
             System.out.println(i);
     }
 }
