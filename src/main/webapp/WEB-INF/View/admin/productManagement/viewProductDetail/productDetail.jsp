@@ -52,9 +52,14 @@
                                                 }
                                             }
                                         }
-
+                                        if (!hasValue) {
+                                    %>
+                                    <div class="attribute-item">No data</div>
+                                    <%
+                                        }
                                     %> 
                                 </td>
+
                             </tr>
                             <%                                } // end for
                             } else {

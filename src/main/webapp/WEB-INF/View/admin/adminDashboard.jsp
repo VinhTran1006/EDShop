@@ -1,4 +1,5 @@
 
+<%@page import="java.math.BigDecimal"%>
 <%@page import="model.Staff"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.text.NumberFormat, java.util.Locale"%>
@@ -11,7 +12,7 @@
     Integer totalStaff = (Integer) request.getAttribute("totalStaff");
     Integer totalProduct = (Integer) request.getAttribute("totalProduct");
     Integer totalSupplier = (Integer) request.getAttribute("totalSupplier");
-    Long monthlyRevenue = (Long) request.getAttribute("monthlyRevenue");
+    BigDecimal monthlyRevenue = (BigDecimal) request.getAttribute("monthlyRevenue");
 
     Integer todayOrders = (Integer) request.getAttribute("todayOrders");
     Integer newFeedback = (Integer) request.getAttribute("newFeedback");
@@ -28,7 +29,7 @@
         totalSupplier = 0;
     }
     if (monthlyRevenue == null) {
-        monthlyRevenue = 0L;
+        monthlyRevenue = BigDecimal.ZERO;
     }
     NumberFormat nf = NumberFormat.getInstance(new Locale("vi", "VN"));
 %>
@@ -109,7 +110,7 @@
                             Monthly Revenue
                             <span class="stat-icon ms-2"><i class="fas fa-chart-line"></i></span>
                         </div>
-                        <div class="stat-value text-success"><%= nf.format(monthlyRevenue)%> ₫</div>
+                        <div class="stat-value text-success"><%= nf.format((BigDecimal)monthlyRevenue)%> ₫</div>
                     </div>
                 </div>
 

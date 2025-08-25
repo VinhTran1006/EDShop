@@ -42,6 +42,22 @@
                 <i class="fas fa-truck"></i> <span>Supplier Management</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="ViewOrderListServletAdmin" class="nav-link">
+                <i class="fas fa-shopping-cart"></i> Orders
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="CustomerListAdmin" class="nav-link">
+                <i class="fas fa-users"></i> Customers
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="ViewListNewFeedbackAdmin" class="nav-link">
+                <i class="fas fa-comments"></i> Feedback
+            </a>
+        </li>
+
     </ul>
 
 </nav>
