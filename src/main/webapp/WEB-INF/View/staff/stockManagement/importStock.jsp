@@ -151,6 +151,7 @@
                 box-shadow: 0 0 0 0.2rem rgba(37, 132, 247, 0.25);
                 outline: none;
             }
+            
         </style>
     </head>
     <body>
@@ -197,7 +198,6 @@
                     <!-- Selected Products -->
 
 
-                    <!-- Selected Products -->
                     <div class="table-container mb-4" style="max-width: 1150px; margin: 0 auto;">
                         <div class="table-navigate" style="display: flex; align-items: center; justify-content: space-between;">
                             <h3 style="margin-bottom: 0;">Selected Products</h3>
@@ -215,9 +215,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
                                 <c:forEach items="${sessionScope.selectedProducts}" var="d">
-                                    
+
                                     <tr>
                                         <td>${d.product.productID}</td>
                                         <td>${d.product.productName}</td>
@@ -226,7 +226,9 @@
                                             <fmt:formatNumber value="${d.unitPrice}" type="number" groupingUsed="true" /> ₫
                                         </td>
                                         <td>
+                                            <c:set var="lineTotal" value="${d.stock * d.unitPrice}" />
                                             <fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true" /> ₫
+
                                         </td>
                                         <td class="text-center">
                                             <button class="btn btn-warning rounded-3 fw-semibold px-3 py-2 me-2 edit-product"
@@ -245,17 +247,11 @@
                                     </tr>
                                 </c:forEach>
                                 <tr>
-                                    
                                 <tr>
-                                    <td colspan="4" class="fw-bold text-end">Total:</td>
-                                    <td class="fw-bold text-end" id="totalAmount">
-                                        <fmt:formatNumber value="${empty totalAmount ? 0 : totalAmount}" type="number" groupingUsed="true"/> ₫
+                                    <td colspan="6" class="fw-bold text-end pe-4" id="totalAmount" style="padding-right: 20px;">
+                                        Total: <fmt:formatNumber value="${empty totalAmount ? 0 : totalAmount}" type="number" groupingUsed="true"/> ₫
                                     </td>
-                                    <td></td>
                                 </tr>
-
-
-
                                 </tr>
                             </tbody>
                         </table>

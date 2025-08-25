@@ -109,7 +109,21 @@ OrderDetailDAO odDAO = new OrderDetailDAO();
                         pDAO.increaseStock(od.getProductID(), od.getQuantity());
                     }
                 }
+                
+                if ("waiting for delivery".equalsIgnoreCase(status)) {
+                    List<OrderDetail> list = odDAO.getOrderDetail(orderID);
+
+                    // Tạo ProductDAO để update stock
+                    dao.ImportStockDetailDAO sDetailDAO = new dao.ImportStockDetailDAO();
+
+                    for (OrderDetail od : list) {
+                        System.out.println(od.getProductID());
+                        System.out.println(od.getQuantity());
+                        sDetailDAO.deductStockFIFO(od.getProductID(), od.getQuantity());
+                    }
+                }
                 // ✅ Thành công
+                
                 response.sendRedirect(request.getContextPath() + "/ViewOrderList?success=update");
             } else {
                 // ❌ Không update được
