@@ -56,6 +56,7 @@
                             <th>ID</th>
                             <th>Product Name</th>
                             <th>Price</th>
+                            <th>Quantity</th>
                             <th>Category</th>
                             <th>Brand</th>
                             <th>Image</th>
@@ -81,6 +82,7 @@
                             <td><%= product.getProductID()%></td>
                             <td><%= product.getProductName()%></td>
                             <td><%= giaFormatted%></td>
+                            <td><%= product.getQuantity() %></td>
                             <td><%= CategoryName%></td>
                             <td><%= brandname %></td>
                             <td>

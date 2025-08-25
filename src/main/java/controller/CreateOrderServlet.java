@@ -254,7 +254,7 @@ public class CreateOrderServlet extends HttpServlet {
             
             order.setAddressSnapshot(addressSnapshot);
             order.setAddressID(addressId);
-            order.setStatus("Pending");
+            order.setStatus("Waiting");
             
             int orderId = orderDAO.createOrder(order);
             
