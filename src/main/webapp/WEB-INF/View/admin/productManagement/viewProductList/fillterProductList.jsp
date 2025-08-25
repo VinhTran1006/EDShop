@@ -63,7 +63,7 @@
             min-width: 110px;
             border: 1.5px solid #1e9c46;
             padding: 8px 16px;
-text-decoration: none;
+            text-decoration: none;
             border-radius: 6px;
             font-weight: bold;
             display: inline-block;
