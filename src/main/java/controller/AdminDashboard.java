@@ -17,6 +17,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.Calendar;
 
 /**
@@ -50,9 +51,9 @@ public class AdminDashboard extends HttpServlet {
         int totalProduct = productDAO.getTotalProducts();
         int totalSupplier = supplierDAO.getTotalSuppliers();
         Calendar now = Calendar.getInstance();
-        int month = now.get(Calendar.MONTH) + 1;
+        int month = now.get(Calendar.MONTH) + 1;    
         int year = now.get(Calendar.YEAR);
-        long monthlyRevenue = orderDAO.getMonthlyRevenue(month, year);
+        BigDecimal monthlyRevenue = orderDAO.getMonthlyRevenue(month, year);
         int todayOrders = orderDAO.countTodayOrders();
         int newFeedback = productFeedbackDAO.countUnreadFeedback();
         int totalCustomers = customerDAO.countTotalCustomers();

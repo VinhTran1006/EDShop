@@ -659,7 +659,6 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
-    
     public int countLowStockDynamic(int threshold) {
         String sql = "SELECT COUNT(*) AS LowStockCount\n"
                 + "FROM Products\n"
@@ -676,7 +675,6 @@ public class ProductDAO extends DBContext {
         }
         return 0;
     }
-    
 
     public Map<Integer, Integer> getAllProductStocks() {
         Map<Integer, Integer> stockMap = new HashMap<>();
@@ -737,7 +735,7 @@ public class ProductDAO extends DBContext {
 
     // Nguyễn Thế Vinh
     public void increaseStock(int productID, int quantity) {
-        String sql = "UPDATE Products SET Quantity = Quantity + ? WHERE ProductID = ?";
+        String sql = "UPDATE Products SET Quantity = Quantity + ? WHERE ProductID = ? AND IsActive != 0";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, quantity);
             ps.setInt(2, productID);
@@ -747,14 +745,34 @@ public class ProductDAO extends DBContext {
         }
     }
 
+    public ProductDetail getProductDetailByProductAndAttribute(int productId, int attributeId) {
+        ProductDetail detail = null;
+        String sql = "SELECT ProductDetailID, ProductID, AttributeID, AttributeValue "
+                + "FROM ProductDetails WHERE ProductID = ? AND AttributeID = ? AND IsActive != 0";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productId);
+            ps.setInt(2, attributeId);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    detail = new ProductDetail();
+                    detail.setProductDetailID(rs.getInt("ProductDetailID"));
+                    detail.setProductID(rs.getInt("ProductID"));
+                    detail.setAttibuteID(rs.getInt("AttributeID"));
+                    detail.setAttributeValue(rs.getString("AttributeValue"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return detail;
+    }
+
     public static void main(String[] args) {
 
-        List<Product> r = new ArrayList<>();
+       ProductDetail p = new ProductDetail();
         ProductDAO dao = new ProductDAO();
-        r = dao.getProductByBrandAndCategory(1, 1);
-        for (Product s : r) {
-            System.out.println(s.toString());
-        }
+        p = dao.getProductDetailByProductAndAttribute(2, 2);
+        System.out.println(p.toString());
     }
 
 }
