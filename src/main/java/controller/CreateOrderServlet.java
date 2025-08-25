@@ -270,7 +270,7 @@ public class CreateOrderServlet extends HttpServlet {
                     orderDetailDAO.createOrderDetail(orderDetail);
                     
                     // Update product quantity
-                    productDAO.updateProductQuantity(item.getProductID(), -item.getQuantity());
+                    //productDAO.updateProductQuantity(item.getProductID(), -item.getQuantity());
                 }
                 
                 // Save voucher usage if voucher was used
