@@ -224,7 +224,7 @@ public class OrderDAO extends DBContext {
             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, order.getCustomerID());
             ps.setLong(2, order.getTotalAmount());
-            ps.setString(3, order.getStatus());
+            ps.setString(3, "Waiting");
             ps.setInt(4, order.getDiscount());
             ps.setString(5, order.getAddressSnapshot());
             ps.setInt(6, order.getAddressID());
