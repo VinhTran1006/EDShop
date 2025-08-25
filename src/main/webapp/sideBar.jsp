@@ -96,11 +96,7 @@
                 <i class="fas fa-truck"></i> <span>Supplier Management</span>
             </a>
         </li>
-        <li class="nav-item">
-            <a href="ManageStatistic" class="nav-link">
-                <i class="fa fa-bar-chart"></i> <span>Manage Statistics</span>
-            </a>
-        </li>
+
     </ul>
 </nav>
 
