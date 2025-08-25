@@ -288,20 +288,24 @@ public class AdminUpdateProductServlet extends HttpServlet {
         boolean res = proDAO.updateProduct(productId, productName, discription, price, Suppliers, Category, Brand, warranty, quantity, imageUrlMap.get("fileMain"), imageUrlMap.get("file1"), imageUrlMap.get("file2"), imageUrlMap.get("file3"));
 
         //        <====================================== Xử lý thông tin ===========================================>
-        List<ProductDetail> productDetailList = proDAO.getProductDetailByProductId(productId);
+        List<Attribute> attributeList = new CategoryDAO().getAttributeByCategoryID(Category);
 
-        for (ProductDetail proDetail : productDetailList) {
-            String paramName = "attribute_" + proDetail.getAttibuteID();
-
+        for (Attribute attr : attributeList) {
+            String paramName = "attribute_" + attr.getAttributeID();
             String value = request.getParameter(paramName);
 
             if (value != null && !value.trim().isEmpty()) {
-                proDetail.setAttributeValue(value.trim());
-                System.out.println("values " + value);
-                // Cập nhật lại DB
-                res = proDAO.updateProductDetail(proDetail.getProductDetailID(), value);
-            }
+                // Kiểm tra xem ProductDetail đã tồn tại chưa
+                ProductDetail existing = proDAO.getProductDetailByProductAndAttribute(productId, attr.getAttributeID());
 
+                if (existing != null) {
+                    // Update nếu có
+                    res = proDAO.updateProductDetail(existing.getProductDetailID(), value);
+                } else {
+                    // Insert nếu chưa có
+                    res = proDAO.insertProductDetail(productId, attr.getAttributeID(), value);
+                }
+            }
         }
 
         if (res) {

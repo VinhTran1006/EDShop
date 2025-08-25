@@ -1,5 +1,6 @@
 package dao;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,6 @@ import utils.DBContext;
 
 public class OrderDAO extends DBContext {
 
-    
     public List<Order> getOrderList() {
         List<Order> list = new ArrayList<>();
         String sql = "SELECT o.*, c.FullName, c.PhoneNumber "
@@ -243,27 +243,20 @@ public class OrderDAO extends DBContext {
         return -1;
     }
 
-    public long getMonthlyRevenue(int month, int year) {
+    public BigDecimal getMonthlyRevenue(int month, int year) {
         String sql = "SELECT SUM(TotalAmount) AS TotalIncome FROM Orders WHERE YEAR(OrderedDate) = ? AND MONTH(OrderedDate) = ? AND status = 'Delivered' GROUP BY YEAR(OrderedDate), MONTH(OrderedDate)";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(2, month);
             ps.setInt(1, year);
             try ( ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getLong(1);
+                    return rs.getBigDecimal(1);
                 }
             }
         } catch (Exception e) {
             System.err.println("Error in getMonthlyRevenue: " + e.getMessage());
         }
-        return 0;
+        return BigDecimal.ZERO;
     }
 
-    public static void main(String[] args) {
-
-        long i;
-        OrderDAO dao = new OrderDAO();
-        i = dao.getMonthlyRevenue(8, 2025);
-        System.out.println(i);
-    }
 }

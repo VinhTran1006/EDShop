@@ -1,5 +1,7 @@
 
-
+<%@page import="java.text.NumberFormat"%>
+<%@page import="java.util.Locale"%>
+<%@page import="java.math.BigDecimal"%>
 <%@page import="model.Product"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
@@ -19,7 +21,19 @@
                 <h1 class = "display-5 fw-bold" style="font-size: 320%; margin: 0;">Product Management</h1>
                 <span style="font-size: 120%; color: gray; margin-top: 4%;">View Product Detail</span>
             </div>
-            <h3><%= product.getProductName()%></h3>
+           
+
+            <div style="text-align: left; margin-bottom: 10px;">
+                <h1 style="font-size: 20px; margin: 5px 0; font-weight: bold; color: #333;">
+                    <%= product.getProductName()%>
+                </h1>
+                <p style="font-size: 20px">In Stock: <%= product.getQuantity()%></p>
+                <% BigDecimal oldPrice = product.getPrice();
+                    Locale localeVN = new Locale("vi", "VN");
+                    NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
+                    String giaCuFormatted = currencyVN.format(oldPrice);%>
+                <p class="giaMoi" style="font-size: 20px">Price: <%= giaCuFormatted%></p>
+            </div>
         </div>
     </body>
 </html>
