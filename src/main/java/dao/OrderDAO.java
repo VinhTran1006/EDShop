@@ -12,6 +12,7 @@ import utils.DBContext;
 
 public class OrderDAO extends DBContext {
 
+    
     public List<Order> getOrderList() {
         List<Order> list = new ArrayList<>();
         String sql = "SELECT o.*, c.FullName, c.PhoneNumber "
@@ -160,7 +161,7 @@ public class OrderDAO extends DBContext {
                 Customer cus = new Customer();
                 cus.setFullName(rs.getString("FullName"));
                 cus.setPhoneNumber(rs.getString("PhoneNumber"));
-                
+
                 Order o = new Order(
                         rs.getInt("OrderID"),
                         rs.getInt("CustomerID"),
@@ -203,7 +204,6 @@ public class OrderDAO extends DBContext {
         return count;
     }
 
-    ////-------------Tai------///
     public int countTodayOrders() {
         String sql = "SELECT COUNT(*) FROM Orders WHERE CAST(OrderedDate AS DATE) = CAST(GETDATE() AS DATE)";
         try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
@@ -215,11 +215,11 @@ public class OrderDAO extends DBContext {
         }
         return 0;
     }
-    
+
     public int createOrder(Order order) {
-        String sql = "INSERT INTO Orders (customerID, totalAmount, orderedDate, status, discount, addressSnapshot, addressID) " +
-                    "VALUES (?, ?, GETDATE(), ?, ?, ?, ?)";
-        
+        String sql = "INSERT INTO Orders (customerID, totalAmount, orderedDate, status, discount, addressSnapshot, addressID) "
+                + "VALUES (?, ?, GETDATE(), ?, ?, ?, ?)";
+
         try {
             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, order.getCustomerID());
@@ -228,7 +228,7 @@ public class OrderDAO extends DBContext {
             ps.setInt(4, order.getDiscount());
             ps.setString(5, order.getAddressSnapshot());
             ps.setInt(6, order.getAddressID());
-            
+
             int result = ps.executeUpdate();
             if (result > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -239,7 +239,31 @@ public class OrderDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return -1;
+    }
+
+    public long getMonthlyRevenue(int month, int year) {
+        String sql = "SELECT SUM(TotalAmount) AS TotalIncome FROM Orders WHERE YEAR(OrderedDate) = ? AND MONTH(OrderedDate) = ? AND status = 'Delivered' GROUP BY YEAR(OrderedDate), MONTH(OrderedDate)";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(2, month);
+            ps.setInt(1, year);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error in getMonthlyRevenue: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public static void main(String[] args) {
+
+        long i;
+        OrderDAO dao = new OrderDAO();
+        i = dao.getMonthlyRevenue(8, 2025);
+        System.out.println(i);
     }
 }

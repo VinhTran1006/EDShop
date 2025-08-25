@@ -659,14 +659,11 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
+    
     public int countLowStockDynamic(int threshold) {
-        String sql = "SELECT COUNT(*) AS LowStockCount FROM ( "
-                + "SELECT p.ProductID, "
-                + "ISNULL(SUM(isd.Quantity), 0) - ISNULL((SELECT SUM(od.Quantity) FROM OrderDetails od WHERE od.ProductID = p.ProductID), 0) AS StockLeft "
-                + "FROM Products p "
-                + "LEFT JOIN ImportStockDetails isd ON p.ProductID = isd.ProductID "
-                + "GROUP BY p.ProductID "
-                + ") AS StockView WHERE StockLeft <= ?";
+        String sql = "SELECT COUNT(*) AS LowStockCount\n"
+                + "FROM Products\n"
+                + "WHERE Quantity <= ?";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, threshold); // Ví dụ, threshold = 5
             try ( ResultSet rs = ps.executeQuery()) {
@@ -679,6 +676,7 @@ public class ProductDAO extends DBContext {
         }
         return 0;
     }
+    
 
     public Map<Integer, Integer> getAllProductStocks() {
         Map<Integer, Integer> stockMap = new HashMap<>();

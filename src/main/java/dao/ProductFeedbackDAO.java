@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  *
+ * 
  * @author VinhNTCE181630
  */
 public class ProductFeedbackDAO extends DBContext {
@@ -418,7 +419,7 @@ public class ProductFeedbackDAO extends DBContext {
 
     // Đếm số feedback chưa đọc
     public int countUnreadFeedback() {
-        String sql = "SELECT COUNT(*) FROM ProductFeedbacks WHERE IsRead = 0";
+            String sql = "SELECT COUNT(*) FROM ProductFeedbacks WHERE Reply is null";
         try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
@@ -427,5 +428,13 @@ public class ProductFeedbackDAO extends DBContext {
             e.printStackTrace();
         }
         return 0;
+    }
+    
+        public static void main(String[] args) {
+
+       int i;
+        ProductFeedbackDAO dao = new ProductFeedbackDAO();
+       i = dao.countUnreadFeedback();
+            System.out.println(i);
     }
 }
