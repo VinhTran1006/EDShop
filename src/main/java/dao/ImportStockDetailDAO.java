@@ -203,4 +203,116 @@ public class ImportStockDetailDAO extends DBContext {
             return false;
         }
     }
+
+    public boolean deductStockFIFO(int productID, int quantityToDeduct) throws SQLException {
+
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn.setAutoCommit(false); // bắt đầu transaction
+
+            // 1. Kiểm tra tổng quantity trong bảng Products
+            String checkQtySql = "SELECT Quantity FROM Products WHERE ProductID = ?";
+            ps = conn.prepareStatement(checkQtySql);
+            ps.setInt(1, productID);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                conn.rollback();
+                return false; // product không tồn tại
+            }
+            int currentQty = rs.getInt("Quantity");
+            if (currentQty < quantityToDeduct) {
+                conn.rollback();
+                return false; // không đủ hàng
+            }
+            rs.close();
+            ps.close();
+
+            // 2. Lấy danh sách ImportStockDetails theo FIFO
+            String fifoSql
+                    = "SELECT d.ImportStockDetailsID, d.StockLeft "
+                    + "FROM ImportStockDetails d "
+                    + "JOIN ImportStocks i ON d.ImportID = i.ImportID "
+                    + "WHERE d.ProductID = ? AND d.StockLeft > 0 "
+                    + "ORDER BY i.ImportDate ASC, d.ImportStockDetailsID ASC";
+            ps = conn.prepareStatement(fifoSql);
+            ps.setInt(1, productID);
+            rs = ps.executeQuery();
+
+            List<int[]> fifoList = new ArrayList<>();
+            // mỗi phần tử: [detailID, stockLeft]
+
+            while (rs.next()) {
+                fifoList.add(new int[]{
+                    rs.getInt("ImportStockDetailsID"),
+                    rs.getInt("StockLeft")
+                });
+            }
+            rs.close();
+            ps.close();
+
+            int remaining = quantityToDeduct;
+
+            // 3. Duyệt từng lô và update StockLeft
+            for (int[] detail : fifoList) {
+                if (remaining <= 0) {
+                    break;
+                }
+
+                int detailID = detail[0];
+                int stockLeft = detail[1];
+
+                int deduct = Math.min(stockLeft, remaining);
+
+                String updateDetailSql
+                        = "UPDATE ImportStockDetails "
+                        + "SET StockLeft = StockLeft - ? "
+                        + "WHERE ImportStockDetailsID = ?";
+                PreparedStatement psUpdate = conn.prepareStatement(updateDetailSql);
+                psUpdate.setInt(1, deduct);
+                psUpdate.setInt(2, detailID);
+                psUpdate.executeUpdate();
+                psUpdate.close();
+
+                remaining -= deduct;
+            }
+
+            if (remaining > 0) {
+                conn.rollback();
+                return false; // không đủ stock
+            }
+
+            // 4. Update bảng Products
+            String updateProductSql
+                    = "UPDATE Products SET Quantity = Quantity - ? WHERE ProductID = ?";
+            PreparedStatement psUpdate = conn.prepareStatement(updateProductSql);
+            psUpdate.setInt(1, quantityToDeduct);
+            psUpdate.setInt(2, productID);
+            psUpdate.executeUpdate();
+            psUpdate.close();
+
+            // 5. Commit transaction
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            if (conn != null) {
+                conn.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (ps != null) {
+                ps.close();
+            }
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
+        }
+    }
+
 }
