@@ -269,7 +269,7 @@ public class CreateOrderServlet extends HttpServlet {
                     
                     orderDetailDAO.createOrderDetail(orderDetail);
                     
-                    
+
                 }
                 
                 // Save voucher usage if voucher was used
