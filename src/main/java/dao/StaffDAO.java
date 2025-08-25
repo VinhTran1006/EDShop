@@ -12,6 +12,7 @@ public class StaffDAO extends DBContext {
         super();
     }
 
+    
     // Lấy tất cả Staff
     public List<Staff> getAllStaff() {
         List<Staff> list = new ArrayList<>();
@@ -192,4 +193,22 @@ public class StaffDAO extends DBContext {
         return false;
     }
 
+    public int getTotalStaff() {
+        String sql = "SELECT COUNT(*) FROM Staffs WHERE Role != 'Admin' AND IsActive != 0";
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        int i;
+        StaffDAO dao = new StaffDAO();
+        i = dao.getTotalStaff();
+        System.out.println(i);
+    }
 }

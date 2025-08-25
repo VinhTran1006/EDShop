@@ -8,6 +8,7 @@ import utils.DBContext;
 
 public class SupplierDAO extends DBContext {
 
+    
     // Lấy toàn bộ danh sách Suppliers
     public List<Suppliers> getAllSuppliers() {
         List<Suppliers> list = new ArrayList<>();
@@ -211,5 +212,17 @@ public class SupplierDAO extends DBContext {
         return list;
     }
 
+    
+    public int getTotalSuppliers() {
+        String sql = "SELECT COUNT(*) FROM Suppliers WHERE ISActive != 0";
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
 }

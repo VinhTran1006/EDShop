@@ -4,8 +4,10 @@
  */
 package controller;
 
+import dao.CustomerDAO;
+import dao.OrderDAO;
 import dao.ProductDAO;
-import dao.RevenueStatisticDAO;
+import dao.ProductFeedbackDAO;
 import dao.StaffDAO;
 import dao.SupplierDAO;
 import java.io.IOException;
@@ -19,13 +21,11 @@ import java.util.Calendar;
 
 /**
  *
- * 
+ *
  * @author HP
  */
 @WebServlet(name = "AdminDashboard", urlPatterns = {"/AdminDashboard"})
 public class AdminDashboard extends HttpServlet {
-
-
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -42,22 +42,33 @@ public class AdminDashboard extends HttpServlet {
             throws ServletException, IOException {
         StaffDAO staffDAO = new StaffDAO();
         ProductDAO productDAO = new ProductDAO();
+        ProductFeedbackDAO productFeedbackDAO = new ProductFeedbackDAO();
         SupplierDAO supplierDAO = new SupplierDAO();
-        RevenueStatisticDAO revenueDAO = new RevenueStatisticDAO();
-        //int totalStaff = staffDAO.getTotalStaff();
+        OrderDAO orderDAO = new OrderDAO();
+        CustomerDAO customerDAO = new CustomerDAO();
+        int totalStaff = staffDAO.getTotalStaff();
         int totalProduct = productDAO.getTotalProducts();
-       // int totalSupplier = supplierDAO.getTotalSuppliers();
+        int totalSupplier = supplierDAO.getTotalSuppliers();
         Calendar now = Calendar.getInstance();
         int month = now.get(Calendar.MONTH) + 1;
         int year = now.get(Calendar.YEAR);
-      //  long monthlyRevenue = revenueDAO.getMonthlyRevenue(month, year);
+        long monthlyRevenue = orderDAO.getMonthlyRevenue(month, year);
+        int todayOrders = orderDAO.countTodayOrders();
+        int newFeedback = productFeedbackDAO.countUnreadFeedback();
+        int totalCustomers = customerDAO.countTotalCustomers();
+        int lowStockAlerts = productDAO.countLowStockDynamic(5); // 5 là mức cảnh báo bạn muốn
 
-        //request.setAttribute("totalStaff", totalStaff);
+        request.setAttribute("todayOrders", todayOrders);
+        request.setAttribute("newFeedback", newFeedback);
+        request.setAttribute("totalCustomers", totalCustomers);
+        request.setAttribute("lowStockAlerts", lowStockAlerts);
+
+        request.setAttribute("totalStaff", totalStaff);
         request.setAttribute("totalProduct", totalProduct);
-       // request.setAttribute("totalSupplier", totalSupplier);
-       // request.setAttribute("monthlyRevenue", monthlyRevenue);
+        request.setAttribute("totalSupplier", totalSupplier);
+        request.setAttribute("monthlyRevenue", monthlyRevenue);
         request.getRequestDispatcher("/WEB-INF/View/admin/adminDashboard.jsp").forward(request, response);
+        
     }
-
 
 }

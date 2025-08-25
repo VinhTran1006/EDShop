@@ -2,20 +2,34 @@
 <%@page import="model.Staff"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.text.NumberFormat, java.util.Locale"%>
-<% 
+<%
     Staff acc = (Staff) session.getAttribute("admin");
-   if (acc == null || !acc.getRole().equalsIgnoreCase("Admin")){
+    if (acc == null || !acc.getRole().equalsIgnoreCase("Admin")) {
         response.sendRedirect("LoginAdmin");
         return;
-   }
-   // Integer totalStaff = (Integer) request.getAttribute("totalStaff");
+    }
+    Integer totalStaff = (Integer) request.getAttribute("totalStaff");
     Integer totalProduct = (Integer) request.getAttribute("totalProduct");
-   // Integer totalSupplier = (Integer) request.getAttribute("totalSupplier");
-  //  Long monthlyRevenue = (Long) request.getAttribute("monthlyRevenue");
-  //  if (totalStaff == null) totalStaff = 0;
-    if (totalProduct == null) totalProduct = 0;
-   // if (totalSupplier == null) totalSupplier = 0;
-   // if (monthlyRevenue == null) monthlyRevenue = 0L;
+    Integer totalSupplier = (Integer) request.getAttribute("totalSupplier");
+    Long monthlyRevenue = (Long) request.getAttribute("monthlyRevenue");
+
+    Integer todayOrders = (Integer) request.getAttribute("todayOrders");
+    Integer newFeedback = (Integer) request.getAttribute("newFeedback");
+    Integer totalCustomers = (Integer) request.getAttribute("totalCustomers");
+    int lowStockAlerts = (int) request.getAttribute("lowStockAlerts");
+    if (totalStaff == null) {
+        totalStaff = 0;
+    }
+    
+    if (totalProduct == null) {
+        totalProduct = 0;
+    }
+    if (totalSupplier == null) {
+        totalSupplier = 0;
+    }
+    if (monthlyRevenue == null) {
+        monthlyRevenue = 0L;
+    }
     NumberFormat nf = NumberFormat.getInstance(new Locale("vi", "VN"));
 %>
 
@@ -35,7 +49,9 @@
         <!-- Dashboard CSS -->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/adminDashboard.css">
         <style>
-            .stat-card { min-width: 220px; }
+            .stat-card {
+                min-width: 220px;
+            }
             .stat-value {
                 font-size: 2rem;
                 font-weight: bold;
@@ -72,26 +88,51 @@
                             Total Staff
                             <span class="stat-icon ms-2"><i class="fas fa-user-tie"></i></span>
                         </div>
+                        <div class="stat-value"><%= totalStaff%></div>
                     </div>
                     <div class="stat-card p-4 shadow rounded bg-white text-center">
                         <div class="stat-header mb-2">
                             Total Products
                             <span class="stat-icon ms-2"><i class="fas fa-box"></i></span>
                         </div>
-                        <div class="stat-value"><%= totalProduct %></div>
+                        <div class="stat-value"><%= totalProduct%></div>
                     </div>
                     <div class="stat-card p-4 shadow rounded bg-white text-center">
                         <div class="stat-header mb-2">
                             Total Suppliers
                             <span class="stat-icon ms-2"><i class="fas fa-users"></i></span>
                         </div>
+                        <div class="stat-value"><%= totalSupplier%></div>
                     </div>
                     <div class="stat-card p-4 shadow rounded bg-white text-center">
                         <div class="stat-header mb-2">
                             Monthly Revenue
                             <span class="stat-icon ms-2"><i class="fas fa-chart-line"></i></span>
                         </div>
+                        <div class="stat-value text-success"><%= nf.format(monthlyRevenue)%> ₫</div>
                     </div>
+                </div>
+
+
+                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                    <div class="stat-card bg-secondary text-white p-3 rounded">
+                        <h5>Today's Orders</h5>
+                        <p style="font-size: 1.8rem; font-weight: bold;">${todayOrders != null ? todayOrders : 0}</p>
+                    </div>
+                    <div class="stat-card bg-success text-white p-3 rounded">
+                        <h5>New Feedback</h5>
+                        <p style="font-size: 1.8rem; font-weight: bold;">${newFeedback != null ? newFeedback : 0}</p>
+                    </div>
+
+                    <div class="stat-card bg-warning text-white p-3 rounded">
+                        <h5>Low Stock</h5>
+                        <p style="font-size: 1.8rem; font-weight: bold;">${lowStockAlerts != null ? lowStockAlerts : 0}</p>
+                    </div>
+                    <div class="stat-card bg-danger text-white p-3 rounded">
+                        <h5>Total Customers</h5>
+                        <p style="font-size: 1.8rem; font-weight: bold;">${totalCustomers != null ? totalCustomers : 0}</p>
+                    </div>
+
                 </div>
             </main>
         </div>

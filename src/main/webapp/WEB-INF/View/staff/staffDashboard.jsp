@@ -38,7 +38,7 @@
 
 
 
-<div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
                         <div class="stat-card bg-secondary text-white p-3 rounded">
                             <h5>Today's Orders</h5>
                             <p style="font-size: 1.8rem; font-weight: bold;">${todayOrders != null ? todayOrders : 0}</p>
