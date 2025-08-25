@@ -175,6 +175,30 @@
                             session.removeAttribute("registerSuccess");
                         }
                     %>
+
+                    <%
+                        String resetPasswordSuccess = (String) request.getAttribute("resetPasswordSuccess");
+                        if (resetPasswordSuccess != null) {
+                    %>
+                    <div class="alert alert-success text-center" role="alert" style="border-radius:10px; font-weight:500;">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <%= resetPasswordSuccess%>
+                    </div>
+                    <%
+                        }
+                    %>
+
+                    <%
+                        String error = (String) session.getAttribute("errorMessage");
+                        if (error != null) {
+                    %>
+                    <div class="error-message">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <%= error%>
+                    </div>
+                    <%
+                        }
+                    %>
                     <div class="mb-3">
                         <label for="email" class="form-label">
                             <i class="bi bi-envelope me-2"></i>Email

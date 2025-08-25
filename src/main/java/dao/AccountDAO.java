@@ -92,7 +92,7 @@ public class AccountDAO extends DBContext {
     // ----------------------
     public boolean checkEmailExisted(String email) {
         String sqlCustomer = "SELECT 1 FROM Customers WHERE Email = ?";
-        String sqlStaff = "SELECT 1 FROM Staff WHERE Email = ?";
+        String sqlStaff = "SELECT 1 FROM Staffs WHERE Email = ?";
         try ( PreparedStatement ps1 = conn.prepareStatement(sqlCustomer)) {
             ps1.setString(1, email);
             try ( ResultSet rs = ps1.executeQuery()) {
@@ -271,6 +271,68 @@ public class AccountDAO extends DBContext {
         return null;
     }
 
+    public Object getAccountByEmail(String email) {
+        String sqlCus = "SELECT * FROM Customers WHERE Email = ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sqlCus)) {
+            ps.setString(1, email);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Customer cus = new Customer();
+                    cus.setCustomerID(rs.getInt("CustomerID"));
+                    cus.setFullName(rs.getString("FullName"));
+                    cus.setEmail(rs.getString("Email"));
+                    cus.setPhoneNumber(rs.getString("PhoneNumber"));
+                    cus.setBirthDate(rs.getDate("BirthDate"));
+                    cus.setGender(rs.getString("Gender"));
+                    cus.setEmailVerified(rs.getBoolean("EmailVerified"));
+                    cus.setPasswordHash(rs.getString("PassWordHash"));
+                    cus.setActive(rs.getBoolean("IsActive"));
+                    cus.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                    return cus;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String sqlStaff = "SELECT * FROM Staffs WHERE Email = ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sqlStaff)) {
+            ps.setString(1, email);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Staff staff = new Staff();
+                    staff.setStaffID(rs.getInt("StaffID"));
+                    staff.setFullName(rs.getString("FullName"));
+                    staff.setPhoneNumber(rs.getString("PhoneNumber"));
+                    staff.setEmail(rs.getString("Email"));
+                    staff.setBirthDate(rs.getDate("BirthDate"));
+                    staff.setGender(rs.getString("Gender"));
+                    staff.setRole(rs.getString("Role"));
+                    staff.setHiredDate(rs.getDate("HiredDate"));
+                    staff.setPasswordHash(rs.getString("PassWordHash"));
+                    staff.setActive(rs.getBoolean("IsActive"));
+                    staff.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                    return staff;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updatePassword(String email, String newPass) {
+        String sqlCus = "UPDATE Customers SET PasswordHash = ? WHERE Email = ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sqlCus)) {
+            ps.setString(1, newPass);
+            ps.setString(2, email);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // ----------------------
     // RANDOM PASSWORD
     // ----------------------
@@ -282,5 +344,36 @@ public class AccountDAO extends DBContext {
             sb.append(chars.charAt(random.nextInt(chars.length())));
         }
         return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        AccountDAO dao = new AccountDAO();
+
+        String emailTest = "tonghopdrive123@gmail.com"; // thay bằng email thật trong DB
+        Object acc = dao.getAccountByEmail(emailTest);
+
+        if (acc == null) {
+            System.out.println("Không tìm thấy account với email: " + emailTest);
+        } else if (acc instanceof Customer) {
+            Customer cus = (Customer) acc;
+            System.out.println(">>> Đây là Customer");
+            System.out.println("ID: " + cus.getCustomerID());
+            System.out.println("Name: " + cus.getFullName());
+            System.out.println("Email: " + cus.getEmail());
+            System.out.println("Phone: " + cus.getPhoneNumber());
+            System.out.println("BirthDate: " + cus.getBirthDate());
+            System.out.println("Gender: " + cus.getGender());
+            System.out.println("EmailVerified: " + cus.isEmailVerified());
+            System.out.println("PasswordHash: " + cus.getPasswordHash());
+            System.out.println("Active: " + cus.isActive());
+            System.out.println("CreatedAt: " + cus.getCreatedAt());
+        } else if (acc instanceof Staff) {
+            Staff staff = (Staff) acc;
+            System.out.println(">>> Đây là Staff");
+            System.out.println("ID: " + staff.getStaffID());
+            System.out.println("Name: " + staff.getFullName());
+            System.out.println("Email: " + staff.getEmail());
+            System.out.println("Role: " + staff.getRole());
+        }
     }
 }

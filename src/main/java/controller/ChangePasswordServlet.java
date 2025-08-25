@@ -55,9 +55,8 @@ public class ChangePasswordServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Customer cus = (Customer) session.getAttribute("cus");
-        Customer customer = (Customer) session.getAttribute("cus");
-        if (cus == null || customer == null) {
+        Customer cus = (Customer)session.getAttribute("user");
+        if (cus == null) {
             response.sendRedirect("Login");
             return;
         }
@@ -76,9 +75,8 @@ public class ChangePasswordServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Integer customerId = (Integer) session.getAttribute("customerId");
-
-        if (customerId == null) {
+        Customer cus = (Customer)session.getAttribute("user");
+        if (cus == null) {
             response.sendRedirect("Login");
             return;
         }
@@ -105,7 +103,7 @@ public class ChangePasswordServlet extends HttpServlet {
         }
 
         AccountDAO dao = new AccountDAO();
-        boolean success = dao.changePassword(customerId, oldPassword, newPassword);
+        boolean success = dao.changePassword(cus.getCustomerID(), oldPassword, newPassword);
 
         if (success) {
             request.setAttribute("success", "Password changed successfully!");
