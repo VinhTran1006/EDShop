@@ -215,10 +215,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:set var="sum" value="0" scope="page" />
+                                
                                 <c:forEach items="${sessionScope.selectedProducts}" var="d">
-                                    <c:set var="lineTotal" value="${d.stock * d.unitPrice}" scope="page"/>
-                                    <c:set var="sum" value="${sum + lineTotal}" scope="page"/>
+                                    
                                     <tr>
                                         <td>${d.product.productID}</td>
                                         <td>${d.product.productName}</td>
@@ -246,11 +245,17 @@
                                     </tr>
                                 </c:forEach>
                                 <tr>
-                                    <td colspan="4"></td>
-                                    <td class="text-end fw-bold">Total:</td>
-                                    <td class="fw-bold text-center" id="totalAmount">
-                                        <fmt:formatNumber value="${sum}" type="number" groupingUsed="true" /> VND
+                                    
+                                <tr>
+                                    <td colspan="4" class="fw-bold text-end">Total:</td>
+                                    <td class="fw-bold text-end" id="totalAmount">
+                                        <fmt:formatNumber value="${empty totalAmount ? 0 : totalAmount}" type="number" groupingUsed="true"/> ₫
                                     </td>
+                                    <td></td>
+                                </tr>
+
+
+
                                 </tr>
                             </tbody>
                         </table>
@@ -409,15 +414,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <script>
-                                                document.addEventListener("DOMContentLoaded", function () {
-                                                    let totalAmountElement = document.getElementById("totalAmount");
-                                                    if (totalAmountElement) {
-                                                        let amount = parseFloat(totalAmountElement.innerText.replace(/[^\d.-]/g, ''));
-                                                        if (!isNaN(amount)) {
-                                                            totalAmountElement.innerText = amount.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
-                                                        }
-                                                    }
-                                                });
+
 
                                                 document.getElementById("openModalBtn").addEventListener("click", function () {
                                                     var myModal = new bootstrap.Modal(document.getElementById("createImportStock"));

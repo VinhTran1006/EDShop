@@ -50,7 +50,13 @@
                                     </td>
                                     <td>${importStock.supplier.name}</td>
                                     <td class="text-center">
-                                        <fmt:formatNumber value="${importStock.totalAmount}" type="currency" currencySymbol="₫" groupingUsed="true" minFractionDigits="0"/>
+                                        <fmt:formatNumber value="${importStock.totalAmount}" 
+                                                          type="number"
+                                                          groupingUsed="true"
+                                                          minFractionDigits="0"
+                                                          maxFractionDigits="2"/> đ
+
+
                                     </td>
                                 </tr>
                             </tbody>
