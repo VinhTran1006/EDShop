@@ -116,10 +116,10 @@
     .user-dropdown-item .bi-geo-alt{
         margin-left: 60px;
     }
-.user-dropdown-item .bi-ticket-perforated{
+    .user-dropdown-item .bi-ticket-perforated{
         margin-left: 60px;
     }
-    
+
 </style>
 <!DOCTYPE html>
 <html>
@@ -252,10 +252,3 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap JS Bundle(dropdown) -->
     </body>
 </html>
-
-<style>
-
-
-
-
-</style>

@@ -60,12 +60,12 @@
                         <jsp:include page="/WEB-INF/View/customer/productManagement/productDetail/imageProduct.jsp" />
                     </div>
 
-                        <p style="font-size: 20px">In Stock: <%= product.getQuantity()%></p>
-                        <% BigDecimal oldPrice = product.getPrice();
-                            Locale localeVN = new Locale("vi", "VN");
-                            NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
-                            String giaCuFormatted = currencyVN.format(oldPrice);%>
-                        <p class="giaMoi" style="font-size: 20px">Price: <%= giaCuFormatted%></p>
+                    <p style="font-size: 20px">In Stock: <%= product.getQuantity()%></p>
+                    <% BigDecimal oldPrice = product.getPrice();
+                        Locale localeVN = new Locale("vi", "VN");
+                        NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
+                        String giaCuFormatted = currencyVN.format(oldPrice);%>
+                    <p class="giaMoi" style="font-size: 20px">Price: <%= giaCuFormatted%></p>
 
                     <!-- ADD TO CART BUTTON -->
                     <div style="margin: 20px 0;">
