@@ -1,5 +1,3 @@
-
-
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
 <%@page import="java.math.BigDecimal"%>
@@ -17,121 +15,124 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Sản phẩm mới</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/newProduct2.css">
         <style>
-            #product-scroll-discount {
+            /* Container chính */
+            .main-container {
+                width: 100%; 
+                border-radius: 15px; 
+                margin-top: 1%; 
+                background-color: #fff; 
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                box-sizing: border-box;
+                overflow: hidden;
+                padding: 20px;
+            }
+
+            /* Container grid cho sản phẩm */
+            .product-grid {
                 display: flex;
-                overflow-x: auto;
-                scroll-behavior: smooth;
-                padding-bottom: 10px;
+                flex-wrap: wrap;
+                gap: 15px;
                 width: 100%;
-                max-width: 100%;
-                scroll-snap-type: x mandatory;
-                gap: 10px;
+                justify-content: flex-start;
             }
 
-            .product-scroll-wrapper {
-                position: relative;
-                margin-left: 2%;
-                margin-right: 2%;
-                overflow: visible; /* Nếu bạn muốn nút nhô ra ngoài một chút */
-                width: 100%;
-                min-height: 300px; /* hoặc chiều cao vừa đủ chứa sản phẩm + nút */
-            }
-
-            .scroll-btn {
-                background-color: white;
-                border: 1px solid #ccc;
-                padding: 8px;
-                width: 40px;
-                height: 40px;
-                cursor: pointer;
-                border-radius: 50%;
-                font-size: 20px;
-                font-weight: bold;
-                color: #333;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                position: absolute;
-                top: 40%;
-                z-index: 10;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .scroll-btn:hover {
-                background-color: #f0f0f0;
-                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-                transform: scale(1.1);
-            }
-
-            .scroll-left-discount {
-                left: 0;
-            }
-
-            .scroll-right-discount {
-                right: 0;
-            }
-
-            #product-scroll-discount {
-                display: flex;
-                overflow-x: auto;
-                scroll-behavior: smooth;
-                padding-bottom: 10px;
-            }
-
+            /* Card sản phẩm - giống như file đầu */
             .sanPhamMoi {
                 box-sizing: border-box;
-                border-radius: 12px;                 /* bo góc */
-                background-color: #fff;              /* nền trắng (nếu cần) */
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* đậm hơn */
+                border-radius: 12px;
+                padding: 15px;
+                background-color: #fff;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                 transition: transform 0.2s ease, box-shadow 0.2s ease;
-
                 flex-shrink: 0;
-                scroll-snap-align: start;
+                width: calc(20% - 12px); /* 5 sản phẩm trên một hàng */
+                min-width: 200px;
             }
 
             .sanPhamMoi:hover {
                 transform: translateY(-3px);
-                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);  /* hiệu ứng khi hover */
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
             }
 
-            #product-scroll-discount {
-                scrollbar-width: none; /* Firefox */
-                -ms-overflow-style: none; /* IE/Edge */
-            }
-
-            #product-scroll-discount::-webkit-scrollbar {
-                display: none; /* Chrome, Safari */
-            }
-
+            /* Hình ảnh sản phẩm - giống như file đầu */
             .divHinh {
-                width: 100%;
-                height: 200px;              /* cố định chiều cao khung ảnh */
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                overflow: hidden;           /* ẩn phần thừa nếu ảnh quá lớn */
-                border-radius: 8px;         /* bo góc nhẹ cho đẹp */
-                background-color: #f9f9f9;  /* nền xám nhạt nếu ảnh không full */
+                margin-bottom: 10px;
+                text-align: center;
             }
 
-            .divHinh img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;   /* cắt ảnh vừa khung */
+            .anhDienThoaiDocQuyen {
+                width: 100% !important;
+                height: 150px;
+                object-fit: cover;
                 border-radius: 8px;
             }
 
+            /* Tên sản phẩm - giống như file đầu */
+            .productName {
+                font-size: 14px;
+                font-weight: 600;
+                color: #333;
+                margin: 10px 0 5px 0;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                line-height: 1.4;
+            }
 
+            /* Giá sản phẩm - giống như file đầu */
+            .giaMoi {
+                font-size: 16px;
+                font-weight: bold;
+                color: #e74c3c;
+                margin: 5px 0;
+            }
+
+            /* Responsive */
+            @media (max-width: 1200px) {
+                .sanPhamMoi {
+                    width: calc(25% - 11.25px); /* 4 sản phẩm trên một hàng */
+                }
+            }
+
+            @media (max-width: 992px) {
+                .sanPhamMoi {
+                    width: calc(33.333% - 10px); /* 3 sản phẩm trên một hàng */
+                }
+            }
+
+            @media (max-width: 768px) {
+                .sanPhamMoi {
+                    width: calc(50% - 7.5px); /* 2 sản phẩm trên một hàng */
+                    min-width: 180px;
+                }
+                
+                .main-container {
+                    padding: 15px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .sanPhamMoi {
+                    width: 100%; /* 1 sản phẩm trên một hàng */
+                    min-width: 160px;
+                    padding: 10px;
+                }
+                
+                .main-container {
+                    padding: 10px;
+                }
+                
+                .product-grid {
+                    gap: 10px;
+                }
+            }
         </style>
     </head>
     <body>
-        <div class="" style="width: 100%; border-radius: 15px; margin-top: 1%; background-color: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
-
-            <!-- Danh sách sản phẩm -->
-            <div id="" style = "gap: 0.25%; display: flex; width: 100%; flex-wrap: wrap;">
+        <div class="main-container">
+            <!-- Container grid cho sản phẩm -->
+            <div class="product-grid">
                 <% if (productList != null) {
                         for (Product pro : productList) {
                             oldPrice = pro.getPrice();
@@ -139,12 +140,13 @@
                             NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
                             String giaCuFormatted = currencyVN.format(oldPrice);
                 %>
-                <div class="sanPhamMoi" style = "width: 18.9%">
+                <div class="sanPhamMoi">
                     <a href="<%= request.getContextPath()%>/ProductDetail?productId=<%= pro.getProductID()%>&categoryId=<%= pro.getCategoryID()%>" style="text-decoration: none; color: inherit; display: block;">
                         <div class="divHinh">
-                            <img style="width: 98%" src="<%= pro.getImageUrl1()%>" alt="anhDienThoai" class="anhDienThoaiDocQuyen">
+                            <img src="<%= pro.getImageUrl1()%>" alt="<%= pro.getProductName()%>" class="anhDienThoaiDocQuyen">
                         </div>
-
+                        <div class="divTraGop">
+                        </div>
                         <p class="productName"><%= pro.getProductName()%></p>
                         <p class="giaMoi"><%= giaCuFormatted%> đ</p>
                     </a>
@@ -152,10 +154,9 @@
                 <%
                     } // end for
                 } else { %>
-                <p>null</p>
+                <p>Không có sản phẩm nào</p>
                 <% }%>
             </div>
-
         </div>
     </body>
 </html>
