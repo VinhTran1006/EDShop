@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 @WebServlet(name = "CreateOrderServlet", urlPatterns = {"/CreateOrderServlet"})
 public class CreateOrderServlet extends HttpServlet {
-    
+
     private CartItemDAO cartItemDAO;
     private AddressDAO addressDAO;
     private VoucherDAO voucherDAO;
@@ -32,7 +32,7 @@ public class CreateOrderServlet extends HttpServlet {
     private OrderDetailDAO orderDetailDAO;
     private ProductDAO productDAO;
     private CustomerVoucherDAO customerVoucherDAO;
-    
+
     @Override
     public void init() throws ServletException {
         cartItemDAO = new CartItemDAO();
@@ -47,15 +47,15 @@ public class CreateOrderServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
         Customer customer = (Customer) session.getAttribute("cus");
-        
+
         if (customer == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("Login.jsp");
             return;
         }
-        
+
         // Get selected cart item IDs from session
         String selectedItemIds = (String) session.getAttribute("selectedCartItemIds");
         if (selectedItemIds == null || selectedItemIds.isEmpty()) {
@@ -63,35 +63,35 @@ public class CreateOrderServlet extends HttpServlet {
             response.sendRedirect("viewCart.jsp");
             return;
         }
-        
+
         try {
             // Parse selected cart item IDs
             List<Integer> cartItemIds = Arrays.stream(selectedItemIds.split(","))
                     .map(Integer::parseInt)
                     .collect(Collectors.toList());
-            
+
             // Get selected cart items
             List<CartItem> selectedCartItems = cartItemDAO.getCartItemsByIds(cartItemIds);
-            
+
             // Get customer addresses
             List<Address> addresses = addressDAO.getAllAddressesByCustomerId(customer.getCustomerID());
-            
+
             // Get customer vouchers (chỉ lấy voucher chưa dùng)
             List<Voucher> availableVouchers = voucherDAO.getAvailableVouchersForCustomer(customer.getCustomerID());
-            
+
             // Calculate total amount
             long totalAmount = 0;
             for (CartItem item : selectedCartItems) {
                 totalAmount += item.getProduct().getPrice().longValue() * item.getQuantity();
             }
-            
+
             request.setAttribute("selectedCartItems", selectedCartItems);
             request.setAttribute("addresses", addresses);
             request.setAttribute("availableVouchers", availableVouchers);
             request.setAttribute("totalAmount", totalAmount);
-            
+
             request.getRequestDispatcher("/WEB-INF/View/customer/orderManagement/CreateOrder.jsp").forward(request, response);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("message", "Error loading order page");
@@ -102,68 +102,68 @@ public class CreateOrderServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String action = request.getParameter("action");
-        
+
         if ("validateVoucher".equals(action)) {
             validateVoucher(request, response);
         } else if ("createOrder".equals(action)) {
             createOrder(request, response);
         }
     }
-    
-    private void validateVoucher(HttpServletRequest request, HttpServletResponse response) 
+
+    private void validateVoucher(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        
+
         String voucherCode = request.getParameter("voucherCode");
         String totalAmountStr = request.getParameter("totalAmount");
-        
+
         HttpSession session = request.getSession();
         Customer customer = (Customer) session.getAttribute("cus");
-        
+
         if (customer == null) {
             response.getWriter().write("error:not_logged_in");
             return;
         }
-        
+
         try {
             // Validate input
             if (voucherCode == null || voucherCode.trim().isEmpty()) {
                 response.getWriter().write("error:empty_code");
                 return;
             }
-            
+
             // Clean and validate voucher code (chỉ cho phép chữ cái, số và một số ký tự đặc biệt)
             voucherCode = voucherCode.trim().toUpperCase();
             if (!isValidVoucherCode(voucherCode)) {
                 response.getWriter().write("error:invalid_format");
                 return;
             }
-            
+
             if (totalAmountStr == null || totalAmountStr.trim().isEmpty()) {
                 response.getWriter().write("error:invalid_amount");
                 return;
             }
-            
+
             long totalAmount = Long.parseLong(totalAmountStr);
             if (totalAmount <= 0) {
                 response.getWriter().write("error:invalid_amount");
                 return;
             }
-            
+
             // 1. Kiểm tra voucher có tồn tại không
             Voucher voucher = voucherDAO.getVoucherByCode(voucherCode);
             if (voucher == null) {
                 response.getWriter().write("error:voucher_not_found");
                 return;
             }
-            
+
             // 2. Kiểm tra khách hàng đã sử dụng voucher này chưa
             if (customerVoucherDAO.hasCustomerUsedVoucher(customer.getCustomerID(), voucher.getVoucherID())) {
                 response.getWriter().write("error:voucher_already_used");
                 return;
             }
-            
+
             // 3. Validate voucher cho đơn hàng (kiểm tra các điều kiện khác)
             Voucher validVoucher = voucherDAO.validateVoucherForOrder(voucherCode, customer.getCustomerID(), totalAmount);
             if (validVoucher == null) {
@@ -181,17 +181,35 @@ public class CreateOrderServlet extends HttpServlet {
                 }
                 return;
             }
-            
+
             // Calculate discount
             long discount = Math.min(
-                (totalAmount * voucher.getDiscountPercent()) / 100,
-                (long) voucher.getMaxDiscountAmount()
+                    (totalAmount * voucher.getDiscountPercent()) / 100,
+                    (long) voucher.getMaxDiscountAmount()
             );
             long finalAmount = totalAmount - discount;
-            
-            // Trả về: discount_amount:final_amount:voucher_id:discount_percent
-            response.getWriter().write("success:" + discount + ":" + finalAmount + ":" + voucher.getVoucherID() + ":" + voucher.getDiscountPercent());
-            
+
+            // Format ngày hết hạn
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+            String expiryDateStr = sdf.format(voucher.getExpiryDate());
+
+            // Trả về thông tin voucher đầy đủ
+            // Format: success:discount_amount:final_amount:voucher_id:discount_percent:description:expiry_date:min_order:max_discount:usage_info
+            String voucherInfo = String.format("success:%d:%d:%d:%d:%s:%s:%.0f:%.0f:%d/%d",
+                    discount,
+                    finalAmount,
+                    voucher.getVoucherID(),
+                    voucher.getDiscountPercent(),
+                    voucher.getDescription() != null ? voucher.getDescription().replace(":", "&#58;") : "Discount voucher", // Replace colon to avoid parsing issues
+                    expiryDateStr,
+                    voucher.getMinOrderAmount(),
+                    voucher.getMaxDiscountAmount(),
+                    voucher.getUsedCount(),
+                    voucher.getUsageLimit()
+            );
+
+            response.getWriter().write(voucherInfo);
+
         } catch (NumberFormatException e) {
             response.getWriter().write("error:invalid_amount");
         } catch (Exception e) {
@@ -199,24 +217,24 @@ public class CreateOrderServlet extends HttpServlet {
             response.getWriter().write("error:system_error");
         }
     }
-    
+
     // Validate voucher code format
     private boolean isValidVoucherCode(String code) {
         // Cho phép chữ cái, số, dấu gạch ngang và underscore, độ dài từ 3-20 ký tự
         return Pattern.matches("^[A-Z0-9_-]{3,20}$", code);
     }
-    
-    private void createOrder(HttpServletRequest request, HttpServletResponse response) 
+
+    private void createOrder(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
         Customer customer = (Customer) session.getAttribute("cus");
-        
+
         if (customer == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("Login.jsp");
             return;
         }
-        
+
         try {
             // Get form data
             int addressId = Integer.parseInt(request.getParameter("addressId"));
@@ -224,40 +242,50 @@ public class CreateOrderServlet extends HttpServlet {
             String discountPercentStr = request.getParameter("discountPercent");
             long finalAmount = Long.parseLong(request.getParameter("finalAmount"));
             long discountAmount = Long.parseLong(request.getParameter("discountAmount"));
-            
+
+            // Kiểm tra giới hạn đơn hàng - Không cho phép đơn hàng trên 500,000,000 VND
+            final long ORDER_LIMIT = 500000000L; // 500 triệu VND
+            if (finalAmount > ORDER_LIMIT) {
+                session.setAttribute("message",
+                        "The order exceeds " + String.format("%,d", ORDER_LIMIT)
+                        + " VND due to the store policy. Please contact the admin for assistance.");
+                response.sendRedirect("CreateOrderServlet");
+                return;
+            }
+
             // Get selected cart items
             String selectedItemIds = (String) session.getAttribute("selectedCartItemIds");
             List<Integer> cartItemIds = Arrays.stream(selectedItemIds.split(","))
                     .map(Integer::parseInt)
                     .collect(Collectors.toList());
-            
+
             List<CartItem> selectedCartItems = cartItemDAO.getCartItemsByIds(cartItemIds);
-            
+
             // Get address for snapshot
             Address address = addressDAO.getAddressById(addressId);
-            String addressSnapshot = address.getProvinceName() + ", " + 
-                                   address.getDistrictName() + ", " + 
-                                   address.getWardName() + ", " + 
-                                   address.getAddressDetails();
-            
+            String addressSnapshot = address.getProvinceName() + ", "
+                    + address.getDistrictName() + ", "
+                    + address.getWardName() + ", "
+                    + address.getAddressDetails();
+
             // Create order
             Order order = new Order();
             order.setCustomerID(customer.getCustomerID());
             order.setTotalAmount(finalAmount);
-            
+
             // Set discount percent từ voucher (không phải discount amount)
             int discountPercent = 0;
             if (discountPercentStr != null && !discountPercentStr.isEmpty()) {
                 discountPercent = Integer.parseInt(discountPercentStr);
             }
             order.setDiscount(discountPercent);
-            
+
             order.setAddressSnapshot(addressSnapshot);
             order.setAddressID(addressId);
             order.setStatus("Waiting");
-            
+
             int orderId = orderDAO.createOrder(order);
-            
+
             if (orderId > 0) {
                 // Create order details and update product quantities
                 for (CartItem item : selectedCartItems) {
@@ -266,30 +294,28 @@ public class CreateOrderServlet extends HttpServlet {
                     orderDetail.setProductID(item.getProductID());
                     orderDetail.setQuantity(item.getQuantity());
                     orderDetail.setPrice(item.getProduct().getPrice().longValue());
-                    
-                    orderDetailDAO.createOrderDetail(orderDetail);
-                    
 
+                    orderDetailDAO.createOrderDetail(orderDetail);
                 }
-                
+
                 // Save voucher usage if voucher was used
                 if (voucherIdStr != null && !voucherIdStr.isEmpty()) {
                     int voucherId = Integer.parseInt(voucherIdStr);
                     customerVoucherDAO.createCustomerVoucher(customer.getCustomerID(), voucherId);
                     voucherDAO.incrementVoucherUsage(voucherId);
                 }
-                
+
                 // Clear cart
                 cartItemDAO.clearCartByCustomerId(customer.getCustomerID());
-                
+
                 session.setAttribute("message", "Order created successfully!");
                 response.sendRedirect("Home");
-                
+
             } else {
                 session.setAttribute("message", "Failed to create order");
                 response.sendRedirect("CreateOrderServlet");
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("message", "Error creating order");
