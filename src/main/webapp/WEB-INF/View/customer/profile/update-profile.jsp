@@ -5,35 +5,35 @@
 %>
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Update Profile - TShop</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Update Profile - TShop</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/profile.css">
-</head>
-<body>
-    <jsp:include page="/WEB-INF/View/customer/homePage/header.jsp" />
+    </head>
+    <body>
+        <jsp:include page="/WEB-INF/View/customer/homePage/header.jsp" />
 
-    <div class="main-account container-fluid">
-        <!-- SIDEBAR -->
-        <jsp:include page="/WEB-INF/View/customer/sideBar.jsp" />
-        
-        <!-- UPDATE PROFILE -->
-        <div class="profile-card">
-            <div class="profile-header">
-                <h4>
-                    <i class="bi bi-pencil-square me-2"></i>
-                    Update Profile
-                </h4>
-            </div>
-            <div class="profile-body">
-                <% if (cus == null) { %>
+        <div class="main-account container-fluid">
+            <!-- SIDEBAR -->
+            <jsp:include page="/WEB-INF/View/customer/sideBar.jsp" />
+
+            <!-- UPDATE PROFILE -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <h4>
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Update Profile
+                    </h4>
+                </div>
+                <div class="profile-body">
+                    <% if (cus == null) { %>
                     <div class="alert alert-danger">
                         <i class="bi bi-exclamation-triangle-fill"></i>
                         There is no customer with that ID
                     </div>
-                <% } else { %>
+                    <% } else {%>
                     <form method="post" action="UpdateProfile">
                         <input type="hidden" name="id" value="<%= cus.getCustomerID()%>">
 
@@ -44,9 +44,12 @@
                             </label>
                             <input type="text"
                                    name="fullname"
-                                   value="<%= cus.getFullName() != null ? cus.getFullName() : "" %>"
+                                   value="<%= cus.getFullName() != null ? cus.getFullName() : ""%>"
                                    class="form-control"
-                                   required>
+                                   required
+                                   maxlength="255"
+                                   pattern="^[A-Za-z\s]{1,255}$"
+                                   title="Please enter letters only (no numbers or special characters, not just spaces, and maximum 255 characters).">
                         </div>
 
                         <div class="form-group">
@@ -56,10 +59,11 @@
                             </label>
                             <input type="tel"
                                    name="phone"
-                                   value="<%= cus.getPhoneNumber()!= null ? cus.getPhoneNumber(): "" %>"
+                                   value="<%= cus.getPhoneNumber() != null ? cus.getPhoneNumber() : ""%>"
                                    class="form-control"
-                                   pattern="[0-9]{10,11}"
-                                   title="Please enter a valid phone number">
+                                   required
+                                   pattern="[0-9]{10}"
+                                   title="Please enter numbers only (no letters or special characters, no spaces and exactly 10 characters).">
                         </div>
 
                         <div class="form-group">
@@ -69,9 +73,9 @@
                             </label>
                             <input type="date"
                                    name="dob"
-                                   value="<%= cus.getBirthDate()!= null ? cus.getBirthDate(): "" %>"
+                                   value="<%= cus.getBirthDate() != null ? cus.getBirthDate() : ""%>"
                                    class="form-control"
-                                   max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>">
+                                   max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date())%>">
                         </div>
 
                         <div class="form-group">
@@ -86,7 +90,7 @@
                                            name="gender"
                                            value="male"
                                            id="male"
-                                           <%= "male".equalsIgnoreCase(cus.getGender()) ? "checked" : "" %>>
+                                           <%= "male".equalsIgnoreCase(cus.getGender()) ? "checked" : ""%>>
                                     <label for="male">Male</label>
                                 </div>
                                 <div class="gender-option">
@@ -95,7 +99,7 @@
                                            name="gender"
                                            value="female"
                                            id="female"
-                                           <%= "female".equalsIgnoreCase(cus.getGender()) ? "checked" : "" %>>
+                                           <%= "female".equalsIgnoreCase(cus.getGender()) ? "checked" : ""%>>
                                     <label for="female">Female</label>
                                 </div>
                             </div>
@@ -112,12 +116,12 @@
                             </button>
                         </div>
                     </form>
-                <% } %>
+                    <% }%>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+
+        <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

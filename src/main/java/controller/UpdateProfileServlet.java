@@ -85,9 +85,9 @@ public class UpdateProfileServlet extends HttpServlet {
         HttpSession session = request.getSession();
         CustomerDAO cusDao = new CustomerDAO();
         int id = Integer.parseInt(request.getParameter("id"));
-        String fullName = request.getParameter("fullname");
-        String phone = request.getParameter("phone");
-        String dob = request.getParameter("dob");
+        String fullName = request.getParameter("fullname").trim();
+        String phone = request.getParameter("phone").trim();
+        String dob = request.getParameter("dob").trim();
         Date birthDate = Date.valueOf(dob);
         String gender = request.getParameter("gender");
 

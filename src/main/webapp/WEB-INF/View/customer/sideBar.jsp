@@ -15,8 +15,8 @@
             <i class="bi bi-person-circle fs-2 text-primary"></i>
         </div>
         <div>
-            <div style="font-weight: 600;"><%= user != null ? user.getFullName() : "Customer"%></div>
-            <div class="text-muted" style="font-size:13px;"><%= user != null ? user.getPhoneNumber(): ""%></div>
+            <div style="font-weight: 600;"><%= acc != null ? acc.getFullName() : "Customer"%></div>
+            <div class="text-muted" style="font-size:13px;"><%= user != null ? acc.getPhoneNumber(): ""%></div>
         </div>
     </div>
     <ul class="nav flex-column account-menu">
