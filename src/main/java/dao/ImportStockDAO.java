@@ -6,7 +6,9 @@ import model.ImportStockDetail;
 import model.Product;
 import model.Suppliers;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import utils.DBContext;
 
 public class ImportStockDAO extends DBContext {
@@ -188,5 +190,80 @@ public class ImportStockDAO extends DBContext {
         }
         return false;
     }
+     // ✅ Daily Import
+    public Map<String, Integer> getDailyImport() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        String sql = "SELECT CONVERT(varchar, importDate, 23) AS day, COUNT(ImportID) AS total "
+                   + "FROM ImportStocks "
+                   + "GROUP BY CONVERT(varchar, importDate, 23) "
+                   + "ORDER BY day";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                map.put(rs.getString("day"), rs.getInt("total"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    // ✅ Monthly Import
+    public Map<String, Integer> getMonthlyImport() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        String sql = "SELECT FORMAT(importDate, 'yyyy-MM') AS month, COUNT(importID) AS total "
+                   + "FROM ImportStocks "
+                   + "GROUP BY FORMAT(importDate, 'yyyy-MM') "
+                   + "ORDER BY month";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                map.put(rs.getString("month"), rs.getInt("total"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    // ✅ Supplier Import (Top 5)
+    public Map<String, Integer> getSupplierImport() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        String sql = "SELECT TOP 5 s.Name, COUNT(i.ImportID) AS total "
+                   + "FROM ImportStocks i "
+                   + "JOIN Suppliers s ON i.SupplierID = s.SupplierID "
+                   + "GROUP BY s.Name "
+                   + "ORDER BY total DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                map.put(rs.getString("Name"), rs.getInt("total"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    // ✅ Top Product Import (Top 5 theo số lượng nhập)
+    public Map<String, Integer> getTopProductImport() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        String sql = "SELECT TOP 5 p.ProductName, SUM(d.Stock) AS totalStock "
+                   + "FROM ImportStockDetails d "
+                   + "JOIN Products p ON d.ProductID = p.ProductID "
+                   + "GROUP BY p.ProductName "
+                   + "ORDER BY totalStock DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                map.put(rs.getString("ProductName"), rs.getInt("totalStock"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+    
+    
 
 }

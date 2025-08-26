@@ -3,7 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controller;
+
 import dao.ImportStockDAO;
+import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,13 +18,19 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
 /**
  *
  * @author HP
  */
 @WebServlet(name = "ImportStatisticServlet", urlPatterns = {"/ImportStatistic"})
 public class ImportStatisticServlet extends HttpServlet {
+
+    private ImportStockDAO dao;
+
+    @Override
+    public void init() throws ServletException {
+        dao = new ImportStockDAO();
+    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -50,32 +58,6 @@ public class ImportStatisticServlet extends HttpServlet {
         }
     }
 
-    private Map<String, Integer> getTop5ShortName(Map<String, Integer> origin) {
-        Map<String, Integer> result = new LinkedHashMap<>();
-        Map<String, Integer> nameCount = new HashMap<>();
-        int count = 0;
-        for (Map.Entry<String, Integer> entry : origin.entrySet()) {
-            String name = entry.getKey();
-            String shortName = name;
-            if (name.length() > 22) {
-                shortName = name.substring(0, 22) + "...";
-            }
-            if (result.containsKey(shortName)) {
-                int suffix = nameCount.getOrDefault(shortName, 1) + 1;
-                nameCount.put(shortName, suffix);
-                shortName = shortName + " #" + suffix;
-            } else {
-                nameCount.put(shortName, 1);
-            }
-            result.put(shortName, entry.getValue());
-            count++;
-            if (count >= 5) {
-                break;
-            }
-        }
-        return result;
-    }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -88,63 +70,21 @@ public class ImportStatisticServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            String keyword = request.getParameter("search");
-//            InventoryStatisticDAO invDao = new InventoryStatisticDAO();
-            ImportStockDAO dao = new ImportStockDAO();
 
-            
-//            ArrayList<InventoryStatistic> inventoryList;
-//            if (keyword != null && !keyword.trim().isEmpty()) {
-//                inventoryList = invDao.searchInventory(keyword);
-//            } else {
-//                inventoryList = invDao.getAllProductStock();
-//            }
-//
-//            Map<String, Integer> dailyImport = dao.getImportStocksCountByDate();
-//            Map<String, Integer> monthlyImport = dao.getImportStocksCountByMonth();
-//            Map<String, Integer> supplierImport = dao.getStocksBySupplier();
-//            Map<String, Integer> topProductImport = dao.getTopImportedProducts();
+        Map<String, Integer> dailyImport = dao.getDailyImport();
+        Map<String, Integer> monthlyImport = dao.getMonthlyImport();
+        Map<String, Integer> supplierImport = dao.getSupplierImport();
+        Map<String, Integer> topProductImport = dao.getTopProductImport();
 
-            Map<String, Integer> top5ProductImportShort = new LinkedHashMap<>();
-            Map<String, String> top5ProductImportFull = new LinkedHashMap<>();
-            int count = 0;
-//            for (Map.Entry<String, Integer> entry : topProductImport.entrySet()) {
-//                if (count >= 5) {
-//                    break;
-//                }
-//                String fullName = entry.getKey();
-//                String shortName = fullName;
-//                if (shortName.length() > 20) {
-//                    shortName = shortName.substring(0, 20) + "...";
-//                }
-//                int idx = 2;
-//                String check = shortName;
-//                while (top5ProductImportShort.containsKey(check)) {
-//                    check = shortName + " #" + idx++;
-//                }
-//                shortName = check;
-//
-//                top5ProductImportShort.put(shortName, entry.getValue());
-//                top5ProductImportFull.put(shortName, fullName);
-//                count++;
-//            }
+        // set attributes cho JSP
+        request.setAttribute("dailyImport", dailyImport.entrySet());
+        request.setAttribute("monthlyImport", monthlyImport.entrySet());
+        request.setAttribute("supplierImport", supplierImport.entrySet());
+        request.setAttribute("topProductImportShort", topProductImport.entrySet());
 
-//            Map<String, Integer> top5SupplierImport = getTop5ShortName(supplierImport);
-//            request.setAttribute("inventoryList", inventoryList);
-//            request.setAttribute("dailyImport", dailyImport);
-//            request.setAttribute("monthlyImport", monthlyImport);
-//            request.setAttribute("supplierImport", top5SupplierImport);
-            request.setAttribute("topProductImportShort", top5ProductImportShort);
-            request.setAttribute("topProductImportFull", top5ProductImportFull);
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importStatistic.jsp");
+        rd.forward(request, response);
 
-            request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importStatistic.jsp").forward(request, response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("error", "Error fetching inventory statistics: " + e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importStatistic.jsp").forward(request, response);
-        }
     }
 
     /**
