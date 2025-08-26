@@ -21,7 +21,7 @@
 
                 <div style="width: 70%; display: flex; gap: 1.5%; border: 0.5px solid gray; justify-content: center; align-items: center; background-color: #ffffff; border-bottom: none ">
 
-                    <div style="width: 58%; background-color: #ffffff; padding: 10px; border-radius: 12px;">
+                    <div style="width: 100%; background-color: #ffffff; padding: 10px; border-radius: 12px;">
                         <jsp:include page="/WEB-INF/View/admin/productManagement/addProduct/addProductDetail/productDetail.jsp" />
                     </div>
 

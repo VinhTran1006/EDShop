@@ -41,19 +41,21 @@
                                     <%
                                         if (productDetailList != null) {
                                             for (ProductDetail proDetail : productDetailList) {
-                                                if (proDetail.getAttibuteID() == a.getAttributeID()) {
+
+                                                if (proDetail.getProductID() == product.getProductID() && proDetail.getAttibuteID() == a.getAttributeID()) {
                                                     hasValue = true;
                                     %>
-                                    <div style = "font-size: 14px;" class="attribute-item"><%= proDetail.getAttributeValue()%></div>
+                                    <div style="font-size: 14px;" class="attribute-item"><%= proDetail.getAttributeValue()%></div>
+
 
                                     <%
-                                                }
                                             }
                                         }
                                         if (!hasValue) {
                                     %>
                                     <div class="attribute-item">No data</div>
                                     <%
+                                            }
                                         }
                                     %>
                                 </td>

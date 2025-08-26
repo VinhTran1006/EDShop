@@ -25,7 +25,7 @@ public class ProductDAO extends DBContext {
     public List<Product> getProductIsNew() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT TOP 30 * \n"
-                + "FROM Products WHERE IsActive != 0 \n"
+                + "FROM Products WHERE IsActive != 0 AND Quantity > 0 \n"
                 + "ORDER BY AddedAt DESC;";
 
         try {
@@ -63,7 +63,7 @@ public class ProductDAO extends DBContext {
     public List<Product> getProductIsFeatured() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT TOP 30 *"
-                + "FROM Products p WHERE IsActive != 0 "
+                + "FROM Products p WHERE IsActive != 0 AND QUANTITY >0"
                 + "ORDER BY NEWID()";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -143,7 +143,7 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getProductListCustomer() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT * FROM Products WHERE IsActive = 1 AND Quantity != 0";
+        String sql = "SELECT * FROM Products WHERE IsActive = 1";
 
         try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -209,7 +209,7 @@ public class ProductDAO extends DBContext {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT *"
                 + "FROM Products p "
-                + "WHERE LOWER(p.ProductName) LIKE ? AND IsActive != 0 AND Quantity != 0";
+                + "WHERE LOWER(p.ProductName) LIKE ? AND IsActive != 0";
 
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword.toLowerCase() + "%");

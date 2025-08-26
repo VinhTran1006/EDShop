@@ -156,7 +156,12 @@
                                     NumberFormat currencyVN = NumberFormat.getInstance(localeVN);
                                     String giaCuFormatted = currencyVN.format(oldPrice);%>
                                 <p class="stock-text">In Stock: <%= product.getQuantity()%></p>
-                                <p class="price-text">Price: <%= giaCuFormatted%></p>
+
+                                <% if (product.getQuantity() >= 1) {%>
+                                <p class="price-text"><%= giaCuFormatted%> đ</p>
+                                <%} else { %>
+                                <p class="price-text">Out Of Stock</p>
+                                <%}%>
                             </div>
 
                             <!-- ADD TO CART BUTTON -->
@@ -322,12 +327,12 @@
         // Hàm để xóa các parameters khỏi URL
         function removeUrlParameters(paramsToRemove) {
             const url = new URL(window.location);
-            
+
             // Xóa các parameters được chỉ định
             paramsToRemove.forEach(param => {
                 url.searchParams.delete(param);
             });
-            
+
             // Cập nhật URL mà không reload trang
             window.history.replaceState({}, document.title, url);
         }

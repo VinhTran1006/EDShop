@@ -16,6 +16,9 @@
 
     </head>
     <body>
+        <style>
+            
+        </style>
         <div class="wrapper"> 
             <jsp:include page="/WEB-INF/View/admin/categoryManagement/deleteCategory/deleteCategory.jsp" />
 

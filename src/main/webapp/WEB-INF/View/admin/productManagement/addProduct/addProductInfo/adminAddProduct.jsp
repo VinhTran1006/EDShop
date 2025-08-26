@@ -19,7 +19,9 @@
             <div style="width: 66%; display: flex; gap: 1.5%; border: 0.5px solid gray; justify-content: center; align-items: center; background-color: #ffffff; border-bottom: none ">
 
                 <div style="width: 48%;">
-                    <jsp:include page="/WEB-INF/View/admin/productManagement/addProduct/addProductInfo/imgProduct.jsp" />
+                    <div class="img-product-wrapper">
+                        <jsp:include page="/WEB-INF/View/admin/productManagement/addProduct/addProductInfo/imgProduct.jsp" />
+                    </div>
                 </div>
 
                 <div style="width: 48%; background-color: #ffffff; padding: 10px; border-radius: 12px;">
@@ -99,5 +101,6 @@
             font-size: 14px;
         }
 
+        
     </style>
 </html>

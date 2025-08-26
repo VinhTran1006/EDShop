@@ -40,11 +40,11 @@
                 <input type="text" class="form-control" name="productName" required value="<%= product.getProductName()%>"/>
             </div>
 
-            
-                  <div class="mb-3">
+
+            <div class="mb-3">
                 <label class="form-label">Description</label>
                 <input type="text" class="form-control" name="description" required value="<%= product.getDescription()%>"/>
-                  </div><!-- comment -->
+            </div><!-- comment -->
             <%
                 String priceFormatted = "";
                 if (product.getPrice() != null) {
@@ -64,17 +64,17 @@
                 }
             %>
 
-            
-               <div class="mb-3">
+
+            <div class="mb-3">
                 <label class="form-label">Warranty period</label>
                 <input type="text" class="form-control" name="warranty" required value="<%= product.getWarrantyPeriod()%>"/>
             </div>
-            
-                  <div class="mb-3">
+
+            <div class="mb-3">
                 <label class="form-label">Quantity</label>
                 <input type="text" class="form-control" name="quantity" required value="<%= product.getQuantity()%>"/>
             </div>
-            
+
             <div class="mb-3">
                 <label class="form-label">Supplier</label>
                 <select class="form-control" id="supplier" name="supplier">
@@ -91,16 +91,17 @@
 
             <div class="mb-3">
                 <label class="form-label">Category</label>
-                <select class="form-control" id="category" name="category" onchange="updateBrands()">
-                    <option value="">-- Select category --</option>
-                    <% for (Category c : categoryList) {
-                            boolean isSelected = (c.getCategoryId() == product.getCategoryID());
-                    %>
-                    <option value="<%= c.getCategoryId()%>" <%= isSelected ? "selected" : ""%>>
-                        <%= c.getCategoryName()%>
-                    </option>
-                    <% }%>
-                </select>
+                <!-- Hiển thị tên category, readonly -->
+                <input type="text" class="form-control" 
+                       value="<%= categoryList.stream()
+                               .filter(c -> c.getCategoryId() == product.getCategoryID())
+                               .findFirst()
+                   .map(Category::getCategoryName)
+                   .orElse("")%>" 
+                       readonly />
+
+                <!-- Gửi id về server -->
+                <input type="hidden" name="category" value="<%= product.getCategoryID()%>">
             </div>
 
             <div class="mb-3">
@@ -117,8 +118,8 @@
                 </select>
             </div>
 
-            
-            
+
+
         </div>
 
     </body>
@@ -131,7 +132,6 @@
             const selectedBrandId = "<%= product.getBrandID()%>";
 
             brandSelect.innerHTML = '<option value="">-- Chọn thương hiệu --</option>';
-
             jsBrandList.forEach(brand => {
                 if (brand.categoryId.toString() === categoryId.toString()) {
                     const option = document.createElement("option");
