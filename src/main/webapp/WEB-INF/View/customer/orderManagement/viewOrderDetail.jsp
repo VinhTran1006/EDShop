@@ -70,14 +70,14 @@
                         <div class="profile-header">
                             <div class="fw-semibold fs-5 text-center">
                                 <i class="bi bi-receipt-cutoff me-2"></i>
-                                Order Date: <span class="fw-bold">${fn:substringBefore(data.orderDate, ' ')}</span>
+                                
+                                Order Date: <span class="fw-bold">${fn:substring(data.orderDate, 0, 16)}</span>
                             </div>
                         </div>
 
                         <div class="mb-4 p-4" style="background: #fff; border-radius: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.08);">
                             <div class="profile-body">
-                                <p><strong><i class="bi bi-calendar-date me-1"></i>Order Date:</strong> ${data.orderDate}</p>
-                                <p><strong><i class="bi bi-pencil-square me-1"></i>Last Updated:</strong> ${data.updatedAt}</p>
+                                <p><strong><i class="bi bi-pencil-square me-1"></i>Last Updated:</strong> ${fn:substring(data.updatedAt, 0, 16)}</p>
                                 <p><strong><i class="bi bi-bar-chart-line me-1"></i>Status:</strong>
                                     <span class="badge status-${data.status}">
                                         <c:choose>
@@ -101,7 +101,7 @@
                                 </p>
                                 <p>
                                     <strong><i class="bi bi-cash-coin me-1"></i>Discount:</strong>
-                                    - <fmt:formatNumber value="${subtotal * data.discount / 100}" type="number" groupingUsed="true"/>₫
+                                    - <fmt:formatNumber value="${subtotal - data.totalAmount}" type="number" groupingUsed="true"/>₫
                                     (giảm ${data.discount}%)
                                 </p>
 

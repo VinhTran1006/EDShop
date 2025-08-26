@@ -4,6 +4,7 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -126,7 +127,7 @@
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <div class="fw-semibold fs-5 text-center">
                                             <i class="bi bi-receipt-cutoff me-2"></i>
-                                            Order Date: <span class="fw-bold">${fn:substringBefore(order.orderDate, ' ')}</span>
+                                            Order Date: <span class="fw-bold">${fn:substring(order.orderDate, 0, 16)}</span>
                                         </div>
 
                                         <span class="badge status-${order.status}">
@@ -141,13 +142,10 @@
                                     </div>
 
                                     <table class="table table-borderless">
-                                        <tr>
-                                            <th scope="row"><i class="bi bi-calendar-check me-2"></i>Order Date:</th>
-                                            <td>${order.orderDate}</td>
-                                        </tr>
+
                                         <tr>
                                             <th scope="row"><i class="bi bi-clock-history me-2"></i>Last Updated:</th>
-                                            <td>${order.updatedAt}</td>
+                                            <td>${fn:substring(order.updatedAt, 0, 16)}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><i class="bi bi-cash-stack me-2"></i>Total Amount:</th>
