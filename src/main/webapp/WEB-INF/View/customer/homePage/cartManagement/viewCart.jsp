@@ -402,7 +402,6 @@
                     <div class="text-end mt-4">
                         <!-- Đơn giản hóa form checkout -->
                         <button type="button" id="checkoutBtn" class="btn btn-success me-3">Create Order</button>
-                        <a href="${pageContext.request.contextPath}/Home" class="btn btn-secondary">Continue Shopping</a>
                     </div>
                 </div>
             </form>
@@ -519,7 +518,7 @@
                             updateItemTotal(row);
                             updateQuantityServer(cartItemId, newValue);
                         } else {
-                            alert('Số lượng không thể vượt quá ' + maxQuantity);
+                            alert('Quantity cannot exceed ' + maxQuantity);
                         }
                     });
 
@@ -536,7 +535,7 @@
                             updateItemTotal(row);
                             updateQuantityServer(cartItemId, newValue);
                         } else {
-                            alert('Số lượng không thể nhỏ hơn 1');
+                            alert('Quantity cannot be less than 1');
                         }
                     });
 
@@ -549,13 +548,13 @@
                         const cartItemId = parseInt(input.data('cart-item-id'));
 
                         if (isNaN(newValue) || newValue < 1) {
-                            alert('Số lượng phải là số nguyên dương!');
+                            alert('Quantity must be a positive integer!');
                             input.val(input.data('original-value'));
                             return;
                         }
 
                         if (newValue > maxQuantity) {
-                            alert('Số lượng không thể vượt quá ' + maxQuantity);
+                            alert('Quantity cannot exceed ' + maxQuantity);
                             input.val(input.data('original-value'));
                             return;
                         }
@@ -568,7 +567,7 @@
                     $(document).on('click', '.delete-icon', function (e) {
                         e.preventDefault();
 
-                        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+                        if (confirm('Are you sure you want to remove this product from your cart?')) {
                             const row = $(this).closest('tr');
                             const cartItemId = row.data('cart-item-id');
 
@@ -599,7 +598,7 @@
                     $(document).on('click', 'a:contains("Clear All")', function (e) {
                         e.preventDefault();
 
-                        if (confirm('Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?')) {
+                        if (confirm('Are you sure you want to remove all items from your cart?')) {
                             // Create a form and submit
                             const form = $('<form>', {
                                 method: 'POST',
@@ -651,7 +650,7 @@
                         });
 
                         if (selectedItems.length === 0) {
-                            alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                            alert('Please select at least one product to checkout!');
                             return false;
                         }
 
