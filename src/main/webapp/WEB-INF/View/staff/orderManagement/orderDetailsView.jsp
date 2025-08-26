@@ -157,40 +157,40 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-//
-//        function disableOptions() {
-//            const status = document.getElementById('orderStatus').value;
-//            const options = document.getElementById('orderStatus').options;
-//            // reset all
-//            for (let i = 0; i < options.length; i++) {
-//                options[i].disabled = false;
-//            }
-//
-//            if (status === 'Waiting for Delivery') {
-//                // disable Waiting, Packaging, Cancelled
-//                options[0].disabled = true; // Waiting
-//                options[1].disabled = true; // Packaging
-//                options[4].disabled = true; // Cancelled
-//            } else if (status === 'Packing') {
-//                // disable Waiting
-//                options[0].disabled = true; // Waiting
-//            } else if (status === 'Delivered') {
-//                // disable Waiting, Packaging, Waiting for Delivery, Cancelled
-//                options[0].disabled = true;
-//                options[1].disabled = true;
-//                options[2].disabled = true;
-//                options[4].disabled = true;
-//            } else if (status === 'Cancelled') {
-//                // disable tất cả trừ Cancelled
-//                options[0].disabled = true;
-//                options[1].disabled = true;
-//                options[2].disabled = true;
-//                options[3].disabled = true;
-//            }
-//        }
-//
-//        // gọi khi load trang để setup ban đầu
-//        disableOptions();
+
+        function disableOptions() {
+            const status = document.getElementById('orderStatus').value;
+            const options = document.getElementById('orderStatus').options;
+            // reset all
+            for (let i = 0; i < options.length; i++) {
+                options[i].disabled = false;
+            }
+
+            if (status === 'Waiting for Delivery') {
+                // disable Waiting, Packaging, Cancelled
+                options[0].disabled = true; // Waiting
+                options[1].disabled = true; // Packaging
+                options[4].disabled = true; // Cancelled
+            } else if (status === 'Packing') {
+                // disable Waiting
+                options[0].disabled = true; // Waiting
+            } else if (status === 'Delivered') {
+                // disable Waiting, Packaging, Waiting for Delivery, Cancelled
+                options[0].disabled = true;
+                options[1].disabled = true;
+                options[2].disabled = true;
+                options[4].disabled = true;
+            } else if (status === 'Cancelled') {
+                // disable tất cả trừ Cancelled
+                options[0].disabled = true;
+                options[1].disabled = true;
+                options[2].disabled = true;
+                options[3].disabled = true;
+            }
+        }
+
+        // gọi khi load trang để setup ban đầu
+        disableOptions();
     </script>
 
 </body>

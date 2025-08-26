@@ -287,7 +287,7 @@ public class ImportStockServlet extends HttpServlet {
                 importStockDetailDAO.createImportStockDetail(d);
 
                 Product p = d.getProduct();
-                int newStock = p.getQuantity() + d.getStock();
+                int newStock = d.getStock();
                 productDAO.increaseStock(p.getProductID(), newStock);
             }
 

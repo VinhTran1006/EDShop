@@ -42,32 +42,6 @@
                 <i class="fas fa-truck"></i> <span>Supplier Management</span>
             </a>
         </li>
-        <li class="nav-item">
-
-            <a href="ManageStatistic" class="nav-link">
-                <i class="fa fa-bar-chart"></i> <span>Manage Statistics</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="ViewOrderList" class="nav-link">
-                <i class="fas fa-shopping-cart"></i> Orders
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="ImportStatistic" class="nav-link">
-                <i class="fas fa-warehouse"></i> Stock
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="CustomerList" class="nav-link">
-                <i class="fas fa-users"></i> Customers
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="ViewListNewFeedback" class="nav-link">
-                <i class="fas fa-comments"></i> Feedback
-            </a>
-        </li>
     </ul>
 
 </nav>
