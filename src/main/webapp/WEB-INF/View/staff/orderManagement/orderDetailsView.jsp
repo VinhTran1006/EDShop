@@ -1,6 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -76,7 +77,8 @@
                             <div class="card-body">
                                 <table class="table table-borderless">
                                     <tr><th>Order ID:</th><td>${data.orderID}</td></tr>
-                                    <tr><th>Order Date:</th><td>${data.orderDate}</td></tr>
+                                    <tr><th>Order Date:</th><td>${fn:substring(data.orderDate, 0, 16)}</td></tr>
+                                     <tr><th>Update Date:</th><td>${fn:substring(data.deliveredDate, 0, 16)}</td></tr>
                                     <tr>
                                         <th>Status:</th>
                                         <td>
@@ -107,10 +109,18 @@
                                     <tr><th>Subtotal:</th>
                                         <td><fmt:formatNumber value="${subtotal}" type="number" groupingUsed="true"/>₫</td>
                                     </tr>
-                                    <tr><th>Discount:</th><td>${data.discount}%</td></tr>
-                                    <tr><th>Discount Amount:</th>
-                                        <td>- <fmt:formatNumber value="${subtotal * data.discount / 100}" type="number" groupingUsed="true"/>₫</td>
+                                    <tr>
+                                        <th>Discount:</th>
+                                        <td>
+                                            <fmt:formatNumber 
+                                                value="${(data.totalAmount - subtotal)}" 
+                                                type="number" 
+                                                groupingUsed="true"/>₫ 
+                                            (<c:out value="${data.discount}"/>%)
+                                        </td>
                                     </tr>
+
+
                                     <tr><th>Total Amount:</th><td><fmt:formatNumber value="${data.totalAmount}" type="number" groupingUsed="true" />₫</td></tr>
                                     <tr><th>Customer Name:</th><td>${data.customer.fullName}</td></tr>
                                     <tr><th>Phone:</th><td>${data.customer.phoneNumber}</td></tr>
@@ -118,15 +128,25 @@
                                 </table>
 
                                 <h5 class="mt-4"><i class="fa-solid fa-box"></i> Order Items</h5>
-                                <ul class="list-group mb-4">
-                                    <c:forEach items="${dataDetail}" var="detail">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span><strong>${detail.productName}</strong></span>
-                                            <span>Quantity: ${detail.quantity}</span>
-                                            <span>Price: <fmt:formatNumber value="${detail.price}" type="number" groupingUsed="true" />₫</span>
-                                        </li>
-                                    </c:forEach>
-                                </ul>
+                                <table class="table table-bordered align-middle text-center">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Product</th>
+                                            <th style="width: 120px;">Quantity</th>
+                                            <th style="width: 150px;">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach items="${dataDetail}" var="detail">
+                                            <tr>
+                                                <td class="text-start"><strong>${detail.productName}</strong></td>
+                                                <td>${detail.quantity}</td>
+                                                <td><fmt:formatNumber value="${detail.price}" type="number" groupingUsed="true"/>₫</td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+
 
                                 <h5><i class="fa-solid fa-cogs"></i> Manage Order</h5>
 
@@ -171,9 +191,15 @@
                 options[0].disabled = true; // Waiting
                 options[1].disabled = true; // Packaging
                 options[4].disabled = true; // Cancelled
+            } else if (status === 'Waiting') {
+                options[2].disabled = true;
+                options[3].disabled = true;
+
             } else if (status === 'Packing') {
                 // disable Waiting
                 options[0].disabled = true; // Waiting
+                options[3].disabled = true;
+
             } else if (status === 'Delivered') {
                 // disable Waiting, Packaging, Waiting for Delivery, Cancelled
                 options[0].disabled = true;

@@ -1,5 +1,4 @@
 package dao;
-
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,18 +12,21 @@ import utils.DBContext;
 
 public class OrderDAO extends DBContext {
 
+    
     public List<Order> getOrderList() {
         List<Order> list = new ArrayList<>();
         String sql = "SELECT o.*, c.FullName, c.PhoneNumber "
-                + "FROM Orders o "
-                + "JOIN Customers c ON o.CustomerID = c.CustomerID "
-                + "ORDER BY CASE o.Status "
-                + "    WHEN 'Waiting' THEN 1 "
-                + "    WHEN 'Packing' THEN 2 "
-                + "    WHEN 'Waiting for Delivery' THEN 3 "
-                + "    WHEN 'Delivered' THEN 4 "
-                + "    WHEN 'Cancelled' THEN 5 "
-                + "    ELSE 6 END";
+        + "FROM Orders o "
+        + "JOIN Customers c ON o.CustomerID = c.CustomerID "
+        + "ORDER BY CASE o.Status "
+        + "    WHEN 'Waiting' THEN 1 "
+        + "    WHEN 'Packing' THEN 2 "
+        + "    WHEN 'Waiting for Delivery' THEN 3 "
+        + "    WHEN 'Delivered' THEN 4 "
+        + "    WHEN 'Cancelled' THEN 5 "
+        + "    ELSE 6 END, "
+        + "o.OrderedDate DESC";
+
 
         try ( PreparedStatement pre = conn.prepareStatement(sql);  ResultSet rs = pre.executeQuery()) {
 

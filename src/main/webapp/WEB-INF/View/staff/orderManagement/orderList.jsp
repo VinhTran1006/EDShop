@@ -3,6 +3,7 @@
 <%@ page import="java.util.Locale" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -92,7 +93,6 @@
                                     <th>Order ID</th>
                                     <th>Customer Name</th>
                                     <th>Phone</th>
-                                    <th>Address</th>
                                     <th>Total Amount</th>
                                     <th>Order Date</th>
                                     <th>Order Update</th>
@@ -106,10 +106,9 @@
                                         <td>#${order.orderID}</td>
                                         <td>${order.customer.fullName}</td>
                                         <td>${order.customer.phoneNumber}</td>
-                                        <td>${order.addressSnapshot}</td>
                                         <td><fmt:formatNumber value="${order.totalAmount}" type="currency" currencySymbol="₫" /></td>
-                                        <td>${order.orderDate}</td>
-                                        <td>${order.updatedAt}</td>
+                                        <td>${fn:substring(order.orderDate, 0, 16)}</td>
+                                        <td>${fn:substring(order.deliveredDate, 0, 16)}</td>
 
                                         <td>
                                             <c:choose>
@@ -132,12 +131,24 @@
                                         </td>
 
                                         <td>
-                                            <div class="text-center">
-                                                <a href="ViewOrderDetail?orderID=${order.orderID}" class="btn btn-primary">
-                                                    Detail
-                                                </a>
+                                            <div class="d-flex gap-2">
+                                                <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-flex gap-2">
+                                                    <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                    <select name="update" class="form-select form-select-sm orderStatus" 
+                                                            onchange="disableOptions(this)">
+                                                        <option value="Waiting" <c:if test="${order.status eq 'Waiting'}">selected</c:if>>Waiting</option>
+                                                        <option value="Packing" <c:if test="${order.status eq 'Packing'}">selected</c:if>>Packing</option>
+                                                        <option value="Waiting for Delivery" <c:if test="${order.status eq 'Waiting for Delivery'}">selected</c:if>>Waiting for Delivery</option>
+                                                        <option value="Delivered" <c:if test="${order.status eq 'Delivered'}">selected</c:if>>Delivered</option>
+                                                        <option value="Cancelled" <c:if test="${order.status eq 'Cancelled'}">selected</c:if>>Cancelled</option>
+                                                        </select>
+                                                        <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                                    </form>
+                                                    <a href="ViewOrderDetail?orderID=${order.orderID}" class="btn btn-primary btn-sm">Detail</a>
                                             </div>
                                         </td>
+
+
                                     </tr>
                                 </c:forEach>
                             </tbody>
@@ -157,33 +168,74 @@
         %>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
-            window.onload = function () {
+                                                                window.onload = function () {
             <% if ("update".equals(success)) { %>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Updated successfully!',
-                    text: 'Order status has been updated.',
-                    timer: 3000,
-                    confirmButtonText: 'OK'
-                });
+                                                                    Swal.fire({
+                                                                        icon: 'success',
+                                                                        title: 'Updated successfully!',
+                                                                        text: 'Order status has been updated.',
+                                                                        timer: 3000,
+                                                                        confirmButtonText: 'OK'
+                                                                    });
             <% } else if ("1".equals(error)) { %>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Unable to update order status.',
-                    timer: 3000,
-                    confirmButtonText: 'Retry'
-                });
+                                                                    Swal.fire({
+                                                                        icon: 'error',
+                                                                        title: 'Error!',
+                                                                        text: 'Unable to update order status.',
+                                                                        timer: 3000,
+                                                                        confirmButtonText: 'Retry'
+                                                                    });
             <% }%>
-                // 🔁 Clean up the URL
-                if (window.history.replaceState) {
-                    const url = new URL(window.location);
-                    url.searchParams.delete('success');
-                    url.searchParams.delete('error');
-                    window.history.replaceState({}, document.title, url.pathname);
-                }
-            };
+                                                                    // 🔁 Clean up the URL
+                                                                    if (window.history.replaceState) {
+                                                                        const url = new URL(window.location);
+                                                                        url.searchParams.delete('success');
+                                                                        url.searchParams.delete('error');
+                                                                        window.history.replaceState({}, document.title, url.pathname);
+                                                                    }
+                                                                };
         </script>
+        <script>
+            function disableOptions(selectEl) {
+                const status = selectEl.value;
+                const options = selectEl.options;
 
+                // reset all
+                for (let i = 0; i < options.length; i++) {
+                    options[i].disabled = false;
+                }
+
+                if (status === 'Waiting for Delivery') {
+                    options[0].disabled = true; // Waiting
+                    options[1].disabled = true; // Packing
+                    options[4].disabled = true; // Cancelled
+                } else if (status === 'Waiting') {
+                    options[2].disabled = true; // Waiting for Delivery
+                    options[3].disabled = true; // Delivered
+
+                } else if (status === 'Packing') {
+                    options[0].disabled = true; // Waiting
+                    options[3].disabled = true; // Delivered
+
+                } else if (status === 'Delivered') {
+                    options[0].disabled = true;
+                    options[1].disabled = true;
+                    options[2].disabled = true;
+                    options[4].disabled = true;
+                } else if (status === 'Cancelled') {
+                    options[0].disabled = true;
+                    options[1].disabled = true;
+                    options[2].disabled = true;
+                    options[3].disabled = true;
+                }
+            }
+            window.onload = function () {
+                // chạy disableOptions cho tất cả select có class orderStatus
+                document.querySelectorAll('.orderStatus').forEach(function (selectEl) {
+                    disableOptions(selectEl);
+                });
+            };
+
+        </script>
     </body>
 </html>
