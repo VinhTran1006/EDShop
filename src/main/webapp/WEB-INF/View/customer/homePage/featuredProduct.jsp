@@ -255,7 +255,9 @@
                                 }
                             }
                         } else { %>
+
                     <p>No Product Available</p>
+
                     <% }%>
                 </div>
 

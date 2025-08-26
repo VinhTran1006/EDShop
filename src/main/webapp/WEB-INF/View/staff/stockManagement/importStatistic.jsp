@@ -50,7 +50,7 @@
                 border-color: #667eea;
                 box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
             }
-            
+
         </style>
     </head>
 
@@ -59,14 +59,13 @@
             <jsp:include page="/WEB-INF/View/staff/sideBar.jsp" />
             <div class="wrapper" style="margin-left:7.5px">
                 <main class="main-content">
-                                        <jsp:include page="/WEB-INF/View/staff/header.jsp" />
+                    <jsp:include page="/WEB-INF/View/staff/header.jsp" />
 
                     <h1>Import Statistic</h1>
                     <div class="d-flex justify-content-end mb-4 btn-group-custom">
                         <button class="back-btn ms-2" onclick="location.href = 'ImportStockHistory'">Import History</button>
                         <button class="create-btn ms-2" onclick="location.href = 'ImportStock'">+ New Import</button>
                     </div>
-
 
                     <div class="charts-grid">
                         <div class="chart-card">
@@ -87,99 +86,114 @@
                     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
                     <script>
-        // Daily Import
-        const dailyLabels = [<c:forEach items="${dailyImport}" var="entry">"${entry.key}",</c:forEach>];
-        const dailyData = [<c:forEach items="${dailyImport}" var="entry">${entry.value},</c:forEach>];
+                            // Daily Import
+                            const dailyLabels = [<c:forEach items="${dailyImport}" var="entry">"${entry.key}",</c:forEach>];
+                            const dailyData = [<c:forEach items="${dailyImport}" var="entry">${entry.value},</c:forEach>];
 
-        // Monthly Import
-        const monthlyLabels = [<c:forEach items="${monthlyImport}" var="entry">"${entry.key}",</c:forEach>];
-        const monthlyData = [<c:forEach items="${monthlyImport}" var="entry">${entry.value},</c:forEach>];
+                            // Monthly Import
+                            const monthlyLabels = [<c:forEach items="${monthlyImport}" var="entry">"${entry.key}",</c:forEach>];
+                            const monthlyData = [<c:forEach items="${monthlyImport}" var="entry">${entry.value},</c:forEach>];
 
-        // Top 5 Suppliers
-        const supplierLabels = [<c:forEach items="${supplierImport}" var="entry">"${entry.key}",</c:forEach>];
-        const supplierData = [<c:forEach items="${supplierImport}" var="entry">${entry.value},</c:forEach>];
+                            // Supplier Import
+                            const supplierLabels = [<c:forEach items="${supplierImport}" var="entry">"${entry.key}",</c:forEach>];
+                            const supplierData = [<c:forEach items="${supplierImport}" var="entry">${entry.value},</c:forEach>];
 
-        // Top 5 Products
-        const productLabels = [<c:forEach items="${topProductImportShort}" var="entry">"${entry.key}",</c:forEach>];
-        const productData = [<c:forEach items="${topProductImportShort}" var="entry">${entry.value},</c:forEach>];
-        const chartOpts = {
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {display: true, position: 'top'},
-                title: {display: true}
-            },
-            layout: {padding: 10},
-            scales: {y: {beginAtZero: true, ticks: {callback: (v) => v.toLocaleString()}}}
-        };
+                            // Top Product Import
+                            const productLabels = [<c:forEach items="${topProductImportShort}" var="entry">"${entry.key}",</c:forEach>];
+                            const productData = [<c:forEach items="${topProductImportShort}" var="entry">${entry.value},</c:forEach>];
 
-        new Chart(document.getElementById('dailyStockChart').getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: dailyLabels,
-                datasets: [{
-                        label: 'Import Order',
-                        data: dailyData,
-                        backgroundColor: '#61a5e8'
-                    }]
-            },
-            options: {
-                ...chartOpts,
-                animation: false,
-                plugins: {...chartOpts.plugins, title: {display: true, text: 'Daily Stock Import'}}
-            }
-        });
+                            const chartOpts = {
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {display: true, position: 'top'},
+                                    title: {display: true}
+                                },
+                                layout: {padding: 10},
+                                scales: {y: {beginAtZero: true, ticks: {callback: (v) => v.toLocaleString()}}}
+                            };
 
-        new Chart(document.getElementById('monthlyStockChart').getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: monthlyLabels,
-                datasets: [{
-                        label: 'Import Order',
-                        data: monthlyData,
-                        backgroundColor: '#61a5e8'
-                    }]
-            },
-            options: {
-                ...chartOpts,
-                animation: false,
-                plugins: {...chartOpts.plugins, title: {display: true, text: 'Monthly Stock Import'}}
-            }
-        });
+                            // Daily chart
+                            new Chart(document.getElementById('dailyStockChart').getContext('2d'), {
+                                type: 'bar',
+                                data: {
+                                    labels: dailyLabels,
+                                    datasets: [{label: 'Import Order', data: dailyData, backgroundColor: '#61a5e8'}]
+                                },
+                                options: {
+                                    ...chartOpts,
+                                    animation: false,
+                                    plugins: {...chartOpts.plugins, title: {display: true, text: 'Daily Stock Import'}}
+                                }
+                            });
 
-        new Chart(document.getElementById('supplierStockChart').getContext('2d'), {
-            type: 'pie',
-            data: {
-                labels: supplierLabels,
-                datasets: [{
-                        data: supplierData,
-                        backgroundColor: ['#61a5e8', '#f58787', '#ffcd56', '#77dd77', '#a4a1ff', '#ffb366']
-                    }]
-            },
-            options: {
-                ...chartOpts,
-                animation: false,
-                plugins: {...chartOpts.plugins, title: {display: true, text: 'Stock Import by Supplier'}}
-            }
-        });
+                            // Monthly chart
+                            new Chart(document.getElementById('monthlyStockChart').getContext('2d'), {
+                                type: 'bar',
+                                data: {
+                                    labels: monthlyLabels,
+                                    datasets: [{label: 'Import Order', data: monthlyData, backgroundColor: '#61a5e8'}]
+                                },
+                                options: {
+                                    ...chartOpts,
+                                    animation: false,
+                                    plugins: {...chartOpts.plugins, title: {display: true, text: 'Monthly Stock Import'}}
+                                }
+                            });
 
-        new Chart(document.getElementById('productStockChart').getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: productLabels,
-                datasets: [{
-                        label: 'Quantity',
-                        data: productData,
-                        backgroundColor: '#61a5e8'
-                    }]
-            },
-            options: {
-                ...chartOpts,
-                animation: false,
-                plugins: {...chartOpts.plugins, title: {display: true, text: 'Stock Import by Product'}},
-                scales: {y: {beginAtZero: true}}
-            }
-        });
+                            // Supplier chart
+                            new Chart(document.getElementById('supplierStockChart').getContext('2d'), {
+                                type: 'pie',
+                                data: {
+                                    labels: supplierLabels,
+                                    datasets: [{data: supplierData, backgroundColor: ['#61a5e8', '#f58787', '#ffcd56', '#77dd77', '#a4a1ff']}]
+                                },
+                                options: {
+                                    ...chartOpts,
+                                    animation: false,
+                                    plugins: {...chartOpts.plugins, title: {display: true, text: 'Stock Import by Supplier'}}
+                                }
+                            });
+
+                            new Chart(document.getElementById('productStockChart').getContext('2d'), {
+                                type: 'bar',
+                                data: {
+                                    labels: productLabels, // vẫn giữ labels để tooltip dùng
+                                    datasets: [{
+                                            label: 'Quantity',
+                                            data: productData,
+                                            backgroundColor: '#61a5e8'
+                                        }]
+                                },
+                                options: {
+                                    ...chartOpts,
+                                    animation: false,
+                                    plugins: {
+                                        ...chartOpts.plugins,
+                                        title: {display: true, text: 'Stock Import by Product'},
+                                        legend: {display: false}, // tắt legend nếu không cần
+                                        tooltip: {
+                                            enabled: true,
+                                            callbacks: {
+                                                title: function (context) {
+                                                    // hiện tên sản phẩm khi hover
+                                                    return context[0].label;
+                                                },
+                                                label: function (context) {
+                                                    return "Quantity: " + context.formattedValue;
+                                                }
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        x: {ticks: {display: false}}, // ✅ ẩn text dưới trục X
+                                        y: {beginAtZero: true}
+                                    }
+                                }
+                            });
+
                     </script>
+                </main>
             </div>
+        </div>
     </body>
 </html>
