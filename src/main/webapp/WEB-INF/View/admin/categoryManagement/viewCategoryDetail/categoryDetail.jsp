@@ -16,113 +16,135 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <style>
             body {
-                background-color: #f8f9fa;
-                font-family: 'Arial', sans-serif;
+                background-color: #f5f6fa;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 margin: 0;
                 padding: 0;
+                color: #333;
             }
 
             .container {
-                width: 85%;
-                margin: 0 auto;
+                width: 90%;
+                max-width: 1200px;
+                margin: 30px auto;
             }
 
+            /* Header */
             .header {
                 display: flex;
                 align-items: center;
-                gap: 10px;
-                margin-top: 3%;
-                margin-bottom: 3%;
+                justify-content: space-between;
+                margin-bottom: 25px;
             }
 
             .header h1 {
-                font-size: 40px;
-                margin: 0;
-                font-weight: 600;
-                color: #333;
+                font-size: 32px;
+                font-weight: 700;
+                color: #2c3e50;
             }
 
+            /* Category card */
             .category-card {
                 display: flex;
+                align-items: center;
                 gap: 20px;
-                margin-bottom: 3%;
-                overflow-x: auto;
-            }
-
-            .category-card .card {
-                border: 1px solid #ddd;
+                margin-bottom: 30px;
                 padding: 20px;
+                background: #fff;
                 border-radius: 12px;
-                display: inline-block;
-                width: 160px;
-                text-align: center;
-            }
-
-            .category-card .card.active {
-                border: 2px solid #0d6efd;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.08);
             }
 
             .category-card img {
-                max-width: 100%;
-                height: 100px;
+                width: 120px;
+                height: 120px;
                 object-fit: contain;
+                border-radius: 8px;
+                border: 1px solid #eee;
+                padding: 10px;
+                background: #fafafa;
             }
 
             .category-card h2 {
-                font-size: 18px;
-                margin-top: 10px;
-                color: #333;
+                font-size: 22px;
+                font-weight: 600;
+                color: #34495e;
             }
 
+            /* Technical specs box */
             .technical-specs {
                 background-color: #ffffff;
-                padding: 20px;
-                border-radius: 15px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 25px;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             }
 
             .technical-specs h2 {
                 font-size: 24px;
-                margin-bottom: 10px;
-                color: #333;
+                margin-bottom: 15px;
+                font-weight: 600;
+                color: #2c3e50;
+                border-left: 5px solid #0d6efd;
+                padding-left: 12px;
             }
 
+            /* Table style */
             .category-table {
                 width: 100%;
                 border-collapse: collapse;
-                margin-top: 20px;
+                margin-top: 15px;
+                background: #fff;
+                border-radius: 8px;
+                overflow: hidden;
             }
 
-            .category-table td,
-            .category-table th {
-                padding: 12px;
-                border: 1px solid #ddd;
+            .category-table th,
+            .category-table td {
+                padding: 14px;
+                border-bottom: 1px solid #e9ecef;
                 text-align: left;
+                font-size: 15px;
             }
 
+            .category-table tr:last-child td {
+                border-bottom: none;
+            }
+
+            /* Group header */
             .group-header {
-                background-color: #f1f1f1;
+                background-color: #f1f3f5;
                 cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .group-header:hover {
+                background-color: #e9ecef;
             }
 
             .group-header h2 {
                 margin: 0;
-                color: #333;
+                font-size: 18px;
+                font-weight: 600;
+                color: #495057;
             }
 
             .arrow-icon {
                 font-size: 18px;
                 margin-left: 10px;
+                transition: transform 0.3s ease;
             }
 
-            .hidden {
-                display: none !important;
+            /* Khi mở thì quay mũi tên */
+            .group-header.open .arrow-icon {
+                transform: rotate(180deg);
             }
 
+            /* No data */
             .no-data-message {
                 text-align: center;
-                padding: 10px;
-                color: gray;
+                padding: 15px;
+                font-size: 15px;
+                color: #888;
             }
 
         </style>
@@ -164,7 +186,7 @@
                             <td colspan="2">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <h2><%= a.getAtrributeName()%></h2>
-                                    <span class="arrow-icon" id="arrow<%= groupIndex%>">▼</span>
+
                                 </div>
                             </td>
                         </tr>

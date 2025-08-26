@@ -82,6 +82,7 @@ public class ProductDetailServlet extends HttpServlet {
 
             // Lấy thông tin chi tiết sản phẩm
             List<Attribute> attributeList = cateDao.getAttributeByCategoryID(categoryId);
+            System.out.println("categoryID " + categoryId);
             Product product = proDao.getProductByID(productId);
             List<ProductDetail> productDetailList = proDao.getProductDetailByProductId(productId);
 

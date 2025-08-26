@@ -255,7 +255,9 @@
                                 }
                             }
                         } else { %>
-                    <p>Không có sản phẩm nào</p>
+
+                    <p>No Product Available</p>
+
                     <% }%>
                 </div>
 

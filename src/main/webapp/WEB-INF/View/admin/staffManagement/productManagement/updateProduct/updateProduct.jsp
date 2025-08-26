@@ -3,22 +3,26 @@
     String error = request.getParameter("error");
 %>
 <!-- Bootstrap CDN -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Fontawesome CDN -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Fontawesome CDN -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 <html>
 
     <head>
         <style>
-          
+
 
             .main-content {
-                margin-left: 40px; /* Phù h?p v?i chi?u r?ng sidebar */
+                margin-left: 40px;   /* gi? nguyên */
                 padding: 30px;
-                min-height: 100vh;
                 background-color: #f8f9fa;
-                overflow-x: hidden;
+
+                /* b? gây ra scrollbar ph? */
+                min-height: auto;
+                height: auto;
+                overflow: visible;   /* cho n?i dung t? ch?y */
             }
+
 
         </style>
 
@@ -79,22 +83,22 @@
         }
 
         window.onload = function () {
-            <% if ("1".equals(success)) { %>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Update!',
-                    text: 'The product has been update.',
-                    timer: 2000
-                });
-            <% } else if ("1".equals(error)) { %>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed!',
-                    text: 'Could not update the product.',
-                    timer: 2000
-                });
-            <% }%>
-            };
+        <% if ("1".equals(success)) { %>
+            Swal.fire({
+                icon: 'success',
+                title: 'Update!',
+                text: 'The product has been update.',
+                timer: 2000
+            });
+        <% } else if ("1".equals(error)) { %>
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed!',
+                text: 'Could not update the product.',
+                timer: 2000
+            });
+        <% }%>
+        };
 
     </script>
 </html>

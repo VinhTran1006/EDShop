@@ -244,6 +244,7 @@ public class VoucherDAO extends DBContext {
             return false;
         }
     }
+   
     
     // Validate voucher cho khách hàng (kiểm tra tất cả điều kiện)
     public Voucher validateVoucherForOrder(String code, int customerId, double orderAmount) {
