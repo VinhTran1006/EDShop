@@ -172,7 +172,7 @@ public class CartItemServlet extends HttpServlet {
             boolean success = cartItemDAO.removeCartItem(cartItemId);
 
             if (success) {
-                session.setAttribute("message", "Đã xóa sản phẩm khỏi giỏ hàng!");
+                session.setAttribute("message", "Product removed from cart successfully!");
             } else {
                 session.setAttribute("message", "Có lỗi xảy ra khi xóa sản phẩm!");
             }
@@ -195,7 +195,7 @@ public class CartItemServlet extends HttpServlet {
             boolean success = cartItemDAO.clearCartByCustomerId(customerId);
 
             if (success) {
-                session.setAttribute("message", "Đã xóa tất cả sản phẩm khỏi giỏ hàng!");
+                session.setAttribute("message", "All products removed from cart!");
             } else {
                 session.setAttribute("message", "Có lỗi xảy ra khi xóa giỏ hàng!");
             }

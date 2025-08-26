@@ -447,8 +447,12 @@
             }
 
             @keyframes loading {
-                0% { left: -100%; }
-                100% { left: 100%; }
+                0% {
+                    left: -100%;
+                }
+                100% {
+                    left: 100%;
+                }
             }
 
             /* Hidden Elements */
@@ -462,9 +466,122 @@
             }
 
             @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
+
+            /* Voucher Info Display Styles */
+            .voucher-info-display {
+                margin-top: 15px;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: all 0.3s ease;
+            }
+
+            .voucher-info-display.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .voucher-info-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 12px;
+                padding: 20px;
+                color: white;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+
+            .voucher-header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 15px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .voucher-header i {
+                margin-right: 10px;
+                font-size: 20px;
+            }
+
+            .voucher-code-display {
+                background: rgba(255, 255, 255, 0.2);
+                padding: 5px 12px;
+                border-radius: 20px;
+                margin-left: 10px;
+                font-family: 'Courier New', monospace;
+            }
+
+            .voucher-description {
+                font-size: 14px;
+                margin-bottom: 15px;
+                opacity: 0.9;
+                font-style: italic;
+            }
+
+            .voucher-stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+
+            .stat-item {
+                display: flex;
+                align-items: center;
+                font-size: 12px;
+            }
+
+            .stat-item i {
+                margin-right: 8px;
+                width: 16px;
+                opacity: 0.8;
+            }
+
+            .stat-item strong {
+                color: #ffd700;
+            }
+
+            .savings-highlight {
+                background: rgba(255, 215, 0, 0.2);
+                border: 1px solid rgba(255, 215, 0, 0.5);
+                border-radius: 8px;
+                padding: 12px;
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            .savings-highlight i {
+                margin-right: 8px;
+                color: #ffd700;
+            }
+
+            .savings-highlight strong {
+                color: #ffd700;
+                font-size: 18px;
+            }
+
+            @media (max-width: 768px) {
+                .voucher-stats {
+                    grid-template-columns: 1fr;
+                }
+
+                .voucher-info-card {
+                    padding: 15px;
+                }
+
+                .voucher-header {
+                    font-size: 16px;
+                }
+            }
+
         </style>
     </head>
     <body>
@@ -566,7 +683,6 @@
                         %>
                     </div>
 
-                    <!-- Voucher Section -->
                     <div class="section-card fade-in">
                         <h3 class="section-title">
                             <i class="fas fa-ticket-alt"></i>
@@ -585,6 +701,41 @@
                             </button>
                         </div>
                         <div id="voucherMessage"></div>
+
+                        <!-- Voucher Information Display -->
+                        <div id="voucherInfoDisplay" class="voucher-info-display hidden">
+                            <div class="voucher-info-card">
+                                <div class="voucher-header">
+                                    <i class="fas fa-ticket-alt"></i>
+                                    <span class="voucher-code-display" id="appliedVoucherCode"></span>
+                                </div>
+                                <div class="voucher-details">
+                                    <div class="voucher-description" id="voucherDescription"></div>
+                                    <div class="voucher-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-percentage"></i>
+                                            <span>Discount: <strong id="voucherDiscountPercent"></strong>%</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <span>Expires: <strong id="voucherExpiryDate"></strong></span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            <span>Min Order: <strong id="voucherMinOrder"></strong> VND</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-coins"></i>
+                                            <span>Max Discount: <strong id="voucherMaxDiscount"></strong> VND</span>
+                                        </div>
+                                    </div>
+                                    <div class="savings-highlight">
+                                        <i class="fas fa-piggy-bank"></i>
+                                        <span>You save: <strong id="voucherSavings"></strong> VND</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Order Summary -->
@@ -604,7 +755,7 @@
                             <span class="summary-label">Discount:</span>
                             <span class="summary-value discount-value" id="discount">-0 VND</span>
                         </div>
-                        
+
                         <div class="total-row">
                             <div class="summary-row">
                                 <span class="summary-label">
@@ -641,14 +792,14 @@
 
             $(document).ready(function () {
                 // Add fade-in animation to elements
-                $('.fade-in').each(function(index) {
-                    $(this).delay(index * 100).queue(function() {
+                $('.fade-in').each(function (index) {
+                    $(this).delay(index * 100).queue(function () {
                         $(this).addClass('fade-in').dequeue();
                     });
                 });
 
                 // Input validation for voucher code
-                $('#voucherCode').on('input', function() {
+                $('#voucherCode').on('input', function () {
                     let value = $(this).val().toUpperCase();
                     value = value.replace(/[^A-Z0-9_-]/g, '');
                     $(this).val(value);
@@ -671,11 +822,11 @@
                 });
 
                 // Clear voucher button click
-                $('#clearVoucherBtn').click(function() {
+                $('#clearVoucherBtn').click(function () {
                     clearVoucher();
                 });
 
-                // Create order button click - Removed confirmation dialog
+                // Create order button click with order limit check
                 $('#createOrderBtn').click(function () {
                     const addressId = $('#addressSelect').val();
                     if (!addressId) {
@@ -683,10 +834,19 @@
                         return;
                     }
 
+                    // Kiểm tra giới hạn đơn hàng
+                    const ORDER_LIMIT = 500000000; // 500 triệu VND
+                    const finalAmount = parseInt($('#hiddenFinalAmount').val());
+
+                    if (finalAmount > ORDER_LIMIT) {
+                        alert('The order exceeds ' + formatPrice(ORDER_LIMIT) + ' VND due to the store policy. Please contact the admin for assistance.');
+                        return;
+                    }
+
                     $('#hiddenAddressId').val(addressId);
                     $('#hiddenVoucherId').val(currentVoucherId || '');
 
-                    // Directly submit without confirmation
+                    // Submit form
                     $(this).addClass('loading').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
                     $('#orderForm').submit();
                 });
@@ -704,7 +864,7 @@
             function applyVoucher(voucherCode) {
                 const $btn = $('#applyVoucherBtn');
                 $btn.prop('disabled', true).addClass('loading').html('<i class="fas fa-spinner fa-spin"></i> Applying...');
-                
+
                 $.ajax({
                     url: 'CreateOrderServlet',
                     type: 'POST',
@@ -720,18 +880,37 @@
                             const finalAmount = parseInt(parts[2]);
                             const voucherId = parts[3];
                             const discountPercent = parts[4];
+                            const description = parts[5].replace(/&#58;/g, ':'); // Convert back colons
+                            const expiryDate = parts[6];
+                            const minOrder = parseFloat(parts[7]);
+                            const maxDiscount = parseFloat(parts[8]);
+                            const usageInfo = parts[9]; // format: used/limit
 
+                            // Update order summary
                             $('#discount').text('-' + formatPrice(discountAmount) + ' VND');
                             $('#finalTotal').text(formatPrice(finalAmount) + ' VND');
                             $('#discountRow').removeClass('hidden').addClass('fade-in');
                             $('#clearVoucherBtn').removeClass('hidden').addClass('fade-in');
 
+                            // Update hidden form fields
                             $('#hiddenFinalAmount').val(finalAmount);
                             $('#hiddenDiscountAmount').val(discountAmount);
                             $('#hiddenDiscountPercent').val(discountPercent);
                             currentVoucherId = voucherId;
 
-                            showVoucherMessage('Voucher applied successfully! You saved ' + formatPrice(discountAmount) + ' VND', 'success');
+                            // Display voucher information
+                            displayVoucherInfo({
+                                code: voucherCode,
+                                description: description,
+                                discountPercent: discountPercent,
+                                expiryDate: expiryDate,
+                                minOrder: minOrder,
+                                maxDiscount: maxDiscount,
+                                usageInfo: usageInfo,
+                                savings: discountAmount
+                            });
+
+                            showVoucherMessage('Voucher applied successfully!', 'success');
 
                         } else if (response.startsWith('error:')) {
                             const errorParts = response.split(':');
@@ -784,9 +963,31 @@
                     error: function () {
                         showVoucherMessage('Connection error. Please try again.', 'error');
                     },
-                    complete: function() {
+                    complete: function () {
                         $btn.prop('disabled', false).removeClass('loading').html('<i class="fas fa-check"></i> Apply');
                     }
+                });
+            }
+
+            function displayVoucherInfo(voucherData) {
+                // Populate voucher information
+                $('#appliedVoucherCode').text(voucherData.code);
+                $('#voucherDescription').text(voucherData.description);
+                $('#voucherDiscountPercent').text(voucherData.discountPercent);
+                $('#voucherExpiryDate').text(voucherData.expiryDate);
+                $('#voucherMinOrder').text(formatPrice(voucherData.minOrder));
+                $('#voucherMaxDiscount').text(formatPrice(voucherData.maxDiscount));
+                $('#voucherUsage').text(voucherData.usageInfo);
+                $('#voucherSavings').text(formatPrice(voucherData.savings));
+
+                // Show voucher info display with animation
+                const $display = $('#voucherInfoDisplay');
+                $display.removeClass('hidden').addClass('show');
+
+                // Smooth scroll to show the voucher info
+                $display[0].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
                 });
             }
 
@@ -799,6 +1000,10 @@
                 $('#hiddenDiscountAmount').val(0);
                 $('#hiddenDiscountPercent').val('');
                 $('#voucherMessage').empty();
+
+                // Hide voucher info display
+                $('#voucherInfoDisplay').removeClass('show').addClass('hidden');
+
                 currentVoucherId = null;
             }
 
@@ -806,7 +1011,7 @@
                 const messageDiv = $('#voucherMessage');
                 const iconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
                 const messageClass = type === 'success' ? 'message-success' : 'message-error';
-                
+
                 messageDiv.html('<i class="' + iconClass + '"></i>' + message);
                 messageDiv.attr('class', 'message ' + messageClass + ' fade-in');
             }
@@ -814,7 +1019,7 @@
             function formatPrice(price) {
                 return parseInt(price).toLocaleString();
             }
-            
+
         </script>
 
         <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />

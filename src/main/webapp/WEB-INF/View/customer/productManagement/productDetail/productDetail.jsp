@@ -265,40 +265,72 @@
 
     <script>
         window.onload = function () {
-            var success = '<%= successcreate%>';
-            var error = '<%= checkquantity%>';
-            var generalError = '<%= error%>';
+            // Lấy URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const success = urlParams.get('successcreate');
+            const error = urlParams.get('checkquantity');
+            const generalError = urlParams.get('error');
 
+            // Hiển thị thông báo tương ứng
             if (success === '1') {
                 Swal.fire({
                     icon: 'success',
                     title: 'Success!',
                     text: 'Product has been added to cart.',
-                    timer: 2000
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Xóa parameters khỏi URL sau khi hiển thị thông báo
+                    removeUrlParameters(['successcreate']);
                 });
             } else if (error === '1') {
                 Swal.fire({
                     icon: 'error',
                     title: 'Failed!',
                     text: 'The quantity of product in stock is not enough to order.',
-                    timer: 2000
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Xóa parameters khỏi URL sau khi hiển thị thông báo
+                    removeUrlParameters(['checkquantity']);
                 });
             } else if (generalError === 'add_failed') {
                 Swal.fire({
                     icon: 'error',
                     title: 'Failed!',
                     text: 'Failed to add product to cart. Please try again.',
-                    timer: 2000
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Xóa parameters khỏi URL sau khi hiển thị thông báo
+                    removeUrlParameters(['error']);
                 });
             } else if (generalError === 'product_not_found') {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
                     text: 'Product not found or no longer available.',
-                    timer: 2000
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Xóa parameters khỏi URL sau khi hiển thị thông báo
+                    removeUrlParameters(['error']);
                 });
             }
         };
+
+        // Hàm để xóa các parameters khỏi URL
+        function removeUrlParameters(paramsToRemove) {
+            const url = new URL(window.location);
+            
+            // Xóa các parameters được chỉ định
+            paramsToRemove.forEach(param => {
+                url.searchParams.delete(param);
+            });
+            
+            // Cập nhật URL mà không reload trang
+            window.history.replaceState({}, document.title, url);
+        }
     </script>
 
 </html>
