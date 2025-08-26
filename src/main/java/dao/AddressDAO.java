@@ -88,7 +88,7 @@ public class AddressDAO extends DBContext {
 
     // Xóa địa chỉ theo ID
     public boolean deleteAddressById(int addressId) {
-        String sql = "DELETE FROM Addresses WHERE AddressID = ?";
+        String sql = "Update Addresses Set IsActive ='0' WHERE AddressID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, addressId);
