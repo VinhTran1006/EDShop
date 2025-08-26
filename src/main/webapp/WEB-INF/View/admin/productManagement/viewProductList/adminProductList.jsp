@@ -12,12 +12,6 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <title>JSP Page</title>
-<!--        <style>
-            .container {
-                padding-left: 47px !important;
-                padding-right: 47px !important;
-            }
-        </style>-->
     </head>
     <body>
         <div style = "display: flex"  >

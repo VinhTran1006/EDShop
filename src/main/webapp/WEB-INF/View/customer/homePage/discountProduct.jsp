@@ -148,13 +148,17 @@
                         <div class="divTraGop">
                         </div>
                         <p class="productName"><%= pro.getProductName()%></p>
+                        <% if(pro.getQuantity() >= 1 ) {%>
                         <p class="giaMoi"><%= giaCuFormatted%> đ</p>
+                        <%} else { %>
+                        <p class="giaMoi">Out Of Stock</p>
+                        <%}%>
                     </a>
                 </div>
                 <%
                     } // end for
                 } else { %>
-                <p>Không có sản phẩm nào</p>
+                <p>No Product Available</p>
                 <% }%>
             </div>
         </div>

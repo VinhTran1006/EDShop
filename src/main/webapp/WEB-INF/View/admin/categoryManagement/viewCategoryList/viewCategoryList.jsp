@@ -10,11 +10,12 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/sideBar.css">
 
         <!-- Dashboard CSS -->
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css">
+       
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     </head>
     <body>
+        
         <div class="container">
             <!-- Sidebar bên trái -->
             <div class="sidebar">
