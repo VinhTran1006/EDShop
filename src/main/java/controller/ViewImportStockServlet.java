@@ -67,7 +67,36 @@ public class ViewImportStockServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String fromRaw = request.getParameter("from"); // yyyy-MM-dd
+        List<ImportStock> history = new ArrayList<>();
+        try {
+            history = importStockDAO.getImportHistoryAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error when fetch Import Stock data!: " + e.getMessage());
+        }
+
+        List<Suppliers> suppliers = supplierDAO.getAllActiveSuppliers();
+
+        request.setAttribute("importHistory", history);
+        
+
+        request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importStockList.jsp")
+                .forward(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+//        processRequest(request, response);
+String fromRaw = request.getParameter("from"); // yyyy-MM-dd
         String toRaw = request.getParameter("to");     // yyyy-MM-dd
         String supplierIdRaw = request.getParameter("supplierId");
 
@@ -114,20 +143,6 @@ public class ViewImportStockServlet extends HttpServlet {
 
         request.getRequestDispatcher("/WEB-INF/View/staff/stockManagement/importStockList.jsp")
                 .forward(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
     }
 
     /**

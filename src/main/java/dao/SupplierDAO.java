@@ -145,7 +145,7 @@ public class SupplierDAO extends DBContext {
     }
 
     public boolean deleteSupplierByID(int supplierID) {
-        String sql = "DELETE FROM Suppliers WHERE SupplierID = ?";
+        String sql = "UPDATE Suppliers Set IsActive = '0' WHERE SupplierID = ?";
         try ( PreparedStatement st = conn.prepareStatement(sql)) {
             st.setInt(1, supplierID);
             int rowsAffected = st.executeUpdate();
