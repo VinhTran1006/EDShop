@@ -61,7 +61,9 @@
     <a href="ViewOrderList" class="sidebar-link">
         <i class="fas fa-shopping-cart"></i> Orders
     </a>
-    
+      <a href="ProductListForStaff" class="sidebar-link">
+        <i class="fas fa-comments"></i> Products
+    </a>
     <a href="ImportStatistic" class="sidebar-link">
         <i class="fas fa-warehouse"></i> Stock
     </a>

@@ -104,7 +104,6 @@
         <div class="divAll">
             <div class="container">
                 <div>
-                    <jsp:include page="/WEB-INF/View/staff/header.jsp" />
 
                     <jsp:include page="/WEB-INF/View/staff/productManagement/viewProductDetail/productTitle.jsp" />
                 </div>

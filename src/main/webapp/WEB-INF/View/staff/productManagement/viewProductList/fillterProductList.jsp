@@ -7,44 +7,138 @@
     }
 %>
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    
-    <body>
-        <div>
-            <h1 class = "col-md-9 fw-bold display-5" style = "margin-left: 18.9%; margin-top: 2%">
-                Product Management
-            </h1>
-        </div>
+        <title>Product Management</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: #f9fafb;
+                margin: 0;
+                padding: 0;
+            }
 
-        <div style="display: flex; align-items: center; margin-top: 3%;">
-            
-            <p style="margin-left: 22%; color: black; font-weight: 500; font-size: 200%;"><%= (selectedFilter != null && !selectedFilter.isEmpty()) ? (selectedFilter + " ") : "All" %>Product</p><!-- comment -->
-            
-            <form style="margin-left: 15%; margin-bottom: 1%; margin-right: 2%" action="StaffProduct" method="get">
-                <label for="filter" class="form-label fw-bold me-2">Filter Products:</label>
-                <select name="filter" id="filter" class="form-select" onchange="this.form.submit()" 
-                        style="width: 250px; display: inline-block;">
-                    <option value="All" <%= "All".equals(selectedFilter) ? "selected" : ""%>>All products</option>
-                    <option value="Featured" <%= "Featured".equals(selectedFilter) ? "selected" : ""%>>Featured products</option>
-                    <option value="Bestseller" <%= "Bestseller".equals(selectedFilter) ? "selected" : ""%>>Bestseller products</option>
-                    <option value="New" <%= "New".equals(selectedFilter) ? "selected" : ""%>>New products</option>
-                </select>
+            h1 {
+                text-align: center;
+                font-size: 2.5rem;
+                margin-top: 30px;
+                color: #222;
+            }
+
+            .header-row {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                margin: 40px auto;
+                flex-wrap: wrap;
+            }
+
+            .header-row p {
+                font-size: 1.6rem;
+                font-weight: 600;
+                color: #333;
+                margin: 0;
+            }
+
+            /* Search form */
+            .search-form {
+                display: flex;
+                align-items: center;
+                background: #fff;
+                padding: 6px 12px;
+                border-radius: 8px;
+                border: 1px solid #ddd;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .search-form input {
+                border: none;
+                outline: none;
+                padding: 8px 12px;
+                font-size: 15px;
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .search-form .search-btn {
+                background: #2563eb;
+                color: #fff;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 500;
+                transition: background 0.2s ease;
+            }
+
+            .search-form .search-btn:hover {
+                background: #1e40af;
+            }
+
+            /* Filter */
+            .filter-form {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: #fff;
+                padding: 6px 12px;
+                border-radius: 8px;
+                border: 1px solid #ddd;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .filter-form label {
+                font-weight: 600;
+                color: #444;
+            }
+
+            .filter-form select {
+                padding: 6px 12px;
+                font-size: 15px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                outline: none;
+                cursor: pointer;
+                transition: border 0.2s ease;
+            }
+
+            .filter-form select:hover {
+                border-color: #2563eb;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Product Management</h1>
+
+        <div class="header-row">
+            <p>
+                <%= (selectedFilter != null && !selectedFilter.isEmpty()) ? (selectedFilter + " ") : "All"%> Product
+            </p>
+
+            <form class="search-form" method="get" action="ProductListForStaff">
+                <input
+                    type="text"
+                    name="keyword"
+                    placeholder="Find by name..."
+                    value="<%= request.getParameter("keyword") != null ? request.getParameter("keyword") : ""%>"
+                    />
+                <button type="submit" class="search-btn">Search</button>
             </form>
 
-            <a href="CreateCategory" 
-               class="btn btn-success d-flex align-items-center shadow rounded-pill px-3 py-2"
-               style="width: fit-content; text-decoration: none; margin-bottom: 1%;">
-                <img src="https://cdn0.iconfinder.com/data/icons/round-ui-icons/512/add_blue.png" 
-                     alt="Add icon" 
-                     style="width: 20px; height: 20px; margin-right: 5px; filter: brightness(0) invert(1);">
-                <span style="color: white; font-weight: 500; font-size: 16px;">Add</span>
-            </a>
+            <form class="filter-form" action="ProductListForStaff" method="get">
+                <label for="filter">Filter:</label>
+                <select name="filter" id="filter" onchange="this.form.submit()">
+                    <option value="All" <%= "All".equals(selectedFilter) ? "selected" : ""%>>All products</option>
+                    <option value="Featured" <%= "Featured".equals(selectedFilter) ? "selected" : ""%>>Featured</option>
+                    <option value="Bestseller" <%= "Bestseller".equals(selectedFilter) ? "selected" : ""%>>Bestseller</option>
+                    <option value="New" <%= "New".equals(selectedFilter) ? "selected" : ""%>>New</option>
+                </select>
+            </form>
         </div>
-
-
     </body>
 </html>
+
