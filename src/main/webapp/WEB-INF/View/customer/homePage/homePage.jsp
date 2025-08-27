@@ -10,6 +10,7 @@
         <jsp:include page="/WEB-INF/View/customer/homePage/bestSellerProduct.jsp" />
         <jsp:include page="/WEB-INF/View/customer/homePage/banner2.jsp" />
         <jsp:include page="/WEB-INF/View/customer/homePage/featuredProduct.jsp" />
+        <jsp:include page="/WEB-INF/View/customer/homePage/newProduct.jsp" />
         <jsp:include page="/WEB-INF/View/customer/homePage/discountProduct.jsp" />
     </div>
     <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
