@@ -155,7 +155,7 @@
     <body>
         <jsp:include page="/WEB-INF/View/customer/homePage/header.jsp" />
         <div class="login-container">
-            <img style="margin-right: 50px; margin-left: -50px;" src="Image/sanpham.jpg"  width="700" height="600">
+            <img style="margin-right: 50px; margin-left: -50px;" src="Logo/d.png"  width="700" height="600">
             <div class="login-card">
                 <h1 class="login-title">
                     <i class="bi bi-person-circle me-2"></i>

@@ -11,7 +11,7 @@
 
         <!-- Banner -->
         <div class="category-banner-full2 col-md-12" style = "margin-top: 1%">
-            <img style = "width: 100%" src="https://res.cloudinary.com/dgnyskpc3/image/upload/v1750922275/Banner2Dai_srnutu.png" alt="Banner" class="img-fluid">
+            <img style = "width: 100%" src="Logo/h.png" alt="Banner" class="img-fluid">
         </div>
 
     </body>

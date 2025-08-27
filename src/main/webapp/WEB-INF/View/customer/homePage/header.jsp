@@ -139,8 +139,7 @@
             <div class="d-flex align-items-center">
                 <!-- Logo -->
                 <a style = "margin-left: 25%" href="${pageContext.request.contextPath}/Home" class="me-3">
-                    <img src="https://res.cloudinary.com/dgnyskpc3/image/upload/v1750919684/Logo_nl7ahl.png" 
-
+                    <img src="Logo/Final.png" 
                          class="header-logo" 
                          style="height: 40px; object-fit: contain;" />
                 </a>

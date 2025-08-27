@@ -262,7 +262,7 @@
                                 <strong>Staff reply:</strong>
                                 <p>${rate.reply}</p>
                                 <small class="text-muted">
-                                    by StaffID: ${rate.staffID}, 
+                                    by Staff: ${st.fullName}, 
                                     at <fmt:formatDate value="${rate.replyDate}" pattern="dd/MM/yyyy HH:mm"/>
                                 </small>
 
