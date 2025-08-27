@@ -190,20 +190,20 @@
                 </p>
 
                 <% String error = (String) request.getAttribute("error");
-                   if (error != null) { %>
-                    <div class="error-message">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <%= error %>
-                    </div>
+                    if (error != null) {%>
+                <div class="error-message">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <%= error%>
+                </div>
                 <% } %>
 
                 <% String message = (String) request.getAttribute("message");
-                   if (message != null) { %>
-                    <div class="success-message">
-                        <i class="bi bi-check-circle-fill me-2"></i>
-                        <%= message %>
-                    </div>
-                <% } %>
+                    if (message != null) {%>
+                <div class="success-message">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <%= message%>
+                </div>
+                <% }%>
 
                 <form method="post" action="ForgotPassword">
                     <div class="input-group">
@@ -240,7 +240,7 @@
                     emailInput.addEventListener('input', function () {
                         const email = this.value;
                         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                        
+
                         if (email.length > 0) {
                             if (emailRegex.test(email)) {
                                 this.style.borderColor = '#28a745';
@@ -256,13 +256,13 @@
                 // Form submission with loading state
                 const form = document.querySelector('form');
                 const submitBtn = document.querySelector('button[type="submit"]');
-                
+
                 if (form && submitBtn) {
                     form.addEventListener('submit', function (e) {
                         // Add loading state
                         submitBtn.disabled = true;
                         submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Sending...';
-                        
+
                         // Re-enable button after 5 seconds in case of network issues
                         setTimeout(() => {
                             submitBtn.disabled = false;
@@ -271,6 +271,8 @@
                     });
                 }
             });
+            localStorage.removeItem("otpExpiry_register");
+            localStorage.removeItem("otpExpiry_forgot");
         </script>
         <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
     </body>

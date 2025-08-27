@@ -156,6 +156,11 @@
             .form-control.with-icon {
                 padding-left: 45px;
             }
+            
+            .input-group.password-group .input-icon {
+                top: 38%;              /* trung tâm chính input */
+                transform: translateY(-50%);
+            }
 
             .description-text {
                 color: #6c757d;
@@ -166,6 +171,7 @@
             }
 
             .password-strength {
+                width: 100%;
                 height: 3px;
                 background: #e9ecef;
                 border-radius: 2px;
@@ -174,20 +180,21 @@
             }
 
             .password-strength-bar {
+                width: 0;
                 height: 100%;
                 transition: all 0.3s ease;
                 border-radius: 2px;
             }
 
-            .strength-weak {
+            .password-strength-bar.strength-weak {
                 background: #ff6b6b;
                 width: 33%;
             }
-            .strength-medium {
+            .password-strength-bar.strength-medium {
                 background: #ffa726;
                 width: 66%;
             }
-            .strength-strong {
+            .password-strength-bar.strength-strong {
                 background: #11998e;
                 width: 100%;
             }
@@ -205,29 +212,35 @@
                 <p class="description-text">
                     Enter your new password below. Make sure it's strong and secure.
                 </p>
+                <%
+                    String error = (String) session.getAttribute("error");
+                %>
 
-                <% String error = (String) request.getAttribute("error");
-                   if (error != null) { %>
-                    <div class="error-message">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <%= error %>
-                    </div>
-                <% } %>
+                <% if (error != null) {%>
+                <div class="error-message">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <%= error%>
+                </div>
+                <%
+                        session.removeAttribute("error");
+                    }%>
 
                 <form method="post" action="ResetPassword">
-                    <div class="input-group">
+                    <div class="input-group password-group">
                         <i class="bi bi-lock-fill input-icon"></i>
                         <input type="password" name="newPassword" class="form-control with-icon"
-                               placeholder="Enter new password" required minlength="6" id="newPassword">
+                               placeholder="Enter new password" required minlength="8" id="newPassword">
+                        <i class="bi bi-eye-slash toggle-password" style="position:absolute; right:15px; top:40%; transform:translateY(-50%); cursor:pointer;"></i>
                         <div class="password-strength">
                             <div class="password-strength-bar" id="strengthBar"></div>
                         </div>
                     </div>
 
-                    <div class="input-group">
+                    <div class="input-group password-group">
                         <i class="bi bi-shield-lock-fill input-icon"></i>
                         <input type="password" name="confirmPassword" class="form-control with-icon"
-                               placeholder="Confirm new password" required minlength="6" id="confirmPassword">
+                               placeholder="Confirm new password" required minlength="8" id="confirmPassword">
+                        <i class="bi bi-eye-slash toggle-password" style="position:absolute; right:15px; top:40%; transform:translateY(-50%); cursor:pointer;"></i>
                     </div>
 
                     <button type="submit" class="btn btn-reset">
@@ -249,40 +262,78 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
-            // Wait for DOM to be fully loaded
             document.addEventListener('DOMContentLoaded', function () {
+                const toggleIcons = document.querySelectorAll('.toggle-password');
+
+                toggleIcons.forEach(icon => {
+                    const input = icon.closest('.password-group').querySelector('input'); // input ngay tr??c icon
+
+                    icon.addEventListener('click', function (e) {
+                        e.stopPropagation(); // tránh s? ki?n click lan ra ngoài
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            icon.classList.remove('bi-eye-slash');
+                            icon.classList.add('bi-eye');
+                        } else {
+                            input.type = 'password';
+                            icon.classList.remove('bi-eye');
+                            icon.classList.add('bi-eye-slash');
+                        }
+                    });
+
+                    // Click ra ngoài input s? hide password
+                    document.addEventListener('click', function (e) {
+                        if (e.target !== input && e.target !== icon) {
+                            input.type = 'password';
+                            icon.classList.remove('bi-eye');
+                            icon.classList.add('bi-eye-slash');
+                        }
+                    });
+                });
                 // Password strength indicator
                 const passwordInput = document.getElementById('newPassword');
+                const confirmPasswordInput = document.getElementById('confirmPassword');
                 const strengthBar = document.getElementById('strengthBar');
 
+                // Password strength
                 if (passwordInput && strengthBar) {
                     passwordInput.addEventListener('input', function () {
-                        const password = this.value;
+                        const pwd = this.value;
+                        let score = 0;
+                        if (pwd.length >= 8)
+                            score++;
+                        if (/[A-Z]/.test(pwd))
+                            score++;
+                        if (/[a-z]/.test(pwd))
+                            score++;
+                        if (/\d/.test(pwd))
+                            score++;
+                        if (/[@]/.test(pwd))
+                            score++;
 
-                        let strength = 0;
-                        if (password.length >= 8)
-                            strength++;
-                        if (password.match(/[a-z]/))
-                            strength++;
-                        if (password.match(/[A-Z]/))
-                            strength++;
-                        if (password.match(/[0-9]/))
-                            strength++;
-                        if (password.match(/[^a-zA-Z0-9]/))
-                            strength++;
-
-                        // Reset classes
                         strengthBar.className = 'password-strength-bar';
-
-                        // Add appropriate strength class
-                        if (password.length === 0) {
-                            // No password, no bar
-                        } else if (strength <= 2) {
+                        if (pwd.length === 0) {
+                        } else if (score <= 2) {
                             strengthBar.classList.add('strength-weak');
-                        } else if (strength <= 4) {
+                        } else if (score <= 4) {
                             strengthBar.classList.add('strength-medium');
                         } else {
                             strengthBar.classList.add('strength-strong');
+                        }
+                    });
+                }
+
+                // Real-time confirm password match
+                if (confirmPasswordInput && passwordInput) {
+                    confirmPasswordInput.addEventListener('input', function () {
+                        const pwd = passwordInput.value;
+                        const conf = this.value;
+                        if (conf.length === 0) {
+                            this.style.setProperty("border-color", "#e9ecef", "important");
+                        } else if (pwd === conf) {
+                            this.style.setProperty("border-color", "#28a745", "important");
+                        } else {
+                            this.style.setProperty("border-color", "#dc3545", "important");
                         }
                     });
                 }
@@ -292,8 +343,7 @@
                 if (form) {
                     form.addEventListener('submit', function (e) {
                         const password = document.getElementById('newPassword');
-                        const confirmPassword = document.getElementById('confirmPassword');
-
+                        
                         if (password && confirmPassword) {
                             if (password.value !== confirmPassword.value) {
                                 e.preventDefault();
@@ -305,7 +355,6 @@
                 }
 
                 // Real-time password match validation
-                const confirmPasswordInput = document.getElementById('confirmPassword');
                 if (confirmPasswordInput && passwordInput) {
                     confirmPasswordInput.addEventListener('input', function () {
                         const password = passwordInput.value;

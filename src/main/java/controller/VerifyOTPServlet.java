@@ -140,7 +140,7 @@ public class VerifyOTPServlet extends HttpServlet {
                 session.removeAttribute("otpPurpose");
 
                 EmailService.sendSuccessEmail(email);
-                session.setAttribute("registerSuccess", "Chúc mừng bạn đã đăng ký thành công, hãy đăng nhập ngay!");
+                session.setAttribute("registerSuccess", "Congratulations you have successfully logged in, please log in now!");
 
                 response.sendRedirect("Login");
             } else {
