@@ -222,7 +222,7 @@
 
         <div class="content-flex">
             <div class="image-section">
-                <img src="https://res.cloudinary.com/dgnyskpc3/image/upload/v1750919683/Discount_abpcr2.png" alt="Featured Banner">
+                <img src="Logo/d.png" alt="Featured Banner">
             </div>
 
             <!-- PHẦN SẢN PHẨM CUỘN NGANG -->

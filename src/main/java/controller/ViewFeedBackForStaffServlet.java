@@ -7,6 +7,7 @@ package controller;
 import dao.CustomerDAO;
 import dao.ProductDAO;
 import dao.ProductFeedbackDAO;
+import dao.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,7 @@ import java.util.List;
 import model.Customer;
 import model.Product;
 import model.ProductFeedback;
+import model.Staff;
 
 /**
  *
@@ -65,26 +67,30 @@ public class ViewFeedBackForStaffServlet extends HttpServlet {
             throws jakarta.servlet.ServletException, IOException {
         int feedbackID = Integer.parseInt(request.getParameter("feedbackID"));
         String isOK = request.getParameter("isOk");
-
+        
         ProductFeedbackDAO pDAO = new ProductFeedbackDAO();
+        ProductFeedback fb = pDAO.getProductFeedback(feedbackID);
         ProductFeedback productFeedback = pDAO.getProductFeedback(feedbackID);
-
+        
         int productID = productFeedback.getProductID();
-
+        
         ProductFeedbackDAO fbDAO = new ProductFeedbackDAO();
         List<ProductFeedback> listReplies = fbDAO.getAllFeedbackRepliesByFeedbackID(productFeedback.getFeedbackID());
 //sai từ khúc này 
+        StaffDAO stDAO = new StaffDAO();
+        Staff st = stDAO.getStaffById(fb.getStaffID());
         ProductDAO pdDAO = new ProductDAO();
         Product pro = pdDAO.getProductByID(productID);
-
+        
         CustomerDAO cDAO = new CustomerDAO();
         Customer cus = cDAO.getCustomerById(productFeedback.getCustomerID());
-
+        
         request.setAttribute("Product", pro);
         request.setAttribute("cus", cus);
         request.setAttribute("rate", productFeedback);
         request.setAttribute("dataReplies", listReplies);
-
+        request.setAttribute("st", st);
+        
         request.getRequestDispatcher("/WEB-INF/View/staff/feedbackManagement/ViewNewFeedback.jsp").forward(request, response);
     }
 

@@ -223,7 +223,7 @@
 
             <div class="content-flex">
                 <div class="image-section">
-                    <img src="https://res.cloudinary.com/dgnyskpc3/image/upload/v1750919683/Bestseller_r69lpv.png" alt="Best Seller Banner">
+                    <img src="Logo/b.png" alt="Best Seller Banner">
                 </div>
 
                 <!-- PHẦN SẢN PHẨM CUỘN NGANG -->

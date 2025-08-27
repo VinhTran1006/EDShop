@@ -11,7 +11,7 @@
 
         <!-- Banner -->
         <div class="" style = "width: 100%; margin-top: 0.5%; ">
-            <img style = "width: 100%; border-radius: 12px;" src="https://res.cloudinary.com/dgnyskpc3/image/upload/v1750922275/Banner1Dai_zpslth.png" alt="Banner" class="img-fluid">
+            <img style = "width: 100%; border-radius: 12px;" src="Logo/c.png" alt="Banner" class="img-fluid">
         </div>
 
     </body>

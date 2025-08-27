@@ -168,74 +168,73 @@
         %>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
-                                                                window.onload = function () {
-            <% if ("update".equals(success)) { %>
-                                                                    Swal.fire({
-                                                                        icon: 'success',
-                                                                        title: 'Updated successfully!',
-                                                                        text: 'Order status has been updated.',
-                                                                        timer: 3000,
-                                                                        confirmButtonText: 'OK'
-                                                                    });
-            <% } else if ("1".equals(error)) { %>
-                                                                    Swal.fire({
-                                                                        icon: 'error',
-                                                                        title: 'Error!',
-                                                                        text: 'Unable to update order status.',
-                                                                        timer: 3000,
-                                                                        confirmButtonText: 'Retry'
-                                                                    });
-            <% }%>
-                                                                    // 🔁 Clean up the URL
-                                                                    if (window.history.replaceState) {
-                                                                        const url = new URL(window.location);
-                                                                        url.searchParams.delete('success');
-                                                                        url.searchParams.delete('error');
-                                                                        window.history.replaceState({}, document.title, url.pathname);
-                                                                    }
-                                                                };
-        </script>
-        <script>
-            function disableOptions(selectEl) {
-                const status = selectEl.value;
-                const options = selectEl.options;
+    function disableOptions(selectEl) {
+        const status = selectEl.value;
+        const options = selectEl.options;
 
-                // reset all
-                for (let i = 0; i < options.length; i++) {
-                    options[i].disabled = false;
-                }
+        // reset all
+        for (let i = 0; i < options.length; i++) {
+            options[i].disabled = false;
+        }
 
-                if (status === 'Waiting for Delivery') {
-                    options[0].disabled = true; // Waiting
-                    options[1].disabled = true; // Packing
-                    options[4].disabled = true; // Cancelled
-                } else if (status === 'Waiting') {
-                    options[2].disabled = true; // Waiting for Delivery
-                    options[3].disabled = true; // Delivered
+        if (status === 'Waiting for Delivery') {
+            options[0].disabled = true; // Waiting
+            options[1].disabled = true; // Packing
+            options[4].disabled = true; // Cancelled
+        } else if (status === 'Waiting') {
+            options[2].disabled = true; // Waiting for Delivery
+            options[3].disabled = true; // Delivered
+        } else if (status === 'Packing') {
+            options[0].disabled = true; // Waiting
+            options[3].disabled = true; // Delivered
+        } else if (status === 'Delivered') {
+            options[0].disabled = true;
+            options[1].disabled = true;
+            options[2].disabled = true;
+            options[4].disabled = true;
+        } else if (status === 'Cancelled') {
+            options[0].disabled = true;
+            options[1].disabled = true;
+            options[2].disabled = true;
+            options[3].disabled = true;
+        }
+    }
 
-                } else if (status === 'Packing') {
-                    options[0].disabled = true; // Waiting
-                    options[3].disabled = true; // Delivered
+    // ✅ xử lý Swal + dọn URL
+    window.addEventListener("load", function () {
+        <% if ("update".equals(success)) { %>
+            Swal.fire({
+                icon: 'success',
+                title: 'Updated successfully!',
+                text: 'Order status has been updated.',
+                timer: 3000,
+                confirmButtonText: 'OK'
+            });
+        <% } else if ("1".equals(error)) { %>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Unable to update order status.',
+                timer: 3000,
+                confirmButtonText: 'Retry'
+            });
+        <% }%>
 
-                } else if (status === 'Delivered') {
-                    options[0].disabled = true;
-                    options[1].disabled = true;
-                    options[2].disabled = true;
-                    options[4].disabled = true;
-                } else if (status === 'Cancelled') {
-                    options[0].disabled = true;
-                    options[1].disabled = true;
-                    options[2].disabled = true;
-                    options[3].disabled = true;
-                }
-            }
-            window.onload = function () {
-                // chạy disableOptions cho tất cả select có class orderStatus
-                document.querySelectorAll('.orderStatus').forEach(function (selectEl) {
-                    disableOptions(selectEl);
-                });
-            };
+        if (window.history.replaceState) {
+            const url = new URL(window.location);
+            url.searchParams.delete('success');
+            url.searchParams.delete('error');
+            window.history.replaceState({}, document.title, url.pathname);
+        }
+    });
 
-        </script>
+    // ✅ xử lý disableOptions cho tất cả select
+    window.addEventListener("load", function () {
+        document.querySelectorAll('.orderStatus').forEach(function (selectEl) {
+            disableOptions(selectEl);
+        });
+    });
+</script>
+
     </body>
 </html>
