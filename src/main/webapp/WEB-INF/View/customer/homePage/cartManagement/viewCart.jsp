@@ -32,6 +32,7 @@
                 padding: 30px;
                 box-shadow: 0 20px 40px rgba(0, 105, 92, 0.25);
                 border: 2px solid #00695c;
+                min-height: 70vh;
             }
             h2 {
                 color: #004d40;
