@@ -81,6 +81,42 @@ public class ImportStockDAO extends DBContext {
 
         return list;
     }
+    // Lấy toàn bộ lịch sử nhập kho (không lọc gì hết)
+
+    public List<ImportStock> getImportHistoryAll() {
+        List<ImportStock> list = new ArrayList<>();
+        String sql = "SELECT i.importID, i.staffID, i.supplierID, i.importDate, i.totalAmount, "
+                + "s.fullName, sup.supplierID, sup.name, sup.isActive "
+                + "FROM ImportStocks i "
+                + "JOIN Staffs s ON i.staffID = s.staffID "
+                + "JOIN Suppliers sup ON i.supplierID = sup.supplierID "
+                + "ORDER BY i.importDate DESC";
+
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                ImportStock stock = new ImportStock();
+                stock.setImportID(rs.getInt("importID"));
+                stock.setStaffID(rs.getInt("staffID"));
+                stock.setSupplierID(rs.getInt("supplierID"));
+                stock.setImportDate(rs.getTimestamp("importDate"));
+                stock.setTotalAmount(rs.getBigDecimal("totalAmount"));
+                stock.setFullName(rs.getString("fullName"));
+
+                Suppliers supplier = new Suppliers();
+                supplier.setSupplierID(rs.getInt("supplierID"));
+                supplier.setName(rs.getString("name"));
+                supplier.setIsActive(rs.getBoolean("isActive"));
+
+                stock.setSupplier(supplier);
+                list.add(stock);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 
     public ImportStock getImportStockDetailsByID(int importID) {
         ImportStock stock = null;
@@ -190,15 +226,15 @@ public class ImportStockDAO extends DBContext {
         }
         return false;
     }
-     // ✅ Daily Import
+    // ✅ Daily Import
+
     public Map<String, Integer> getDailyImport() {
         Map<String, Integer> map = new LinkedHashMap<>();
         String sql = "SELECT CONVERT(varchar, importDate, 23) AS day, COUNT(ImportID) AS total "
-                   + "FROM ImportStocks "
-                   + "GROUP BY CONVERT(varchar, importDate, 23) "
-                   + "ORDER BY day";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                + "FROM ImportStocks "
+                + "GROUP BY CONVERT(varchar, importDate, 23) "
+                + "ORDER BY day";
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 map.put(rs.getString("day"), rs.getInt("total"));
             }
@@ -212,11 +248,10 @@ public class ImportStockDAO extends DBContext {
     public Map<String, Integer> getMonthlyImport() {
         Map<String, Integer> map = new LinkedHashMap<>();
         String sql = "SELECT FORMAT(importDate, 'yyyy-MM') AS month, COUNT(importID) AS total "
-                   + "FROM ImportStocks "
-                   + "GROUP BY FORMAT(importDate, 'yyyy-MM') "
-                   + "ORDER BY month";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                + "FROM ImportStocks "
+                + "GROUP BY FORMAT(importDate, 'yyyy-MM') "
+                + "ORDER BY month";
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 map.put(rs.getString("month"), rs.getInt("total"));
             }
@@ -230,12 +265,11 @@ public class ImportStockDAO extends DBContext {
     public Map<String, Integer> getSupplierImport() {
         Map<String, Integer> map = new LinkedHashMap<>();
         String sql = "SELECT TOP 5 s.Name, COUNT(i.ImportID) AS total "
-                   + "FROM ImportStocks i "
-                   + "JOIN Suppliers s ON i.SupplierID = s.SupplierID "
-                   + "GROUP BY s.Name "
-                   + "ORDER BY total DESC";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                + "FROM ImportStocks i "
+                + "JOIN Suppliers s ON i.SupplierID = s.SupplierID "
+                + "GROUP BY s.Name "
+                + "ORDER BY total DESC";
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 map.put(rs.getString("Name"), rs.getInt("total"));
             }
@@ -249,12 +283,11 @@ public class ImportStockDAO extends DBContext {
     public Map<String, Integer> getTopProductImport() {
         Map<String, Integer> map = new LinkedHashMap<>();
         String sql = "SELECT TOP 5 p.ProductName, SUM(d.Stock) AS totalStock "
-                   + "FROM ImportStockDetails d "
-                   + "JOIN Products p ON d.ProductID = p.ProductID "
-                   + "GROUP BY p.ProductName "
-                   + "ORDER BY totalStock DESC";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                + "FROM ImportStockDetails d "
+                + "JOIN Products p ON d.ProductID = p.ProductID "
+                + "GROUP BY p.ProductName "
+                + "ORDER BY totalStock DESC";
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 map.put(rs.getString("ProductName"), rs.getInt("totalStock"));
             }
@@ -263,7 +296,5 @@ public class ImportStockDAO extends DBContext {
         }
         return map;
     }
-    
-    
 
 }

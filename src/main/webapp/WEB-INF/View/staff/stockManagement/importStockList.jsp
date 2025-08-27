@@ -9,7 +9,7 @@
         <title>Import Stock History</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList6.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css">
     </head>
     <body>
         <div class="container">
@@ -20,9 +20,10 @@
 
                     <h1>Import Stock History</h1>
                     <button class="btn btn-success mb-2 float-end" onclick="location.href = 'ImportStock'">+ New Import</button>
-                    <button id="exportExcelBtn" class="btn btn-success mb-3 float-end">Export Excel</button>
+                    <button id="exportExcelBtn" style="margin-right:10px" class="btn btn-success mb-3 float-end" disabled>Export Excel</button>
 
-                    <form class="search-form mb-3" method="get" action="">
+
+                    <form class="search-form mb-3" method="post" action="">
                         <input type="date" name="from" value="${from != null ? from : ''}" />
                         <input type="date" name="to" value="${to != null ? to : ''}" />
                         <select name="supplierId">
@@ -36,7 +37,7 @@
                         <button type="submit" class="btn btn-primary">Filter</button>
                     </form>
 
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered table-striped" id="importHistoryTable">
                         <thead class="table-dark">
                             <tr>
                                 <th>#</th>
@@ -211,6 +212,27 @@
             });
             return false;
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const exportBtn = document.getElementById('exportExcelBtn');
+
+            // Kiểm tra điều kiện filter + dữ liệu
+            const from = document.querySelector('input[name="from"]').value;
+            const to = document.querySelector('input[name="to"]').value;
+            const supplierId = document.querySelector('select[name="supplierId"]').value;
+
+            const tableBody = document.querySelector("#importHistoryTable tbody"); // hoặc tbody table thực tế
+            const hasData = tableBody && tableBody.querySelectorAll("tr").length > 0
+                    && !tableBody.querySelector("td[colspan]"); // loại row "No data"
+
+            // Bật/tắt nút
+            if ((from || to || supplierId) && hasData) {
+                exportBtn.disabled = false;
+            } else {
+                exportBtn.disabled = true;
+            }
+        });
+
     </script>
 
 

@@ -7,7 +7,7 @@
         <title>Stock Management</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList6.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css">
 
         <style>
 
@@ -63,7 +63,7 @@
 
                     <h1>Import Statistic</h1>
                     <div class="d-flex justify-content-end mb-4 btn-group-custom">
-                        <button class="back-btn ms-2" onclick="location.href = 'ImportStockHistory'">Import History</button>
+                        <button class="create-btn ms-2" onclick="location.href = 'ImportStockHistory'">Import History</button>
                         <button class="create-btn ms-2" onclick="location.href = 'ImportStock'">+ New Import</button>
                     </div>
 

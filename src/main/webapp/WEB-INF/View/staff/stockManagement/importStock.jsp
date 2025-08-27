@@ -12,9 +12,9 @@
         <meta charset="UTF-8" />
         <title>Import Stock</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css">
 
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList6.css">
+        
         <style>
             .modal-table {
                 border-radius: 0 !important;
@@ -151,7 +151,7 @@
                 box-shadow: 0 0 0 0.2rem rgba(37, 132, 247, 0.25);
                 outline: none;
             }
-            
+
         </style>
     </head>
     <body>
@@ -171,7 +171,7 @@
                     <div class="table-container mb-4" style="max-width: 1150px; margin: 0 auto;">
                         <div class="table-navigate" style="display: flex; align-items: center; justify-content: space-between;">
                             <h3 style="margin-bottom: 0;">Selected Supplier</h3>
-                            <button id="openModalBtn" class="btn-detail">Select Supplier</button>
+                            <button id="openModalBtn" style="background:#22c55e; color:white;" class="btn-detail">Select Supplier</button>
                         </div>
                         <table aria-label="Selected Supplier">
                             <thead>
@@ -201,7 +201,10 @@
                     <div class="table-container mb-4" style="max-width: 1150px; margin: 0 auto;">
                         <div class="table-navigate" style="display: flex; align-items: center; justify-content: space-between;">
                             <h3 style="margin-bottom: 0;">Selected Products</h3>
-                            <button id="openProductModalBtn" class="btn-detail">Select Product</button>
+                            <button id="openProductModalBtn" style="background:#22c55e; color:white;" class="btn-detail">
+                                Select Product
+                            </button>
+
                         </div>
                         <table aria-label="Selected Products">
                             <thead>
@@ -257,8 +260,8 @@
                         </table>
 
                         <div class="mt-2 text-end">
-                            <button type="button" class="create-btn" onclick="redirectToImport()">Import</button>
-                            <button type="button" class="back-btn" onclick="cancelImportStock()">Cancel</button>
+                            <button type="button"  class="create-btn" onclick="redirectToImport()">Import</button>
+                            <button type="button" style="margin-right:10px" class="back-btn" onclick="cancelImportStock()">Cancel</button>
                         </div>
                     </div>
 
@@ -270,7 +273,7 @@
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="createImportStockLabel">Select Supplier</h5>
+                                    <h5 class="modal-title"  id="createImportStockLabel">Select Supplier</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
