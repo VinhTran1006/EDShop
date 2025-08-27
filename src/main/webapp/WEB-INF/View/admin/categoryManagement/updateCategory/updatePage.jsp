@@ -3,6 +3,7 @@
 <%@page import="java.util.List"%>
 <%@page import="model.Category"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
     List<Attribute> attributeList = (List<Attribute>) request.getAttribute("attributeList");
     Category category = (Category) request.getAttribute("category");
@@ -23,13 +24,22 @@
             <div style="display: flex; align-items: center; gap: 10px; margin-left: 21.5%; margin-bottom: 3%;  margin-top: 3%">
                 <h1 class = "display-5 fw-bold" style="font-size: 320%; margin: 0;">Category</h1>
                 <span style="font-size: 120%; color: gray; margin-top: 4%;">Update Category</span>
+                <c:if test="${not empty sessionScope.existCategory}">
+                    <span style="color:red">${sessionScope.existCategory}</span>
+                </c:if>
+                <c:remove var="existCategory" scope="session"/>
             </div>
+
 
             <!--            <== Category name==>-->
             <% if (category != null) {%>
             <div class="divCategoryInput">
                 <div class="form-row" style = "margin-bottom: 2%">
                     <label for="categoryName_<%= category.getCategoryId()%>">Category Name:</label>
+                    <c:if test="${not empty sessionScope.errorCategoryName}">
+                        <span style="color:red">${sessionScope.errorCategoryName}</span>
+                    </c:if>
+                    <c:remove var="errorCategoryName" scope="session"/>
                     <input type="text"
                            id="categoryName"
                            name="categoryName"
@@ -39,6 +49,10 @@
 
                 <div class="form-row">
                     <label for="ImgURLLogo<%= category.getCategoryId()%>">ImgURLLogo:</label>
+                    <c:if test="${not empty sessionScope.errorUrl}">
+                        <span style="color:red">${sessionScope.errorUrl}</span>
+                    </c:if>
+                    <c:remove var="errorUrl" scope="session"/>
                     <input type="text"
                            id="ImgURLLogo:"
                            name="ImgURLLogo"
@@ -143,15 +157,19 @@
         Swal.fire({
             icon: 'success',
             title: 'Deleted!',
-            text: 'The category has been hidden.',
+            text: 'The category has been updated.',
             timer: 2000
+        }).then(() => {
+            window.history.replaceState({}, document.title, window.location.pathname);
         });
     <% } else if ("1".equals(error)) { %>
         Swal.fire({
             icon: 'error',
             title: 'Failed!',
-            text: 'Could not hide the category.',
+            text: 'Could not update the category.',
             timer: 2000
+        }).then(() => {
+            window.history.replaceState({}, document.title, window.location.pathname);
         });
     <% }%>
     };
@@ -159,7 +177,7 @@
     function confirmDelete(attributeID, categoryId) {
         Swal.fire({
             title: 'Are you sure?',
-            text: "This category will be hidden from view.",
+            text: "This category has been deleted.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
