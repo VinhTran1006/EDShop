@@ -784,9 +784,9 @@
                                     data-expiry="<%= expiryDate%>"
                                     data-code="<%= voucher.getCode()%>"
                                     data-usage="<%= voucher.getUsedCount()%>/<%= voucher.getUsageLimit()%>">
-                                <%= voucher.getCode()%> - <%= voucher.getDiscountPercent()%>% OFF 
-                                (Min: <%= String.format("%,.0f", voucher.getMinOrderAmount())%> VND, 
-                                Max: <%= String.format("%,.0f", voucher.getMaxDiscountAmount())%> VND)
+                                <%= voucher.getCode()%> - <%= voucher.getDiscountPercent()%>% -- 
+                                (Min Order: <%= String.format("%,.0f", voucher.getMinOrderAmount())%> VND, 
+                                Max Discount: <%= String.format("%,.0f", voucher.getMaxDiscountAmount())%> VND)
                             </option>
                             <%
                                 }
