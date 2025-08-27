@@ -71,13 +71,17 @@ public class RegisterServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null) {
             if (session.getAttribute("tempPhone") != null) {
-                request.setAttribute("phone", session.getAttribute("tempPhone"));
+                request.setAttribute("tempPhone", session.getAttribute("tempPhone"));
             }
             if (session.getAttribute("tempEmail") != null) {
-                request.setAttribute("email", session.getAttribute("tempEmail"));
+                request.setAttribute("tempEmail", session.getAttribute("tempEmail"));
             }
             if (session.getAttribute("tempFullName") != null) {
-                request.setAttribute("fullName", session.getAttribute("tempFullName"));
+                request.setAttribute("tempFullName", session.getAttribute("tempFullName"));
+            }
+            if (session.getAttribute("error") != null) {
+                request.setAttribute("error", session.getAttribute("error"));
+                session.removeAttribute("error");
             }
         }
         request.getRequestDispatcher("WEB-INF/View/account/register.jsp").forward(request, response);
@@ -94,51 +98,86 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String phone = request.getParameter("phone");
-        String email = request.getParameter("email");
-        String fullName = request.getParameter("fullName");
-        String password = request.getParameter("password");
-        String confirmPassword = request.getParameter("confirmPassword");
-        String passwordPattern = "^.{9,}$";
+        HttpSession session = request.getSession();
+        String phone = request.getParameter("phone").trim();
+        String email = request.getParameter("email").trim();
+        String fullName = request.getParameter("fullName").trim();
+        String password = request.getParameter("password").trim();
+        String confirmPassword = request.getParameter("confirmPassword").trim();
+
+        String passwordPattern = "^(?=.*@)[A-Z][A-Za-z0-9@]{7,254}$";
+        String namePattern = "^[\\p{L}\\s]{2,255}$";
+        String phonePattern = "^\\d{10}$";
+        String emailPattern = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
+
+        if (!fullName.matches(namePattern)) {
+            setFlashError(session,
+                    "Full name must be 2-255 letters, spaces allowed, no numbers or special characters.",
+                    phone, fullName, email);
+            request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
+            return;
+        }
+
+        // Validate phone
+        if (!phone.matches(phonePattern)) {
+            setFlashError(session,
+                    "Phone number must be exactly 10 digits and contain only numbers.",
+                    phone, fullName, email);
+            request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
+            return;
+        }
+
+        // Validate email
+        if (email.isEmpty()) {
+            setFlashError(session, "Email cannot be empty.", phone, fullName, email);
+            request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
+            return;
+        }
+        if (email.length() > 255) {
+            setFlashError(session, "Email cannot be longer than 255 characters.", phone, fullName, email);
+            request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
+            return;
+        }
+        if (!email.matches(emailPattern)) {
+            setFlashError(session, "Invalid email format.", phone, fullName, email);
+            request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
+            return;
+        }
+
         if (!password.matches(passwordPattern)) {
-            request.setAttribute("error", "Password must be at least 9 characters long.");
-            request.setAttribute("phone", phone);
-            request.setAttribute("fullName", fullName);
-            request.setAttribute("email", email);
-            request.getRequestDispatcher("WEB-INF/View/account/register.jsp").forward(request, response);
+            setFlashError(session, "Password must be 8–255 characters long, start with an uppercase letter, and contain at least one '@'.",
+                    phone, fullName, email);
+            request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("error", "Password and Confirm Password do not match.");
-            request.getRequestDispatcher("WEB-INF/View/account/register.jsp").forward(request, response);
-            request.setAttribute("phone", phone);
-            request.setAttribute("fullName", fullName);
-            request.setAttribute("email", email);
+            setFlashError(session, "Password and Confirm Password do not match.", phone, fullName, email);
+            request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
             return;
         }
 
         AccountDAO dao = new AccountDAO();
         if (dao.checkEmailExisted(email)) {
-            request.setAttribute("error", "This email is already registered.");
-            request.setAttribute("phone", phone);
-            request.setAttribute("fullName", fullName);
-            request.setAttribute("email", email);
-            request.getRequestDispatcher("WEB-INF/View/account/register.jsp").forward(request, response);
+            setFlashError(session, "This email is already registered.", phone, fullName, email);
+            request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
             return;
         }
-        HttpSession session = request.getSession();
         // Gửi OTP có kiểm soát số lần và thời hạn
         int otpCode = EmailService.generateVerificationCode();
         boolean emailSent = EmailService.sendOTPEmail(email, otpCode, "REGISTER"); // Gửi đúng mã vừa tạo
-        OTPManager otpManager = new OTPManager(otpCode, 5);
-        session.setAttribute("otpManager", otpManager);
-        session.setAttribute("otpPurpose", "register");
         if (!emailSent) {
-            request.setAttribute("error", "Failed to send OTP. You may have reached the resend limit (max 3 times).");
-            request.getRequestDispatcher("WEB-INF/View/account/register.jsp").forward(request, response);
+            setFlashError(session, "Failed to send OTP. You may have reached the resend limit (max 3 times).",
+                    phone, fullName, email);
+            request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
             return;
         }
+
+        OTPManager otpManager = new OTPManager(otpCode, 5);
+        long expiryTime = System.currentTimeMillis() + (5 * 60 * 1000);
+        session.setAttribute("registerOtpExpiryTime", expiryTime);
+        session.setAttribute("registerOtpManager", otpManager);
+        session.setAttribute("otpPurpose", "register");
 
         // Lưu tạm thông tin người dùng chờ xác minh
         session.setAttribute("tempEmail", email);
@@ -147,6 +186,13 @@ public class RegisterServlet extends HttpServlet {
         session.setAttribute("tempPhone", phone);
 
         response.sendRedirect("Verify");
+    }
+
+    private void setFlashError(HttpSession session, String message, String phone, String fullName, String email) {
+        session.setAttribute("error", message);
+        session.setAttribute("tempPhone", phone);
+        session.setAttribute("tempFullName", fullName);
+        session.setAttribute("tempEmail", email);
     }
 
     /**

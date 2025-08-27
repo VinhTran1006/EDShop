@@ -234,6 +234,32 @@
             if (otpPurpose == null) {
                 otpPurpose = "register"; // fallback
             }
+
+            long otpExpiryTimestamp = 0L;
+
+            if ("register".equals(otpPurpose)) {
+                Object expiryObj = session.getAttribute("registerOtpExpiryTime");
+                if (expiryObj != null) {
+                    try {
+                        otpExpiryTimestamp = (expiryObj instanceof Long)
+                                ? (Long) expiryObj
+                                : Long.parseLong(expiryObj.toString());
+                    } catch (Exception e) {
+                        otpExpiryTimestamp = 0L;
+                    }
+                }
+            } else if ("forgot".equals(otpPurpose)) {
+                Object expiryObj = session.getAttribute("resetOtpExpiryTime");
+                if (expiryObj != null) {
+                    try {
+                        otpExpiryTimestamp = (expiryObj instanceof Long)
+                                ? (Long) expiryObj
+                                : Long.parseLong(expiryObj.toString());
+                    } catch (Exception e) {
+                        otpExpiryTimestamp = 0L;
+                    }
+                }
+            }
         %>
 
 
@@ -262,6 +288,7 @@
                     <%= error%>
                 </div>
                 <%
+                        session.removeAttribute("error");
                     }
                 %>
 
@@ -320,12 +347,17 @@
             let resendCooldown = 60;
             let resendInterval;
 
+            const SERVER_OTP_EXPIRY = <%= otpExpiryTimestamp%>;
+
             document.addEventListener('DOMContentLoaded', function () {
                 console.log("✅ DOMContentLoaded - script is running...");
 
                 const otpInputs = document.querySelectorAll('.otp-input');
                 const otpValue = document.getElementById('otpValue');
                 const verifyBtn = document.getElementById('verifyBtn');
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '<i class="bi bi-shield-check me-2"></i>Verify Code';
+
                 const resendBtn = document.getElementById('resendBtn');
                 const resendText = document.getElementById('resendText');
                 const successMessage = document.getElementById('successMessage');
@@ -392,53 +424,79 @@
                     updateOTPValue();
                 }
                 function startExpiryTimer() {
-                    expiryTime = 300;
                     clearInterval(expiryInterval);
-                    timer.classList.remove('warning');
+
+                    // Nếu server không gửi expiry => vô hiệu hoá verify (không có OTP)
+                    if (!SERVER_OTP_EXPIRY || SERVER_OTP_EXPIRY <= 0) {
+                        countdown.textContent = 'No OTP';
+                        verifyBtn.disabled = true;
+                        otpInputs.forEach(input => input.disabled = true);
+                        console.warn("No server-side OTP expiry provided in session.");
+                        return;
+                    }
+
+                    // Lưu mốc server vào localStorage để giữ qua reload
+                    try {
+                        localStorage.setItem("otpExpiry", String(SERVER_OTP_EXPIRY));
+                    } catch (e) {
+                        console.warn("localStorage not available:", e);
+                    }
+
+                    // Lấy từ localStorage (để giữ qua reload) và parse lại
+                    let expiryTimestamp = parseInt(localStorage.getItem("otpExpiry"), 10);
+                    if (isNaN(expiryTimestamp) || expiryTimestamp <= 0) {
+                        expiryTimestamp = SERVER_OTP_EXPIRY;
+                        localStorage.setItem("otpExpiry", String(expiryTimestamp));
+                    }
 
                     function updateTimer() {
-                        const minutes = Math.floor(expiryTime / 60);
-                        const seconds = expiryTime % 60;
-                        const formatted = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                                        countdown.textContent = formatted;
-                                        console.log("🕓 Countdown cập nhật:", formatted);
-                                    }
-                                    updateTimer();
+                        const now = Date.now();
+                        let remaining = Math.floor((expiryTimestamp - now) / 1000);
 
-                                    expiryInterval = setInterval(() => {
-                                        expiryTime--;
-                                        updateTimer();
+                        if (remaining <= 0) {
+                            clearInterval(expiryInterval);
+                            countdown.textContent = 'Expired';
+                            verifyBtn.disabled = true;
+                            otpInputs.forEach(input => input.disabled = true);
+                            console.log("Countdown hết hạn");
+                            return;
+                        }
 
-                                        if (expiryTime <= 60)
-                                            timer.classList.add('warning');
+                        const minutes = Math.floor(remaining / 60);
+                        const seconds = remaining % 60;
+                        const formatted =
+                                minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
 
-                                        if (expiryTime <= 0) {
-                                            clearInterval(expiryInterval);
-                                            countdown.textContent = 'Expired';
-                                            verifyBtn.disabled = true;
-                                            otpInputs.forEach(input => input.disabled = true);
-                                            console.log("⚠️ Countdown hết hạn");
-                                        }
-                                    }, 1000);
-                                }
+                        countdown.textContent = formatted;
+                        if (remaining <= 60) {
+                            timer.classList.add('warning');
+                        } else {
+                            timer.classList.remove('warning');
+                        }
+                    }
 
-                                // Xử lý khi nhấn nút xác thực
-                                document.getElementById('verifyForm').addEventListener('submit', function (e) {
-                                    updateOTPValue();
-                                    const otp = otpValue.value;
-                                    if (otp.length !== 6) {
-                                        e.preventDefault();
-                                        alert('Please enter a complete 6-digit code');
-                                        return;
-                                    }
-                                    verifyBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Verifying...';
-                                    verifyBtn.disabled = true;
-                                });
+                    updateTimer(); // chạy ngay
+                    expiryInterval = setInterval(updateTimer, 1000);
+                }
 
-                                // Gọi khi trang tải
-                                startExpiryTimer();
-                                otpInputs[0].focus();
-                            });
+
+                // Xử lý khi nhấn nút xác thực
+                document.getElementById('verifyForm').addEventListener('submit', function (e) {
+                    updateOTPValue();
+                    const otp = otpValue.value;
+                    if (otp.length !== 6) {
+                        e.preventDefault();
+                        alert('Please enter a complete 6-digit code');
+                        return;
+                    }
+                    verifyBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Verifying...';
+                    verifyBtn.disabled = true;
+                });
+
+                // Gọi khi trang tải
+                startExpiryTimer();
+                otpInputs[0].focus();
+            });
         </script>
     </body>
 </html>

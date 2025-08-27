@@ -91,12 +91,14 @@ public class ResetPasswordServlet extends HttpServlet {
 
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
-        String passwordPattern = "^.{9,}$";
-        if (!newPassword.matches(passwordPattern)) {
-            request.setAttribute("error", "Password must be at least 9 characters long.");
+        String passwordPattern = "^(?=.*@)[A-Z][A-Za-z0-9@]{7,254}$";
+        if (!newPassword.matches(passwordPattern)) {     
+            session.setAttribute("error", "Password must be 8–255 characters long, start with an uppercase letter, and contain at least one '@'.");
+            request.getRequestDispatcher("/WEB-INF/View/account/reset-password.jsp").forward(request, response);
+            return;
         }
         if (!newPassword.equals(confirmPassword)) {
-            request.setAttribute("error", "Passwords do not match.");
+            session.setAttribute("error", "Passwords do not match.");
             request.getRequestDispatcher("WEB-INF/View/account/reset-password.jsp").forward(request, response);
             return;
         }

@@ -89,6 +89,9 @@ public class ForgotPasswordServlet extends HttpServlet {
         // Tạo OTP mới
         int otpCode = EmailService.generateVerificationCode();
         OTPManager otpManager = new OTPManager(otpCode, 5); // hết hạn sau 5 phút
+        long expiryTime = System.currentTimeMillis() + (5 * 60 * 1000);
+        session.setAttribute("resetOtpExpiryTime", expiryTime);
+        session.setAttribute("resetOtpManager", otpManager);
 
         // Gửi OTP qua email
         boolean emailSent = EmailService.sendOTPEmail(email, otpCode, "RESET_PASSWORD");
@@ -100,7 +103,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 
         // Lưu OTP và mục đích vào session
         session.setAttribute("otpManager", otpManager);
-        session.setAttribute("otpPurpose", "forgot"); // ⚠️ Đúng là 'forgot' để Verify xử lý đúng!
+        session.setAttribute("otpPurpose", "forgot");
         session.setAttribute("resetEmail", email);
 
         // Điều hướng đến trang xác minh OTP

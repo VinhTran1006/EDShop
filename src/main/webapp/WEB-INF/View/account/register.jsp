@@ -133,7 +133,8 @@
                 color: white;
                 padding: 15px;
                 border-radius: 10px;
-                margin-top: 20px;
+                margin-top: 10px;
+                margin-bottom: 20px;
                 text-align: center;
                 font-weight: 500;
             }
@@ -146,7 +147,7 @@
             .input-icon {
                 position: absolute;
                 left: 15px;
-                top: 50%;
+                top: 46%;
                 transform: translateY(-50%);
                 color: #6c757d;
                 z-index: 5;
@@ -154,6 +155,11 @@
 
             .form-control.with-icon {
                 padding-left: 45px;
+            }
+
+            .input-group.password-group .input-icon {
+                top: 38%;              /* trung tâm chính input */
+                transform: translateY(-50%);
             }
 
             .form-row {
@@ -166,6 +172,7 @@
             }
 
             .password-strength {
+                width: 100%;
                 height: 3px;
                 background: #e9ecef;
                 border-radius: 2px;
@@ -174,20 +181,21 @@
             }
 
             .password-strength-bar {
+                width: 0;
                 height: 100%;
                 transition: all 0.3s ease;
                 border-radius: 2px;
             }
 
-            .strength-weak {
+            .password-strength-bar.strength-weak {
                 background: #ff6b6b;
                 width: 33%;
             }
-            .strength-medium {
+            .password-strength-bar.strength-medium {
                 background: #ffa726;
                 width: 66%;
             }
-            .strength-strong {
+            .password-strength-bar.strength-strong {
                 background: #11998e;
                 width: 100%;
             }
@@ -201,41 +209,57 @@
                     <i class="bi bi-person-plus-fill me-2"></i>
                     Create New Account
                 </h2>
+                <%
+                    String error = (String) session.getAttribute("error");
+                    String phoneVal = (String) session.getAttribute("tempPhone");
+                    String emailVal = (String) session.getAttribute("tempEmail");
+                    String fullNameVal = (String) session.getAttribute("tempFullName");
+                %>
+
+                <% if (error != null) {%>
+                <div class="error-message">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <%= error%>
+                </div>
+                <%
+                        session.removeAttribute("error"); // clear flash
+                    }%>
 
                 <form method="post" action="Register">
                     <div class="input-group">
                         <i class="bi bi-telephone-fill input-icon"></i>
                         <input type="tel" name="phone" class="form-control with-icon"
                                pattern="^\d{10}$" maxlength="10" placeholder="Enter your phone number"
-                               required value="<%= request.getAttribute("phone") != null ? request.getAttribute("phone") : ""%>">
+                               required value="<%= phoneVal != null ? phoneVal : ""%>">
                     </div>
 
                     <div class="input-group">
                         <i class="bi bi-envelope-fill input-icon"></i>
                         <input type="email" name="email" class="form-control with-icon"
                                placeholder="Enter your email address" required
-                               value="<%= request.getAttribute("email") != null ? request.getAttribute("email") : ""%>">
-
+                               value="<%= emailVal != null ? emailVal : ""%>">
                     </div>
 
                     <div class="input-group">
                         <i class="bi bi-person-fill input-icon"></i>
                         <input type="text" name="fullName" class="form-control with-icon"
-                               pattern="^[A-Za-zÀ-?\s]+$" placeholder="Enter your full name" required
-                               value="<%= request.getAttribute("fullName") != null ? request.getAttribute("fullName") : ""%>">
+                               pattern="^[\p{L}\s]{2,255}$" placeholder="Enter your full name" required
+                               value="<%= fullNameVal != null ? fullNameVal : ""%>">
                     </div>
 
-                    <div class="input-group">
+                    <div class="input-group password-group">
                         <i class="bi bi-lock-fill input-icon"></i>
                         <input type="password" name="password" class="form-control with-icon" placeholder="Create a password" required id="password">
+                        <i class="bi bi-eye-slash toggle-password" style="position:absolute; right:15px; top:40%; transform:translateY(-50%); cursor:pointer;"></i>
                         <div class="password-strength">
                             <div class="password-strength-bar" id="strengthBar"></div>
                         </div>
                     </div>
 
-                    <div class="input-group">
+                    <div class="input-group password-group">
                         <i class="bi bi-shield-lock-fill input-icon"></i>
                         <input type="password" name="confirmPassword" class="form-control with-icon" placeholder="Confirm your password" required id="confirmPassword">
+                        <i class="bi bi-eye-slash toggle-password" style="position:absolute; right:15px; top:40%; transform:translateY(-50%); cursor:pointer;"></i>
                     </div>
 
                     <button type="submit" class="btn btn-register">
@@ -252,51 +276,133 @@
                         Sign In
                     </a>
                 </form>
-
-                <% if (request.getAttribute("error") != null) {%>
-                <div class="error-message">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    <%= request.getAttribute("error")%>
-                </div>
-                <% }%>
             </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
-            // Wait for DOM to be fully loaded
             document.addEventListener('DOMContentLoaded', function () {
-                // Password strength indicator
-                const passwordInput = document.getElementById('password');
-                const strengthBar = document.getElementById('strengthBar');
+                const toggleIcons = document.querySelectorAll('.toggle-password');
+
+                toggleIcons.forEach(icon => {
+                    const input = icon.previousElementSibling; // input ngay tr??c icon
+
+                    icon.addEventListener('click', function (e) {
+                        e.stopPropagation(); // tránh s? ki?n click lan ra ngoài
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            icon.classList.remove('bi-eye-slash');
+                            icon.classList.add('bi-eye');
+                        } else {
+                            input.type = 'password';
+                            icon.classList.remove('bi-eye');
+                            icon.classList.add('bi-eye-slash');
+                        }
+                    });
+
+                    // Click ra ngoài input s? hide password
+                    document.addEventListener('click', function (e) {
+                        if (e.target !== input && e.target !== icon) {
+                            input.type = 'password';
+                            icon.classList.remove('bi-eye');
+                            icon.classList.add('bi-eye-slash');
+                        }
+                    });
+                });
+
+                const form = document.querySelector('form');
                 const phoneInput = document.querySelector('input[name="phone"]');
                 const fullNameInput = document.querySelector('input[name="fullName"]');
+                const passwordInput = document.getElementById('password');
+                const confirmPasswordInput = document.getElementById('confirmPassword');
+                const strengthBar = document.getElementById('strengthBar');
 
+                const phoneRegex = /^\d{10}$/;
+                const nameRegex = /^[\p{L}\s]{2,255}$/u;
+                const passwordRegex = /^(?=.*@)[A-Z][A-Za-z0-9@]{7,254}$/;
+
+                if (form) {
+                    form.addEventListener('submit', function (e) {
+                        const errors = [];
+
+                        const phoneVal = phoneInput ? phoneInput.value.trim() : '';
+                        const nameVal = fullNameInput ? fullNameInput.value.trim() : '';
+                        const pwdVal = passwordInput ? passwordInput.value : '';
+                        const confVal = confirmPasswordInput ? confirmPasswordInput.value : '';
+
+                        // Phone validation
+                        if (phoneInput) {
+                            if (!phoneRegex.test(phoneVal)) {
+                                errors.push("Phone number must be exactly 10 digits.");
+                            }
+                        }
+
+                        // Full name validation
+                        if (fullNameInput) {
+                            if (nameVal.length === 0 || !nameRegex.test(nameVal)) {
+                                errors.push("Full name cannot be empty and must not contain numbers or special characters.");
+                            }
+                        }
+
+                        // Password validation (the one required by backend)
+                        if (!passwordRegex.test(pwdVal)) {
+                            errors.push("Password must be 8-255 characters, start with an uppercase letter, and contain at least one '@'.");
+                        }
+
+                        // Confirm password
+                        if (pwdVal !== confVal) {
+                            errors.push("Passwords do not match.");
+                        }
+
+                        if (errors.length > 0) {
+                            e.preventDefault();
+                            alert(errors.join("\n"));
+
+                            if (phoneInput && !phoneRegex.test(phoneVal)) {
+                                phoneInput.focus();
+                                return;
+                            }
+                            if (fullNameInput && (nameVal.length === 0 || !nameRegex.test(nameVal))) {
+                                fullNameInput.focus();
+                                return;
+                            }
+                            if (!passwordRegex.test(pwdVal) && passwordInput) {
+                                passwordInput.focus();
+                                return;
+                            }
+                            if (pwdVal !== confVal && confirmPasswordInput) {
+                                confirmPasswordInput.focus();
+                                return;
+                            }
+                        }
+                    });
+                }
+
+                // Password strength indicator (visual helper only)
                 if (passwordInput && strengthBar) {
                     passwordInput.addEventListener('input', function () {
-                        const password = this.value;
+                        const pwd = this.value || '';
+                        let score = 0;
 
-                        let strength = 0;
-                        if (password.length >= 8)
-                            strength++;
-                        if (password.match(/[a-z]/))
-                            strength++;
-                        if (password.match(/[A-Z]/))
-                            strength++;
-                        if (password.match(/[0-9]/))
-                            strength++;
-                        if (password.match(/[^a-zA-Z0-9]/))
-                            strength++;
+                        if (pwd.length >= 8)
+                            score++;
+                        if (/[A-Z]/.test(pwd))
+                            score++;
+                        if (/[a-z]/.test(pwd))
+                            score++;
+                        if (/\d/.test(pwd))
+                            score++;
+                        if (/[@]/.test(pwd))
+                            score++;
 
                         // Reset classes
                         strengthBar.className = 'password-strength-bar';
 
-                        // Add appropriate strength class
-                        if (password.length === 0) {
-                            // No password, no bar
-                        } else if (strength <= 2) {
+                        if (pwd.length === 0) {
+                            // no bar
+                        } else if (score <= 2) {
                             strengthBar.classList.add('strength-weak');
-                        } else if (strength <= 4) {
+                        } else if (score <= 4) {
                             strengthBar.classList.add('strength-medium');
                         } else {
                             strengthBar.classList.add('strength-strong');
@@ -304,59 +410,25 @@
                     });
                 }
 
-                // Form validation
-                const form = document.querySelector('form');
-                if (form) {
-                    form.addEventListener('submit', function (e) {
-                        const password = document.getElementById('password');
-                        const confirmPassword = document.getElementById('confirmPassword');
-
-                        if (password && confirmPassword) {
-                            if (password.value !== confirmPassword.value) {
-                                e.preventDefault();
-                                alert('Passwords do not match!');
-                                confirmPassword.focus();
-                            }
-                        }
-                    });
-                }
-
-                const phonePattern = /^\d{10}$/;
-                if (!phonePattern.test(phoneInput.value)) {
-                    e.preventDefault();
-                    alert('Phone number must be exactly 10 digits and contain only numbers!');
-                    phoneInput.focus();
-                    return;
-                }
-
-                // Validate Full Name
-                const namePattern = /^[A-Za-zÀ-?\s]+$/;
-                if (!namePattern.test(fullNameInput.value.trim())) {
-                    e.preventDefault();
-                    alert('Full name must not be empty and cannot contain numbers or special characters!');
-                    fullNameInput.focus();
-                    return;
-                }
-
-                // Real-time password match validation
-                const confirmPasswordInput = document.getElementById('confirmPassword');
+                // Realtime confirm password border color
                 if (confirmPasswordInput && passwordInput) {
                     confirmPasswordInput.addEventListener('input', function () {
-                        const password = passwordInput.value;
-                        const confirmPassword = this.value;
-
-                        if (confirmPassword.length > 0) {
-                            if (password === confirmPassword) {
-                                this.style.borderColor = '#28a745';
-                            } else {
-                                this.style.borderColor = '#dc3545';
-                            }
+                        const pwd = passwordInput.value || '';
+                        const conf = this.value || '';
+                        if (conf.length === 0) {
+//                            this.style.borderColor = '#e9ecef';
+                            this.style.setProperty("border-color", "#e9ecef", "important");
+                        } else if (pwd === conf) {
+                            this.style.setProperty("border-color", "#28a745", "important");
                         } else {
-                            this.style.borderColor = '#e9ecef';
+//                            this.style.borderColor = '#dc3545';
+                            this.style.setProperty("border-color", "#dc3545", "important");
                         }
                     });
                 }
             });
+            localStorage.removeItem("otpExpiry_register");
+            localStorage.removeItem("otpExpiry_forgot");
         </script>
         <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
     </body>
