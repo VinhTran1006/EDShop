@@ -29,7 +29,7 @@
             <jsp:include page="../sideBar.jsp" />
             <div class="wrapper">
                 <main class="main-content">
-                    <h1>Vouchers</h1>
+                    <h1>Voucher Management</h1>
                     <button class="create-btn" onclick="location.href = 'Voucher?action=create'">Create</button>
 
                     <!-- Search Form -->

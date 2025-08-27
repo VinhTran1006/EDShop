@@ -1,7 +1,7 @@
 package controller;
 
 import dao.CartItemDAO;
-import dao.ProductDAO; // Cần thêm ProductDAO để check số lượng sản phẩm
+import dao.ProductDAO;
 import java.io.IOException;
 import java.util.List;
 import jakarta.servlet.ServletException;
@@ -18,7 +18,7 @@ import model.Product;
 public class CartItemServlet extends HttpServlet {
 
     private CartItemDAO cartItemDAO = new CartItemDAO();
-    private ProductDAO productDAO = new ProductDAO(); // Cần thêm ProductDAO
+    private ProductDAO productDAO = new ProductDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -28,7 +28,6 @@ public class CartItemServlet extends HttpServlet {
         Customer customer = (Customer) session.getAttribute("cus");
 
         if (customer == null) {
-            // Nếu chưa đăng nhập, chuyển về trang login
             response.sendRedirect("Login");
             return;
         }
@@ -36,6 +35,9 @@ public class CartItemServlet extends HttpServlet {
         try {
             // Lấy danh sách cart items của customer
             List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomerId(customer.getCustomerID());
+            
+            // Validate và update cart items dựa trên stock hiện tại
+            validateAndUpdateCartItems(cartItems, session);
 
             // Set attribute để JSP có thể sử dụng
             request.setAttribute("cartItems", cartItems);
@@ -47,6 +49,55 @@ public class CartItemServlet extends HttpServlet {
             e.printStackTrace();
             session.setAttribute("message", "Có lỗi xảy ra khi tải giỏ hàng!");
             response.sendRedirect("Home");
+        }
+    }
+
+    /**
+     * Validate cart items against current stock and update quantities if necessary
+     */
+    private void validateAndUpdateCartItems(List<CartItem> cartItems, HttpSession session) {
+        StringBuilder warningMessage = new StringBuilder();
+        boolean hasUpdates = false;
+
+        for (CartItem item : cartItems) {
+            try {
+                Product currentProduct = productDAO.getProductByID(item.getProductID());
+                
+                if (currentProduct == null || !currentProduct.isIsActive()) {
+                    // Sản phẩm không còn tồn tại hoặc bị vô hiệu hóa
+                    cartItemDAO.removeCartItem(item.getCartItemID());
+                    warningMessage.append("Product '").append(item.getProduct().getProductName())
+                                 .append("' has been removed from your cart as it's no longer available.\n");
+                    hasUpdates = true;
+                    continue;
+                }
+
+                // Update product info in cart item
+                item.setProduct(currentProduct);
+
+                // Kiểm tra số lượng trong kho
+                if (currentProduct.getQuantity() == 0) {
+                    // Sản phẩm hết hàng
+                    warningMessage.append("Product '").append(currentProduct.getProductName())
+                                 .append("' is out of stock.\n");
+                    hasUpdates = true;
+                } else if (item.getQuantity() > currentProduct.getQuantity()) {
+                    // Số lượng trong cart vượt quá số lượng có sẵn
+                    cartItemDAO.updateCartItemQuantity(item.getCartItemID(), currentProduct.getQuantity());
+                    item.setQuantity(currentProduct.getQuantity());
+                    warningMessage.append("Quantity for '").append(currentProduct.getProductName())
+                                 .append("' has been reduced to ").append(currentProduct.getQuantity())
+                                 .append(" (maximum available).\n");
+                    hasUpdates = true;
+                }
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (hasUpdates && warningMessage.length() > 0) {
+            session.setAttribute("cartWarning", warningMessage.toString());
         }
     }
 
@@ -80,6 +131,10 @@ public class CartItemServlet extends HttpServlet {
                 handleClearAll(request, response, session, customer.getCustomerID());
                 break;
 
+            case "validateCheckout":
+                handleValidateCheckout(request, response, session, customer.getCustomerID());
+                break;
+
             default:
                 doGet(request, response);
                 break;
@@ -91,6 +146,72 @@ public class CartItemServlet extends HttpServlet {
         String selectedCartItemIds = request.getParameter("selectedCartItemIds");
         session.setAttribute("selectedCartItemIds", selectedCartItemIds);
         response.getWriter().write("success");
+    }
+
+    private void handleValidateCheckout(HttpServletRequest request, HttpServletResponse response,
+            HttpSession session, int customerId) throws IOException {
+        try {
+            String selectedItemIds = request.getParameter("selectedCartItemIds");
+            if (selectedItemIds == null || selectedItemIds.trim().isEmpty()) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write("{\"success\": false, \"message\": \"No items selected\"}");
+                return;
+            }
+
+            String[] itemIds = selectedItemIds.split(",");
+            StringBuilder errorMessage = new StringBuilder();
+            boolean hasErrors = false;
+
+            for (String itemId : itemIds) {
+                try {
+                    int cartItemId = Integer.parseInt(itemId.trim());
+                    CartItem cartItem = cartItemDAO.getCartItemById(cartItemId);
+                    
+                    if (cartItem == null || cartItem.getCustomerID() != customerId) {
+                        continue;
+                    }
+
+                    Product product = productDAO.getProductByID(cartItem.getProductID());
+                    if (product == null || !product.isIsActive()) {
+                        errorMessage.append("Product '").append(cartItem.getProduct().getProductName())
+                                   .append("' is no longer available.\n");
+                        hasErrors = true;
+                        continue;
+                    }
+
+                    if (product.getQuantity() == 0) {
+                        errorMessage.append("Product '").append(product.getProductName())
+                                   .append("' is out of stock.\n");
+                        hasErrors = true;
+                    } else if (cartItem.getQuantity() > product.getQuantity()) {
+                        errorMessage.append("Product '").append(product.getProductName())
+                                   .append("' only has ").append(product.getQuantity())
+                                   .append(" items available, but you have ")
+                                   .append(cartItem.getQuantity()).append(" in cart.\n");
+                        hasErrors = true;
+                    }
+                } catch (NumberFormatException e) {
+                    continue;
+                }
+            }
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            
+            if (hasErrors) {
+                response.getWriter().write("{\"success\": false, \"message\": \"" + 
+                    errorMessage.toString().replace("\"", "\\\"").replace("\n", "\\n") + "\"}");
+            } else {
+                response.getWriter().write("{\"success\": true}");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"success\": false, \"message\": \"System error occurred\"}");
+        }
     }
 
     private void handleUpdateQuantity(HttpServletRequest request, HttpServletResponse response,
@@ -122,6 +243,13 @@ public class CartItemServlet extends HttpServlet {
                 response.setContentType("text/plain");
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write("error:product_not_available");
+                return;
+            }
+
+            if (product.getQuantity() == 0) {
+                response.setContentType("text/plain");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write("error:product_out_of_stock");
                 return;
             }
 
@@ -211,6 +339,6 @@ public class CartItemServlet extends HttpServlet {
 
     @Override
     public String getServletInfo() {
-        return "Servlet for managing cart items";
+        return "Servlet for managing cart items with stock validation";
     }
 }

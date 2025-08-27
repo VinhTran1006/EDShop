@@ -264,4 +264,58 @@ public class VoucherDAO extends DBContext {
         }
         return null;
     }
+    
+    // Validate specific voucher for customer and order
+    public Voucher validateVoucherForCustomer(int voucherId, int customerId, double orderAmount) {
+        String sql = "SELECT v.* FROM Vouchers v "
+                + "WHERE v.VoucherID = ? AND v.IsActive = 1 "
+                + "AND v.ExpiryDate >= GETDATE() AND v.UsedCount < v.UsageLimit "
+                + "AND v.MinOrderAmount <= ? "
+                + "AND v.VoucherID NOT IN ("
+                + "    SELECT cv.VoucherID FROM CustomerVouchers cv WHERE cv.CustomerID = ?"
+                + ")";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, voucherId);
+            ps.setDouble(2, orderAmount);
+            ps.setInt(3, customerId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return mapResultSetToVoucher(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    
+    public List<Voucher> getAvailableVouchersForCustomer(int customerId, double orderAmount) {
+        List<Voucher> vouchers = new ArrayList<>();
+        String sql = "SELECT v.* FROM Vouchers v "
+                + "WHERE v.IsActive = 1 AND v.ExpiryDate >= GETDATE() "
+                + "AND v.UsedCount < v.UsageLimit "
+                + "AND v.MinOrderAmount <= ? "
+                + "AND v.VoucherID NOT IN ("
+                + "    SELECT cv.VoucherID FROM CustomerVouchers cv WHERE cv.CustomerID = ?"
+                + ")";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setDouble(1, orderAmount);
+            ps.setInt(2, customerId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Voucher voucher = mapResultSetToVoucher(rs);
+                vouchers.add(voucher);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return vouchers;
+    }
 }

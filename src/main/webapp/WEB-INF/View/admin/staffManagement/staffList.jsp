@@ -24,7 +24,7 @@
             <jsp:include page="../sideBar.jsp" />
             <div class="wrapper">
                 <main class="main-content">
-                    <h1>Staff List</h1>
+                    <h1>Staff Management</h1>
                     <button class="create-btn" onclick="location.href = 'CreateStaffServlet'">Create</button>
 
 

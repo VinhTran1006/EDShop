@@ -12,7 +12,7 @@
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
         <meta http-equiv="Pragma" content="no-cache">
         <meta http-equiv="Expires" content="0">
-        <title>View Cart - TShop</title>
+        <title>View Cart</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <style>
@@ -312,17 +312,19 @@
                 <input type="hidden" name="action" value="removeMultiple">
                 <input type="hidden" name="selectedItems" id="selectedItems">
                 <input type="hidden" name="customerId" value="<%= session.getAttribute("cus") != null ? ((Customer) session.getAttribute("cus")).getCustomerID() : 0%>">
+
                 <div class="table-header-actions">
                     <div>
                         <input type="checkbox" id="selectAll">
                         <label for="selectAll" class="ms-2 fw-bold">Select All</label>
                     </div>
                     <div>
-                        <a href="javascript:void(0);" class="btn btn-danger btn-sm">
+                        <a href="javascript:void(0);" class="btn btn-danger btn-sm clear-all-btn">
                             <i class="fas fa-trash-alt"></i> Clear All
                         </a>
                     </div>
                 </div>
+
                 <table class="table cart-table">
                     <thead>
                         <tr>
@@ -339,37 +341,59 @@
                             for (CartItem item : cartItems) {
                                 Product product = item.getProduct();
                                 if (product == null) {
-                                    System.out.println("Sản phẩm null cho cartItemId: " + item.getCartItemID());
                                     continue;
                                 }
+
                                 BigDecimal unitPrice = product.getPrice();
                                 BigDecimal itemTotal = unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
-
-                                if (itemTotal == null || unitPrice == null) {
-                                    System.out.println("Tính giá không hợp lệ cho cartItemId: " + item.getCartItemID());
-                                    itemTotal = BigDecimal.ZERO;
-                                    unitPrice = BigDecimal.ZERO;
-                                }
+                                boolean isOutOfStock = product.getQuantity() == 0;
+                                boolean isLowStock = product.getQuantity() > 0 && product.getQuantity() <= 5;
+                                boolean quantityExceedsStock = item.getQuantity() > product.getQuantity();
                         %>
                         <tr data-unit-price="<%= unitPrice.setScale(0, BigDecimal.ROUND_HALF_UP).toString()%>" 
                             data-cart-item-id="<%= item.getCartItemID()%>" 
                             data-item-total="<%= itemTotal.setScale(0, BigDecimal.ROUND_HALF_UP).toString()%>"
-                            data-max-quantity="<%= product.getQuantity()%>">    
-                            <td><input type="checkbox" class="selectItem" data-item-total="<%= itemTotal.setScale(0, BigDecimal.ROUND_HALF_UP).toString()%>"></td>
+                            data-max-quantity="<%= product.getQuantity()%>"
+                            data-is-available="<%= !isOutOfStock && product.isIsActive()%>"
+                            class="<%= isOutOfStock ? "out-of-stock" : ""%>">
+
+                            <td>
+                                <input type="checkbox" 
+                                       class="selectItem" 
+                                       data-item-total="<%= itemTotal.setScale(0, BigDecimal.ROUND_HALF_UP).toString()%>"
+                                       <%= isOutOfStock || !product.isIsActive() ? "disabled" : ""%>>
+                            </td>
+
                             <td>
                                 <a href="${pageContext.request.contextPath}/ProductDetail?productId=<%= product.getProductID()%>&categoryId=<%= product.getCategoryID()%>" class="product-link">
                                     <div class="product-details">
-                                        <img src="<%= product.getImageUrl1() != null ? product.getImageUrl1() : "https://via.placeholder.com/80"%>" alt="<%= product.getProductName()%>" style="width: 80px; height: 80px; object-fit: cover;">
-                                        <div class="product-name"><%= product.getProductName()%></div>
+                                        <img src="<%= product.getImageUrl1() != null ? product.getImageUrl1() : "https://via.placeholder.com/80"%>" 
+                                             alt="<%= product.getProductName()%>" 
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                        <div>
+                                            <div class="product-name"><%= product.getProductName()%></div>
+                                            
+                                            <% if (quantityExceedsStock && product.getQuantity() > 0) {%>
+                                            <small class="stock-warning">
+                                                <i class="fas fa-exclamation-triangle"></i> 
+                                                Your cart quantity (<%= item.getQuantity()%>) exceeds available stock
+                                            </small>
+                                            <% }%>
+                                        </div>
                                     </div>
                                 </a>
                             </td>
+
                             <td class="price">
                                 <%= String.format("%,d", unitPrice.setScale(0, BigDecimal.ROUND_HALF_UP).longValue())%> VND
                             </td>
+
                             <td>
-                                <div class="quantity-container" style="display: flex; align-items: center; gap: 5px;">
-                                    <button type="button" class="quantity-btn btn btn-outline-secondary btn-sm" style="width: 30px; height: 30px;">-</button>
+                                <div class="quantity-container">
+                                    <button type="button" 
+                                            class="quantity-btn btn btn-outline-secondary btn-sm" 
+                                            style="width: 30px; height: 30px;"
+                                            <%= isOutOfStock || !product.isIsActive() ? "disabled" : ""%>>-</button>
                                     <input type="number" 
                                            value="<%= item.getQuantity()%>" 
                                            class="form-control quantity-value text-center" 
@@ -378,29 +402,49 @@
                                            max="<%= product.getQuantity()%>"
                                            data-original-value="<%= item.getQuantity()%>"
                                            data-cart-item-id="<%= item.getCartItemID()%>"
-                                           style="width: 70px;">
-                                    <button type="button" class="quantity-btn btn btn-outline-secondary btn-sm" style="width: 30px; height: 30px;">+</button>
+                                           style="width: 70px;"
+                                           <%= isOutOfStock || !product.isIsActive() ? "disabled" : ""%>>
+                                    <button type="button" 
+                                            class="quantity-btn btn btn-outline-secondary btn-sm" 
+                                            style="width: 30px; height: 30px;"
+                                            <%= isOutOfStock || !product.isIsActive() ? "disabled" : ""%>>+</button>
                                 </div>
-                                <small class="text-muted">Max: <%= product.getQuantity()%></small>
+                                <small class="text-muted">
+                                    <% if (product.getQuantity() > 0) {%>
+                                    Max: <%= product.getQuantity()%>
+                                    <% } else { %>
+                                    <span class="stock-warning">Out of Stock</span>
+                                    <% }%>
+                                </small>
                             </td>
-                            <td class="price" id="total_<%= item.getCartItemID()%>"><%= String.format("%,d", itemTotal.setScale(0, BigDecimal.ROUND_HALF_UP).longValue())%> VND</td>
+
+                            <td class="price" id="total_<%= item.getCartItemID()%>">
+                                <%= String.format("%,d", itemTotal.setScale(0, BigDecimal.ROUND_HALF_UP).longValue())%> VND
+                            </td>
+
                             <td class="action-buttons">
-                                <a href="javascript:void(0);" class="delete-icon btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></a>
+                                <a href="javascript:void(0);" class="delete-icon btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
                             </td>
                         </tr>
-                        <%
-                            }
-                        %>
+                        <% } %>
                     </tbody>
                 </table>
+
                 <!-- Cart Summary -->
                 <div class="card p-4 mb-4">
                     <div class="d-flex justify-content-between cart-total">
                         <span><strong>Selected Total:</strong></span>
                         <span id="cartTotal" style="font-weight: bold; font-size: 1.2em;">0 VND</span>
                     </div>
+
+                    <div id="checkoutWarning" class="alert alert-warning mt-3" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="warningMessage"></span>
+                    </div>
+
                     <div class="text-end mt-4">
-                        <!-- Đơn giản hóa form checkout -->
                         <button type="button" id="checkoutBtn" class="btn btn-success me-3">Create Order</button>
                     </div>
                 </div>
@@ -416,6 +460,7 @@
             <%
                 }
             %>
+
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
             <script>
                 $(document).ready(function () {
@@ -440,11 +485,37 @@
                     // Update selected total
                     function updateSelectedTotal() {
                         let total = 0;
+                        let hasUnavailableItems = false;
+
                         $('.selectItem:checked').each(function () {
+                            const row = $(this).closest('tr');
+                            const isAvailable = row.data('is-available');
+
+                            if (!isAvailable) {
+                                hasUnavailableItems = true;
+                            }
+
                             const itemTotal = parseInt($(this).data('item-total'));
                             total += itemTotal;
                         });
+
                         $('#cartTotal').text(formatPrice(total));
+
+                        // Show/hide checkout button based on availability
+                        const checkoutBtn = $('#checkoutBtn');
+                        const warningDiv = $('#checkoutWarning');
+
+                        if (hasUnavailableItems) {
+                            checkoutBtn.addClass('checkout-disabled').prop('disabled', true);
+                            warningDiv.show().find('#warningMessage')
+                                    .text('Some selected items are out of stock or unavailable. Please remove them to continue.');
+                        } else if ($('.selectItem:checked').length === 0) {
+                            checkoutBtn.removeClass('checkout-disabled').prop('disabled', false);
+                            warningDiv.hide();
+                        } else {
+                            checkoutBtn.removeClass('checkout-disabled').prop('disabled', false);
+                            warningDiv.hide();
+                        }
                     }
 
                     // Handle quantity change via AJAX
@@ -459,7 +530,8 @@
                             },
                             success: function (response) {
                                 if (response.startsWith('error:')) {
-                                    const errorType = response.split(':')[1];
+                                    const errorParts = response.split(':');
+                                    const errorType = errorParts[1];
                                     let message = 'Có lỗi xảy ra!';
 
                                     switch (errorType) {
@@ -472,8 +544,11 @@
                                         case 'product_not_available':
                                             message = 'Sản phẩm không còn khả dụng!';
                                             break;
+                                        case 'product_out_of_stock':
+                                            message = 'Sản phẩm đã hết hàng!';
+                                            break;
                                         case 'insufficient_stock':
-                                            const availableStock = response.split(':')[2];
+                                            const availableStock = errorParts[2];
                                             message = 'Chỉ còn ' + availableStock + ' sản phẩm trong kho!';
                                             break;
                                         case 'update_failed':
@@ -511,6 +586,17 @@
                         const currentValue = parseInt(input.val());
                         const maxQuantity = parseInt(row.data('max-quantity'));
                         const cartItemId = parseInt(input.data('cart-item-id'));
+                        const isAvailable = row.data('is-available');
+
+                        if (!isAvailable) {
+                            alert('This product is not available for purchase');
+                            return;
+                        }
+
+                        if (maxQuantity === 0) {
+                            alert('This product is out of stock');
+                            return;
+                        }
 
                         if (currentValue < maxQuantity) {
                             const newValue = currentValue + 1;
@@ -528,6 +614,12 @@
                         const input = row.find('.quantity-value');
                         const currentValue = parseInt(input.val());
                         const cartItemId = parseInt(input.data('cart-item-id'));
+                        const isAvailable = row.data('is-available');
+
+                        if (!isAvailable) {
+                            alert('This product is not available for purchase');
+                            return;
+                        }
 
                         if (currentValue > 1) {
                             const newValue = currentValue - 1;
@@ -546,9 +638,22 @@
                         const newValue = parseInt(input.val());
                         const maxQuantity = parseInt(row.data('max-quantity'));
                         const cartItemId = parseInt(input.data('cart-item-id'));
+                        const isAvailable = row.data('is-available');
+
+                        if (!isAvailable) {
+                            alert('This product is not available for purchase');
+                            input.val(input.data('original-value'));
+                            return;
+                        }
 
                         if (isNaN(newValue) || newValue < 1) {
                             alert('Quantity must be a positive integer!');
+                            input.val(input.data('original-value'));
+                            return;
+                        }
+
+                        if (maxQuantity === 0) {
+                            alert('This product is out of stock');
                             input.val(input.data('original-value'));
                             return;
                         }
@@ -595,7 +700,7 @@
                     });
 
                     // Handle Clear All
-                    $(document).on('click', 'a:contains("Clear All")', function (e) {
+                    $(document).on('click', '.clear-all-btn', function (e) {
                         e.preventDefault();
 
                         if (confirm('Are you sure you want to remove all items from your cart?')) {
@@ -619,7 +724,7 @@
                     // Handle Select All checkbox
                     $('#selectAll').on('change', function () {
                         const isChecked = $(this).is(':checked');
-                        $('.selectItem').prop('checked', isChecked);
+                        $('.selectItem:not(:disabled)').prop('checked', isChecked);
                         updateSelectedTotal();
                     });
 
@@ -628,8 +733,8 @@
                         updateSelectedTotal();
 
                         // Update Select All checkbox state
-                        const totalItems = $('.selectItem').length;
-                        const checkedItems = $('.selectItem:checked').length;
+                        const totalItems = $('.selectItem:not(:disabled)').length;
+                        const checkedItems = $('.selectItem:not(:disabled):checked').length;
 
                         if (checkedItems === 0) {
                             $('#selectAll').prop('indeterminate', false).prop('checked', false);
@@ -640,9 +745,12 @@
                         }
                     });
 
-                    // Handle checkout form submission
-                    // Handle checkout form submission
+                    // Handle checkout validation and form submission
                     $('#checkoutBtn').on('click', function () {
+                        if ($(this).hasClass('checkout-disabled')) {
+                            return false;
+                        }
+
                         const selectedItems = [];
                         $('.selectItem:checked').each(function () {
                             const cartItemId = $(this).closest('tr').data('cart-item-id');
@@ -654,27 +762,60 @@
                             return false;
                         }
 
-                        // Save selected items to session via AJAX
+                        // Validate checkout items before proceeding
                         $.ajax({
                             url: 'CartItem',
                             type: 'POST',
                             data: {
-                                action: 'saveSelectedItems',
+                                action: 'validateCheckout',
                                 selectedCartItemIds: selectedItems.join(',')
                             },
+                            dataType: 'json',
                             success: function (response) {
-                                if (response === 'success') {
-                                    // Chuyển hướng trực tiếp đến CreateOrderServlet
-                                    window.location.href = 'CreateOrderServlet';
+                                if (response.success) {
+                                    // Save selected items to session and redirect
+                                    $.ajax({
+                                        url: 'CartItem',
+                                        type: 'POST',
+                                        data: {
+                                            action: 'saveSelectedItems',
+                                            selectedCartItemIds: selectedItems.join(',')
+                                        },
+                                        success: function (saveResponse) {
+                                            if (saveResponse === 'success') {
+                                                window.location.href = 'CreateOrderServlet';
+                                            } else {
+                                                alert('Có lỗi xảy ra khi lưu thông tin!');
+                                            }
+                                        },
+                                        error: function () {
+                                            alert('Có lỗi kết nối xảy ra!');
+                                        }
+                                    });
                                 } else {
-                                    alert('Có lỗi xảy ra khi lưu thông tin!');
+                                    alert('Cannot proceed to checkout:\n\n' + response.message +
+                                            '\n\nPlease refresh the page to see updated stock information.');
+
+                                    // Refresh page to show updated stock status
+                                    setTimeout(function () {
+                                        window.location.reload();
+                                    }, 2000);
                                 }
                             },
                             error: function () {
-                                alert('Có lỗi kết nối xảy ra!');
+                                alert('Có lỗi kết nối xảy ra khi kiểm tra tồn kho!');
                             }
                         });
                     });
+
+                    // Auto-refresh stock status every 30 seconds (optional)
+                    setInterval(function () {
+                        // Check if there are any items in cart
+                        if ($('.selectItem').length > 0) {
+                            // Refresh page silently to update stock status
+                            // You can implement a more sophisticated AJAX check here if needed
+                        }
+                    }, 30000);
 
                     // Initialize selected total on page load
                     updateSelectedTotal();

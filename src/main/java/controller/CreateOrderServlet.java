@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.regex.Pattern;
 
 @WebServlet(name = "CreateOrderServlet", urlPatterns = {"/CreateOrderServlet"})
 public class CreateOrderServlet extends HttpServlet {
@@ -60,7 +59,7 @@ public class CreateOrderServlet extends HttpServlet {
         String selectedItemIds = (String) session.getAttribute("selectedCartItemIds");
         if (selectedItemIds == null || selectedItemIds.isEmpty()) {
             session.setAttribute("message", "No items selected for checkout");
-            response.sendRedirect("viewCart.jsp");
+            response.sendRedirect("CartItem");
             return;
         }
 
@@ -73,17 +72,50 @@ public class CreateOrderServlet extends HttpServlet {
             // Get selected cart items
             List<CartItem> selectedCartItems = cartItemDAO.getCartItemsByIds(cartItemIds);
 
+            // Validate stock before showing order page
+            StringBuilder stockErrors = new StringBuilder();
+            boolean hasStockIssues = false;
+
+            for (CartItem item : selectedCartItems) {
+                Product currentProduct = productDAO.getProductByID(item.getProductID());
+
+                if (currentProduct == null || !currentProduct.isIsActive()) {
+                    stockErrors.append("Product '").append(item.getProduct().getProductName())
+                            .append("' is no longer available.\n");
+                    hasStockIssues = true;
+                } else if (currentProduct.getQuantity() == 0) {
+                    stockErrors.append("Product '").append(currentProduct.getProductName())
+                            .append("' is out of stock.\n");
+                    hasStockIssues = true;
+                } else if (item.getQuantity() > currentProduct.getQuantity()) {
+                    stockErrors.append("Product '").append(currentProduct.getProductName())
+                            .append("' only has ").append(currentProduct.getQuantity())
+                            .append(" items available, but you have ")
+                            .append(item.getQuantity()).append(" in cart.\n");
+                    hasStockIssues = true;
+                }
+
+                // Update product info in cart item
+                item.setProduct(currentProduct);
+            }
+
+            if (hasStockIssues) {
+                session.setAttribute("message", "Cannot proceed to checkout due to stock issues:\n" + stockErrors.toString());
+                response.sendRedirect("CartItem");
+                return;
+            }
+
             // Get customer addresses
             List<Address> addresses = addressDAO.getAllAddressesByCustomerId(customer.getCustomerID());
-
-            // Get customer vouchers (chỉ lấy voucher chưa dùng)
-            List<Voucher> availableVouchers = voucherDAO.getAvailableVouchersForCustomer(customer.getCustomerID());
 
             // Calculate total amount
             long totalAmount = 0;
             for (CartItem item : selectedCartItems) {
                 totalAmount += item.getProduct().getPrice().longValue() * item.getQuantity();
             }
+
+            // Get available vouchers for customer (vouchers they haven't used yet)
+            List<Voucher> availableVouchers = voucherDAO.getAvailableVouchersForCustomer(customer.getCustomerID(), totalAmount);
 
             request.setAttribute("selectedCartItems", selectedCartItems);
             request.setAttribute("addresses", addresses);
@@ -95,7 +127,7 @@ public class CreateOrderServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("message", "Error loading order page");
-            response.sendRedirect("viewCart.jsp");
+            response.sendRedirect("CartItem");
         }
     }
 
@@ -105,17 +137,17 @@ public class CreateOrderServlet extends HttpServlet {
 
         String action = request.getParameter("action");
 
-        if ("validateVoucher".equals(action)) {
-            validateVoucher(request, response);
+        if ("applyVoucher".equals(action)) {
+            applyVoucher(request, response);
         } else if ("createOrder".equals(action)) {
             createOrder(request, response);
         }
     }
 
-    private void validateVoucher(HttpServletRequest request, HttpServletResponse response)
+    private void applyVoucher(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        String voucherCode = request.getParameter("voucherCode");
+        String voucherIdStr = request.getParameter("voucherId");
         String totalAmountStr = request.getParameter("totalAmount");
 
         HttpSession session = request.getSession();
@@ -127,16 +159,8 @@ public class CreateOrderServlet extends HttpServlet {
         }
 
         try {
-            // Validate input
-            if (voucherCode == null || voucherCode.trim().isEmpty()) {
-                response.getWriter().write("error:empty_code");
-                return;
-            }
-
-            // Clean and validate voucher code (chỉ cho phép chữ cái, số và một số ký tự đặc biệt)
-            voucherCode = voucherCode.trim().toUpperCase();
-            if (!isValidVoucherCode(voucherCode)) {
-                response.getWriter().write("error:invalid_format");
+            if (voucherIdStr == null || voucherIdStr.trim().isEmpty()) {
+                response.getWriter().write("error:no_voucher_selected");
                 return;
             }
 
@@ -145,62 +169,40 @@ public class CreateOrderServlet extends HttpServlet {
                 return;
             }
 
-            long totalAmount = Long.parseLong(totalAmountStr);
+            int voucherId = Integer.parseInt(voucherIdStr);
+            double totalAmount = Double.parseDouble(totalAmountStr);
+
             if (totalAmount <= 0) {
                 response.getWriter().write("error:invalid_amount");
                 return;
             }
 
-            // 1. Kiểm tra voucher có tồn tại không
-            Voucher voucher = voucherDAO.getVoucherByCode(voucherCode);
+            // Validate voucher for this customer and order
+            Voucher voucher = voucherDAO.validateVoucherForCustomer(voucherId, customer.getCustomerID(), totalAmount);
+            
             if (voucher == null) {
-                response.getWriter().write("error:voucher_not_found");
-                return;
-            }
-
-            // 2. Kiểm tra khách hàng đã sử dụng voucher này chưa
-            if (customerVoucherDAO.hasCustomerUsedVoucher(customer.getCustomerID(), voucher.getVoucherID())) {
-                response.getWriter().write("error:voucher_already_used");
-                return;
-            }
-
-            // 3. Validate voucher cho đơn hàng (kiểm tra các điều kiện khác)
-            Voucher validVoucher = voucherDAO.validateVoucherForOrder(voucherCode, customer.getCustomerID(), totalAmount);
-            if (validVoucher == null) {
-                // Kiểm tra cụ thể lý do không hợp lệ
-                if (!voucher.isActive()) {
-                    response.getWriter().write("error:voucher_inactive");
-                } else if (voucher.getExpiryDate().before(new java.util.Date())) {
-                    response.getWriter().write("error:voucher_expired");
-                } else if (voucher.getUsedCount() >= voucher.getUsageLimit()) {
-                    response.getWriter().write("error:voucher_limit_reached");
-                } else if (totalAmount < voucher.getMinOrderAmount()) {
-                    response.getWriter().write("error:min_order_not_met:" + String.format("%.0f", voucher.getMinOrderAmount()));
-                } else {
-                    response.getWriter().write("error:voucher_invalid");
-                }
+                response.getWriter().write("error:voucher_not_valid");
                 return;
             }
 
             // Calculate discount
             long discount = Math.min(
-                    (totalAmount * voucher.getDiscountPercent()) / 100,
+                    (long) (totalAmount * voucher.getDiscountPercent()) / 100,
                     (long) voucher.getMaxDiscountAmount()
             );
-            long finalAmount = totalAmount - discount;
+            long finalAmount = (long) totalAmount - discount;
 
-            // Format ngày hết hạn
+            // Format expiry date
             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
             String expiryDateStr = sdf.format(voucher.getExpiryDate());
 
-            // Trả về thông tin voucher đầy đủ
-            // Format: success:discount_amount:final_amount:voucher_id:discount_percent:description:expiry_date:min_order:max_discount:usage_info
+            // Return voucher information
             String voucherInfo = String.format("success:%d:%d:%d:%d:%s:%s:%.0f:%.0f:%d/%d",
                     discount,
                     finalAmount,
                     voucher.getVoucherID(),
                     voucher.getDiscountPercent(),
-                    voucher.getDescription() != null ? voucher.getDescription().replace(":", "&#58;") : "Discount voucher", // Replace colon to avoid parsing issues
+                    voucher.getDescription() != null ? voucher.getDescription().replace(":", "&#58;") : "Discount voucher",
                     expiryDateStr,
                     voucher.getMinOrderAmount(),
                     voucher.getMaxDiscountAmount(),
@@ -211,17 +213,11 @@ public class CreateOrderServlet extends HttpServlet {
             response.getWriter().write(voucherInfo);
 
         } catch (NumberFormatException e) {
-            response.getWriter().write("error:invalid_amount");
+            response.getWriter().write("error:invalid_data");
         } catch (Exception e) {
             e.printStackTrace();
             response.getWriter().write("error:system_error");
         }
-    }
-
-    // Validate voucher code format
-    private boolean isValidVoucherCode(String code) {
-        // Cho phép chữ cái, số, dấu gạch ngang và underscore, độ dài từ 3-20 ký tự
-        return Pattern.matches("^[A-Z0-9_-]{3,20}$", code);
     }
 
     private void createOrder(HttpServletRequest request, HttpServletResponse response)
@@ -243,8 +239,8 @@ public class CreateOrderServlet extends HttpServlet {
             long finalAmount = Long.parseLong(request.getParameter("finalAmount"));
             long discountAmount = Long.parseLong(request.getParameter("discountAmount"));
 
-            // Kiểm tra giới hạn đơn hàng - Không cho phép đơn hàng trên 500,000,000 VND
-            final long ORDER_LIMIT = 500000000L; // 500 triệu VND
+            // Check order limit
+            final long ORDER_LIMIT = 500000000L; // 500 million VND
             if (finalAmount > ORDER_LIMIT) {
                 session.setAttribute("message",
                         "The order exceeds " + String.format("%,d", ORDER_LIMIT)
@@ -261,6 +257,37 @@ public class CreateOrderServlet extends HttpServlet {
 
             List<CartItem> selectedCartItems = cartItemDAO.getCartItemsByIds(cartItemIds);
 
+            // CRITICAL: Final stock validation before creating order
+            StringBuilder stockErrors = new StringBuilder();
+            boolean hasStockIssues = false;
+
+            for (CartItem item : selectedCartItems) {
+                Product currentProduct = productDAO.getProductByID(item.getProductID());
+
+                if (currentProduct == null || !currentProduct.isIsActive()) {
+                    stockErrors.append("Product '").append(item.getProduct().getProductName())
+                            .append("' is no longer available.\n");
+                    hasStockIssues = true;
+                } else if (currentProduct.getQuantity() == 0) {
+                    stockErrors.append("Product '").append(currentProduct.getProductName())
+                            .append("' is out of stock.\n");
+                    hasStockIssues = true;
+                } else if (item.getQuantity() > currentProduct.getQuantity()) {
+                    stockErrors.append("Product '").append(currentProduct.getProductName())
+                            .append("' only has ").append(currentProduct.getQuantity())
+                            .append(" items available, but you're trying to order ")
+                            .append(item.getQuantity()).append(".\n");
+                    hasStockIssues = true;
+                }
+            }
+
+            if (hasStockIssues) {
+                session.setAttribute("message", "Cannot create order due to stock issues:\n" + stockErrors.toString()
+                        + "\nPlease return to cart and update your selection.");
+                response.sendRedirect("CartItem");
+                return;
+            }
+
             // Get address for snapshot
             Address address = addressDAO.getAddressById(addressId);
             String addressSnapshot = address.getProvinceName() + ", "
@@ -273,7 +300,7 @@ public class CreateOrderServlet extends HttpServlet {
             order.setCustomerID(customer.getCustomerID());
             order.setTotalAmount(finalAmount);
 
-            // Set discount percent từ voucher (không phải discount amount)
+            // Set discount percent from voucher
             int discountPercent = 0;
             if (discountPercentStr != null && !discountPercentStr.isEmpty()) {
                 discountPercent = Integer.parseInt(discountPercentStr);
@@ -287,7 +314,7 @@ public class CreateOrderServlet extends HttpServlet {
             int orderId = orderDAO.createOrder(order);
 
             if (orderId > 0) {
-                // Create order details and update product quantities
+                // Create order details
                 for (CartItem item : selectedCartItems) {
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setOrderID(orderId);
@@ -301,15 +328,25 @@ public class CreateOrderServlet extends HttpServlet {
                 // Save voucher usage if voucher was used
                 if (voucherIdStr != null && !voucherIdStr.isEmpty()) {
                     int voucherId = Integer.parseInt(voucherIdStr);
-                    customerVoucherDAO.createCustomerVoucher(customer.getCustomerID(), voucherId);
-                    voucherDAO.incrementVoucherUsage(voucherId);
+                    
+                    // Double-check voucher is still valid before using
+                    Voucher voucher = voucherDAO.validateVoucherForCustomer(voucherId, customer.getCustomerID(), finalAmount + discountAmount);
+                    if (voucher != null) {
+                        customerVoucherDAO.createCustomerVoucher(customer.getCustomerID(), voucherId);
+                        voucherDAO.incrementVoucherUsage(voucherId);
+                    }
                 }
 
-                // Clear cart
-                cartItemDAO.clearCartByCustomerId(customer.getCustomerID());
+                // Clear selected cart items
+                for (CartItem item : selectedCartItems) {
+                    cartItemDAO.removeCartItem(item.getCartItemID());
+                }
+
+                // Clear selected items from session
+                session.removeAttribute("selectedCartItemIds");
 
                 session.setAttribute("message", "Order created successfully!");
-                response.sendRedirect("Home");
+                response.sendRedirect("ViewOrderOfCustomer?success=created");
 
             } else {
                 session.setAttribute("message", "Failed to create order");
@@ -318,7 +355,7 @@ public class CreateOrderServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("message", "Error creating order");
+            session.setAttribute("message", "Error creating order: " + e.getMessage());
             response.sendRedirect("CreateOrderServlet");
         }
     }
