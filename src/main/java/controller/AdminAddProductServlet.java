@@ -122,35 +122,49 @@ public class AdminAddProductServlet extends HttpServlet {
         ProductDAO proDAO = new ProductDAO();
         HttpSession session = request.getSession();
         session.removeAttribute("errorProductName");
+        boolean error = false;
+        session.removeAttribute("errorProductName");
         session.removeAttribute("errorDescription");
         session.removeAttribute("errorPrice");
         session.removeAttribute("errorWarranty");
         session.removeAttribute("errorQuantity");
+        session.removeAttribute("existedProduct");
         String productName = request.getParameter("productName");
         if (productName == null || productName.trim().isEmpty()) {
             session.setAttribute("errorProductName", "Product name cannot be empty.");
+            error = true;
         } else if (!productName.matches("[a-zA-Z0-9/\\.\\- ]+")) {
             session.setAttribute("errorProductName", "Product name contains invalid characters.");
+            error = true;
         }
         String discription = request.getParameter("description");
         if (discription == null || discription.trim().isEmpty()) {
             session.setAttribute("errorDescription", "Description cannot be empty.");
+            error = true;
         } else if (!discription.matches("[a-zA-Z0-9/\\.\\- ]+")) {
             session.setAttribute("errorDescription", "Description contains invalid characters.");
+            error = true;
         }
 
         String priceRaw = request.getParameter("price");
         BigDecimal price = null;
         if (priceRaw == null || priceRaw.trim().isEmpty()) {
             session.setAttribute("errorPrice", "Price cannot be empty.");
+            error = true;
         } else {
             try {
                 price = new BigDecimal(priceRaw);
                 if (price.compareTo(BigDecimal.ZERO) < 0) {
                     session.setAttribute("errorPrice", "Price must be non-negative.");
+                    error = true;
+                } else if (price.compareTo(new BigDecimal("1000000000")) > 0) {
+                    session.setAttribute("errorPrice", "Price must be less than or equal to 1,000,000,000.");
+                    error = true;
                 }
+
             } catch (NumberFormatException e) {
                 session.setAttribute("errorPrice", "Price must be a valid number.");
+                error = true;
             }
         }
 
@@ -164,29 +178,47 @@ public class AdminAddProductServlet extends HttpServlet {
 
         if (warrantyRaw == null || warrantyRaw.trim().isEmpty()) {
             session.setAttribute("errorWarranty", "Warranty cannot be empty.");
+            error = true;
         } else {
             try {
                 warranty = Integer.parseInt(warrantyRaw);
                 if (warranty <= 0) {
                     session.setAttribute("errorWarranty", "Warranty must be a positive integer.");
+                    error = true;
+                } else if (warranty > 100) {
+                    session.setAttribute("errorWarranty", "Warranty must be smalller than 100");
+                    error = true;
                 }
             } catch (NumberFormatException e) {
                 session.setAttribute("errorWarranty", "Warranty must be a valid integer.");
+                error = true;
             }
         }
         String quantityRaw = request.getParameter("quantity");
 
         if (quantityRaw == null || quantityRaw.trim().isEmpty()) {
             session.setAttribute("errorQuantity", "Quantity cannot be empty.");
+            error = true;
         } else {
             try {
                 quantity = Integer.parseInt(quantityRaw);
                 if (quantity <= 0) {
                     session.setAttribute("errorQuantity", "Quantity must be a positive integer.");
+                    error = true;
+                } else if (quantity > 1000) {
+                    session.setAttribute("errorQuantity", "Quantity must be smaller than 1000");
+                    error = true;
                 }
             } catch (NumberFormatException e) {
                 session.setAttribute("errorQuantity", "Quantity must be a valid integer.");
+                error = true;
             }
+        }
+
+        boolean exist = proDAO.checkExist(productName, Brand);
+        if (exist) {
+            session.setAttribute("existedProduct", "This product has already added in the shop.");
+            error = true;
         }
 //        <====================================== Xử lý ảnh ===========================================>
         request.setCharacterEncoding("UTF-8");
@@ -243,14 +275,12 @@ public class AdminAddProductServlet extends HttpServlet {
             }
         }
 //        <====================================== Xử lý anh ===========================================>
-        int productId = proDAO.insertProduct(productName, discription, price, Suppliers, Category, Brand, warranty, quantity, imageUrlMap.get("fileMain"), imageUrlMap.get("fileSub1"), imageUrlMap.get("fileSub2"), imageUrlMap.get("fileSub3"));
-
-        if (productId > 0) {
+        if (!error) {
+            int productId = proDAO.insertProduct(productName, discription, price, Suppliers, Category, Brand, warranty, quantity, imageUrlMap.get("fileMain"), imageUrlMap.get("fileSub1"), imageUrlMap.get("fileSub2"), imageUrlMap.get("fileSub3"));
             response.sendRedirect("AdminAddProductDetail?productId=" + productId + "&categoryId=" + Category);
         } else {
-            response.sendRedirect("AdminCreateProduct?productId=&error=1");
+            response.sendRedirect("AdminCreateProduct?error=1");
         }
-
     }
 
     /**

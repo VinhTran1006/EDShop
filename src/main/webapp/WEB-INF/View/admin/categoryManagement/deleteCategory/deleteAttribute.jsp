@@ -13,7 +13,7 @@
     function confirmDelete(attributeID, categoryId) {
         Swal.fire({
             title: 'Are you sure?',
-            text: "This category will be hidden from view.",
+            text: "This atrribute has been deleted.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',

@@ -145,92 +145,106 @@ public class AdminUpdateProductServlet extends HttpServlet {
         int productId = ((productIdString != null) ? Integer.parseInt(productIdString) : -1);
         System.out.println("id khong loi");
         HttpSession session = request.getSession();
+        boolean error = false;
         session.removeAttribute("errorProductName");
         session.removeAttribute("errorDescription");
         session.removeAttribute("errorPrice");
         session.removeAttribute("errorWarranty");
         session.removeAttribute("errorQuantity");
+        session.removeAttribute("existedProduct");
         String productName = request.getParameter("productName");
         if (productName == null || productName.trim().isEmpty()) {
             session.setAttribute("errorProductName", "Product name cannot be empty.");
+            error = true;
         } else if (!productName.matches("[a-zA-Z0-9/\\.\\- ]+")) {
             session.setAttribute("errorProductName", "Product name contains invalid characters.");
+            error = true;
         }
-        System.out.println("name khong loi");
         String discription = request.getParameter("description");
         if (discription == null || discription.trim().isEmpty()) {
             session.setAttribute("errorDescription", "Description cannot be empty.");
+            error = true;
         } else if (!discription.matches("[a-zA-Z0-9/\\.\\- ]+")) {
             session.setAttribute("errorDescription", "Description contains invalid characters.");
+            error = true;
         }
-        System.out.println("description khong loi");
-        String priceFormatted = request.getParameter("price");
-        priceFormatted = priceFormatted.replace(".", "") // bỏ dấu chấm ngăn cách hàng nghìn
-                .replace("₫", "") // bỏ ký tự tiền
-                .trim();
-        BigDecimal price = new BigDecimal(priceFormatted);
-        if (priceFormatted == null || priceFormatted.trim().isEmpty()) {
+
+        String priceRaw = request.getParameter("price");
+        BigDecimal price = null;
+        if (priceRaw == null || priceRaw.trim().isEmpty()) {
             session.setAttribute("errorPrice", "Price cannot be empty.");
+            error = true;
         } else {
             try {
-                price = new BigDecimal(priceFormatted);
+                price = new BigDecimal(priceRaw);
                 if (price.compareTo(BigDecimal.ZERO) < 0) {
                     session.setAttribute("errorPrice", "Price must be non-negative.");
+                    error = true;
+                } else if (price.compareTo(new BigDecimal("1000000000")) > 0) {
+                    session.setAttribute("errorPrice", "Price must be less than or equal to 1,000,000,000.");
+                    error = true;
                 }
+
             } catch (NumberFormatException e) {
                 session.setAttribute("errorPrice", "Price must be a valid number.");
+                error = true;
             }
         }
-        System.out.println("Price khong loi");
+
         int Category = Integer.parseInt(request.getParameter("category"));
-        System.out.println("category khong loi");
         int Brand = Integer.parseInt(request.getParameter("brand"));
-        System.out.println("brand khong loi");
         int Suppliers = Integer.parseInt(request.getParameter("supplier"));
-        System.out.println("suplier khong loi");
+
         int warranty = 0;
         int quantity = 0;
         String warrantyRaw = request.getParameter("warranty");
 
         if (warrantyRaw == null || warrantyRaw.trim().isEmpty()) {
             session.setAttribute("errorWarranty", "Warranty cannot be empty.");
+            error = true;
         } else {
             try {
                 warranty = Integer.parseInt(warrantyRaw);
                 if (warranty <= 0) {
                     session.setAttribute("errorWarranty", "Warranty must be a positive integer.");
+                    error = true;
+                } else if (warranty > 100) {
+                    session.setAttribute("errorWarranty", "Warranty must be smalller than 100");
+                    error = true;
                 }
             } catch (NumberFormatException e) {
                 session.setAttribute("errorWarranty", "Warranty must be a valid integer.");
+                error = true;
             }
         }
-        System.out.println("warranty khong loi");
         String quantityRaw = request.getParameter("quantity");
 
         if (quantityRaw == null || quantityRaw.trim().isEmpty()) {
             session.setAttribute("errorQuantity", "Quantity cannot be empty.");
+            error = true;
         } else {
             try {
                 quantity = Integer.parseInt(quantityRaw);
                 if (quantity <= 0) {
                     session.setAttribute("errorQuantity", "Quantity must be a positive integer.");
+                    error = true;
+                } else if (quantity > 1000) {
+                    session.setAttribute("errorQuantity", "Quantity must be smaller than 1000");
+                    error = true;
                 }
             } catch (NumberFormatException e) {
                 session.setAttribute("errorQuantity", "Quantity must be a valid integer.");
+                error = true;
             }
         }
-        System.out.println("quantity khong loi");
-        System.out.println("id " + productId);
-        System.out.println("name " + productName);
-        System.out.println("description " + discription);
-        System.out.println("price " + price);
-        System.out.println("category " + Category);
-        System.out.println("Brand " + Brand);
-        System.out.println("suplier " + Suppliers);
-        System.out.println("warranty " + warranty);
-        System.out.println("quantity " + quantity);
         ProductDAO proDAO = new ProductDAO();
         Product product = proDAO.getProductByID(productId);
+        boolean exist = proDAO.checkExistUpdate(productName, Brand, productId);
+        if (exist) {
+            session.setAttribute("existedProduct", "This product has already added in the shop.");
+            error = true;
+        }
+
 //        <====================================== Xử lý ảnh ===========================================>
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
@@ -285,8 +299,9 @@ public class AdminUpdateProductServlet extends HttpServlet {
                 : oldUrl);
 
         //        <====================================== Xử lý ảnh ===========================================>
-        boolean res = proDAO.updateProduct(productId, productName, discription, price, Suppliers, Category, Brand, warranty, quantity, imageUrlMap.get("fileMain"), imageUrlMap.get("file1"), imageUrlMap.get("file2"), imageUrlMap.get("file3"));
-
+        if (!error) {
+            proDAO.updateProduct(productId, productName, discription, price, Suppliers, Category, Brand, warranty, quantity, imageUrlMap.get("fileMain"), imageUrlMap.get("file1"), imageUrlMap.get("file2"), imageUrlMap.get("file3"));
+        }
         //        <====================================== Xử lý thông tin ===========================================>
         List<Attribute> attributeList = new CategoryDAO().getAttributeByCategoryID(Category);
 
@@ -300,15 +315,14 @@ public class AdminUpdateProductServlet extends HttpServlet {
 
                 if (existing != null) {
                     // Update nếu có
-                    res = proDAO.updateProductDetail(existing.getProductDetailID(), value);
+                    proDAO.updateProductDetail(existing.getProductDetailID(), value);
                 } else {
                     // Insert nếu chưa có
-                    res = proDAO.insertProductDetail(productId, attr.getAttributeID(), value);
+                    proDAO.insertProductDetail(productId, attr.getAttributeID(), value);
                 }
             }
         }
-
-        if (res) {
+        if (!error) {
             response.sendRedirect("AdminProduct?updatesuccess=1");
         } else {
             response.sendRedirect("AdminUpdateProduct?productId=" + productId + "&error=1");
