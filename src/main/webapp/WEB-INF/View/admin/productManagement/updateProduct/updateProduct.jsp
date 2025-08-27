@@ -13,14 +13,14 @@
 
 
             .main-content {
-                margin-left: 40px;   /* gi? nguyên */
+                margin-left: 40px;
                 padding: 30px;
                 background-color: #f8f9fa;
 
-                /* b? gây ra scrollbar ph? */
+
                 min-height: auto;
                 height: auto;
-                overflow: visible;   /* cho n?i dung t? ch?y */
+                overflow: visible;
             }
 
 
@@ -88,17 +88,26 @@
                 icon: 'success',
                 title: 'Update!',
                 text: 'The product has been update.',
-                timer: 2000
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+
+                window.history.replaceState({}, document.title, window.location.pathname);
             });
         <% } else if ("1".equals(error)) { %>
             Swal.fire({
                 icon: 'error',
                 title: 'Failed!',
                 text: 'Could not update the product.',
-                timer: 2000
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+
+                window.history.replaceState({}, document.title, window.location.pathname);
             });
         <% }%>
         };
+
 
     </script>
 </html>

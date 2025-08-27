@@ -407,7 +407,7 @@ public class ProductDAO extends DBContext {
     }
 
     public int insertProduct(String productName, String description, BigDecimal price, int supplierid, int categoryid, int brandid, int warranty, int quantity, String url1, String url2, String url3, String url4) {
-        int productId = 0;
+        int productId = -1;
         String sql = "INSERT INTO Products (ProductName, Description,Price,SupplierID,CategoryID, BrandID, WarrantyPeriod, Quantity, ImageURL1, ImageURL2,ImageURL3,ImageURL4, IsActive ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?, 1)";
 
         try ( PreparedStatement pstmt1 = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
@@ -767,9 +767,44 @@ public class ProductDAO extends DBContext {
         return detail;
     }
 
+    public boolean checkExist(String productName, int brandId) {
+        String sql = "SELECT * "
+                + "FROM Products WHERE ProductName = ? AND BrandID = ? AND IsActive != 0";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, productName);
+            ps.setInt(2, brandId);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+     public boolean checkExistUpdate(String productName, int brandId, int productId) {
+        String sql = "SELECT * "
+                + "FROM Products WHERE ProductName = ? AND BrandID = ? AND IsActive != 0 AND ProductID != ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, productName);
+            ps.setInt(2, brandId);
+            ps.setInt(3, productId);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
 
-       ProductDetail p = new ProductDetail();
+        ProductDetail p = new ProductDetail();
         ProductDAO dao = new ProductDAO();
         p = dao.getProductDetailByProductAndAttribute(2, 2);
         System.out.println(p.toString());

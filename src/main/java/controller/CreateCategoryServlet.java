@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controller;
+
 import java.util.Arrays;
 
 import dao.CategoryDAO;
@@ -13,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -76,39 +78,57 @@ public class CreateCategoryServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-
+        HttpSession session = request.getSession();
+        session.removeAttribute("errorCategoryName");
+        session.removeAttribute("errorUrl");
+        session.removeAttribute("existCategory");
+        boolean error = false;
         String categoryName = request.getParameter("categoryName");
+        if (categoryName == null || categoryName.trim().isEmpty()) {
+            session.setAttribute("errorCategoryName", "Category name cannot be empty.");
+            error = true;
+        } else if (!categoryName.matches("^[a-zA-Z ]+$")) {
+            session.setAttribute("errorCategoryName", "Category name contains invalid characters.");
+            error = true;
+        }
         String ImgURLLogo = request.getParameter("ImgURLLogo");
+        if (ImgURLLogo == null || ImgURLLogo.trim().isEmpty()) {
+            session.setAttribute("errorUrl", "Image URL cannot be empty.");
+            error = true;
+        }
         int groupCount = Integer.parseInt(request.getParameter("groupCount"));
-
         CategoryDAO dao = new CategoryDAO();
-        int categoryId = dao.addCategory(categoryName, ImgURLLogo);
-
-        if (categoryId == -1) {
+        boolean exist = dao.checkExist(categoryName);
+        if (exist) {
+            session.setAttribute("existCategory", "This Category already exist.");
+            error = true;
+        }
+        if (error) {
             request.setAttribute("createError", "1");
             request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/createCategory/createCategory.jsp").forward(request, response);
-            return;
-        }
-        for (int i = 1; i <= groupCount; i++) {
-            String groupName = request.getParameter("groups[" + i + "][name]");
-            if (groupName == null || groupName.trim().isEmpty()) {
-                continue;
+        } else {
+            int categoryId = dao.addCategory(categoryName, ImgURLLogo);
+            for (int i = 1; i <= groupCount; i++) {
+                String groupName = request.getParameter("groups[" + i + "][name]");
+                if (groupName == null || groupName.trim().isEmpty()) {
+                    continue;
+                }
+                int attributeID = dao.addAttribute(groupName, categoryId);
+                if (attributeID == -1) {
+                    request.setAttribute("createError", "1");
+                    request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/createCategory/createCategory.jsp").forward(request, response);
+                    return;
+                }
             }
-            int attributeID = dao.addAttribute(groupName, categoryId);
-            if (attributeID == -1) {
-                request.setAttribute("createError", "1");
-                request.getRequestDispatcher("/WEB-INF/View/admin/categoryManagement/createCategory/createCategory.jsp").forward(request, response);
-                return;
-            }
+
+            request.getParameterMap().forEach((k, v) -> {
+                System.out.println(k + " = " + Arrays.toString(v));
+            });
+
+            // Thành công
+            response.sendRedirect("CategoryView?createSuccess=1");
+
         }
-
-        request.getParameterMap().forEach((k, v) -> {
-            System.out.println(k + " = " + Arrays.toString(v));
-        });
-
-        // Thành công
-        response.sendRedirect("CategoryView?createSuccess=1");
-
     }
 
     /**

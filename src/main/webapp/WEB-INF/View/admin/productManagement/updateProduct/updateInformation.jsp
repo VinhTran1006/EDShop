@@ -9,6 +9,7 @@
 <%@page import="java.math.BigDecimal"%>
 <%@page import="model.Product"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
     String success = request.getParameter("success");
     String error = request.getParameter("error");
@@ -28,6 +29,10 @@
     </head>
     <body>
         <% if (product != null && productDetailList != null) {%>
+        <c:if test="${not empty sessionScope.existedProduct}">
+            <span style="color:red">${sessionScope.existedProduct}</span>
+        </c:if>
+        <c:remove var="existedProduct" scope="session"/>
 
         <div class="form-wrapper">
             <div class="mb-3">
@@ -37,12 +42,20 @@
 
             <div class="mb-3">
                 <label class="form-label">Product Name</label>
+                <c:if test="${not empty sessionScope.errorProductName}">
+                    <span style="color:red">${sessionScope.errorProductName}</span>
+                </c:if>
+                <c:remove var="errorProductName" scope="session"/>
                 <input type="text" class="form-control" name="productName" required value="<%= product.getProductName()%>"/>
             </div>
 
 
             <div class="mb-3">
                 <label class="form-label">Description</label>
+                <c:if test="${not empty sessionScope.errorDescription}">
+                    <span style="color:red">${sessionScope.errorDescription}</span>
+                </c:if>
+                <c:remove var="errorDescription" scope="session"/>
                 <input type="text" class="form-control" name="description" required value="<%= product.getDescription()%>"/>
             </div><!-- comment -->
             <%
@@ -58,7 +71,11 @@
 
             <div class="mb-3">
                 <label class="form-label">Price</label>
-                <input type="text" min="1" class="form-control" name="price" required value="<%= priceFormatted%>"/>
+                <c:if test="${not empty sessionScope.errorPrice}">
+                    <span style="color:red">${sessionScope.errorPrice}</span>
+                </c:if>
+                <c:remove var="errorPrice" scope="session"/>
+                <input type="text" min="1" class="form-control" name="price" required value="<%= product.getPrice()%>"/>
             </div>
             <%
                 }
@@ -67,11 +84,19 @@
 
             <div class="mb-3">
                 <label class="form-label">Warranty period</label>
+                <c:if test="${not empty sessionScope.errorWarranty}">
+                    <span style="color:red">${sessionScope.errorWarranty}</span>
+                </c:if>
+                <c:remove var="errorWarranty" scope="session"/>
                 <input type="text" class="form-control" name="warranty" required value="<%= product.getWarrantyPeriod()%>"/>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Quantity</label>
+                <c:if test="${not empty sessionScope.errorQuantity}">
+                    <span style="color:red">${sessionScope.errorQuantity}</span>
+                </c:if>
+                <c:remove var="errorQuantity" scope="session"/>
                 <input type="text" class="form-control" name="quantity" required value="<%= product.getQuantity()%>"/>
             </div>
 
@@ -96,8 +121,8 @@
                        value="<%= categoryList.stream()
                                .filter(c -> c.getCategoryId() == product.getCategoryID())
                                .findFirst()
-                   .map(Category::getCategoryName)
-                   .orElse("")%>" 
+                               .map(Category::getCategoryName)
+                               .orElse("")%>" 
                        readonly />
 
                 <!-- Gửi id về server -->
@@ -156,27 +181,6 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
-
-        window.onload = function () {
-            updateBrands();
-        <% if ("1".equals(success)) { %>
-            Swal.fire({
-                icon: 'success',
-                title: 'Update Successful!',
-                text: 'The product information has been updated.',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        <% } else if ("1".equals(error)) { %>
-            Swal.fire({
-                icon: 'error',
-                title: 'Update Failed!',
-                text: 'Unable to update the product. Please try again.',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        <% }%>
-        };
     </script>
 
     <style>

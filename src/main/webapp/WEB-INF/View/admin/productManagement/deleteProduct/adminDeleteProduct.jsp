@@ -11,7 +11,7 @@
         function confirmDelete(productId) {
             Swal.fire({
                 title: 'Are you sure?',
-                text: "This product will be hidden from view.",
+                text: "This product will be delete.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',

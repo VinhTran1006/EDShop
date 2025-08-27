@@ -26,13 +26,18 @@
     <body>
         <div class="form-wrapper" style = "width: 100%">
 
+            <c:if test="${not empty sessionScope.existedProduct}">
+                <span style="color:red">${sessionScope.existedProduct}</span>
+            </c:if>
+            <c:remove var="existedProduct" scope="session"/>
+
             <div class="mb-3">
                 <label class="form-label">Product Name</label>
                 <c:if test="${not empty sessionScope.errorProductName}">
                     <span style="color:red">${sessionScope.errorProductName}</span>
                 </c:if>
                 <c:remove var="errorProductName" scope="session"/>
-                <input type="text" class="form-control" name="productName" required/>
+                <input type="text" class="form-control" name="productName"/>
             </div>
 
             <div class="mb-3">
@@ -41,7 +46,7 @@
                     <span style="color:red">${sessionScope.errorDescription}</span>
                 </c:if>
                 <c:remove var="errorDescription" scope="session"/>
-                <input type="text" class="form-control" name="description" required/>
+                <input type="text" class="form-control" name="description"/>
             </div>
 
             <div class="mb-3">
@@ -50,7 +55,7 @@
                     <span style="color:red">${sessionScope.errorPrice}</span>
                 </c:if>
                 <c:remove var="errorPrice" scope="session"/>
-                <input type="text" class="form-control" name="price" required/>
+                <input type="text" class="form-control" name="price"/>
             </div>
 
             <div class="mb-3">
@@ -59,7 +64,7 @@
                     <span style="color:red">${sessionScope.errorWarranty}</span>
                 </c:if>
                 <c:remove var="errorWarranty" scope="session"/>
-                <input type="text" class="form-control" name="warranty" required/>
+                <input type="text" class="form-control" name="warranty"/>
             </div>
 
             <div class="mb-3">
@@ -68,7 +73,7 @@
                     <span style="color:red">${sessionScope.errorQuantity}</span>
                 </c:if>
                 <c:remove var="errorQuantity" scope="session"/>
-                <input type="text" class="form-control" name="quantity" required/>
+                <input type="text" class="form-control" name="quantity"/>
             </div>
 
             <div class="mb-3">

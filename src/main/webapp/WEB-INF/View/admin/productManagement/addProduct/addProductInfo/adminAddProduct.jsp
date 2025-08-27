@@ -50,19 +50,27 @@
         <% if ("1".equals(success)) { %>
             Swal.fire({
                 icon: 'success',
-                title: 'Deleted!',
-                text: 'The product has been hidden.',
-                timer: 2000
+                title: 'Success!',
+                text: 'The product has been added.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                // Xoá query param khỏi URL sau khi hiện thông báo
+                window.history.replaceState({}, document.title, window.location.pathname);
             });
         <% } else if ("1".equals(error)) { %>
             Swal.fire({
                 icon: 'error',
                 title: 'Failed!',
-                text: 'Could not hide the product.',
-                timer: 2000
+                text: 'Could not add the product.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.history.replaceState({}, document.title, window.location.pathname);
             });
         <% }%>
         };
+
     </script>
 
     <style>
@@ -101,6 +109,6 @@
             font-size: 14px;
         }
 
-        
+
     </style>
 </html>

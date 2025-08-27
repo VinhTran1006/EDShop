@@ -44,14 +44,14 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Deleted!',
-                    text: 'The product has been hidden.',
+                    text: 'The product has been added.',
                     timer: 2000
                 });
             <% } else if ("1".equals(error)) { %>
                 Swal.fire({
                     icon: 'error',
                     title: 'Failed!',
-                    text: 'Could not hide the product.',
+                    text: 'Could not add product.',
                     timer: 2000
                 });
             <% }%>
