@@ -22,7 +22,7 @@
             <jsp:include page="../sideBar.jsp" />
             <div class="wrapper">
                 <main class="main-content">
-                    <h1>Suppliers</h1>
+                    <h1>Supplier Management</h1>
                     <button class="create-btn" onclick="location.href = 'CreateSupplier'">Create</button>
                     <form class="search-form" method="get" action="ViewSupplier">
                         <input

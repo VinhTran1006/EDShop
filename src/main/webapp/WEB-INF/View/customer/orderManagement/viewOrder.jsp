@@ -221,7 +221,7 @@
 
 
         <!-- SweetAlert for server response -->
-        <c:if test="${not empty success || not empty error}">
+        <c:if test="${not empty success || not empty error || not empty sessionMessage}">
             <script>
                 window.onload = function () {
                 <c:if test="${success == 'cancel'}">
@@ -233,6 +233,15 @@
                         confirmButtonText: 'OK'
                     });
                 </c:if>
+                <c:if test="${success == 'created'}">
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Order Created Successfully',
+                        text: 'Your order has been placed successfully!',
+                        timer: 3000,
+                        confirmButtonText: 'OK'
+                    });
+                </c:if>
                 <c:if test="${error == 'not-cancelable'}">
                     Swal.fire({
                         icon: 'error',
@@ -240,6 +249,15 @@
                         text: 'Cannot cancel the order unless it is in Waiting or Packing status.',
                         timer: 3000,
                         confirmButtonText: 'Close'
+                    });
+                </c:if>
+                <c:if test="${not empty sessionMessage}">
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: '${sessionMessage}',
+                        timer: 3000,
+                        confirmButtonText: 'OK'
                     });
                 </c:if>
 

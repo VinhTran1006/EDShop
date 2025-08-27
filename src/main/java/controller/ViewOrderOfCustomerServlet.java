@@ -26,7 +26,8 @@ import model.Order;
 public class ViewOrderOfCustomerServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -64,19 +65,36 @@ public class ViewOrderOfCustomerServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         Customer cus = (Customer) session.getAttribute("cus");
-//
-//        if ( cus == null) {
-//            response.sendRedirect("Login");
-//            return;
-//        }
+
+        if (cus == null) {
+            response.sendRedirect("Login");
+            return;
+        }
+
         OrderDAO dao = new OrderDAO();
         List<Order> orders = dao.getOrdersByCustomerID(cus.getCustomerID());
+
+        // Get parameters
         String success = request.getParameter("success");
         String error = request.getParameter("error");
 
+        // Get message from session if exists
+        String sessionMessage = (String) session.getAttribute("message");
+
+        // Debug: In ra console để kiểm tra
+        System.out.println("Success parameter: " + success);
+        System.out.println("Session message: " + sessionMessage);
+
         request.setAttribute("success", success);
         request.setAttribute("error", error);
+        request.setAttribute("sessionMessage", sessionMessage);
         request.setAttribute("orderList", orders);
+
+        // Remove message from session after setting it in request
+        if (sessionMessage != null) {
+            session.removeAttribute("message");
+        }
+
         request.getRequestDispatcher("/WEB-INF/View/customer/orderManagement/viewOrder.jsp").forward(request, response);
     }
 
