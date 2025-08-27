@@ -90,7 +90,7 @@ public class ProductListForStaff extends HttpServlet {
         request.setAttribute("cateList", cateList);
         request.setAttribute("brandList", brandList);
         request.setAttribute("selectedFilter", filter);
-        request.getRequestDispatcher("/WEB-INF/View/staff/productManagement/productList.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/View/staff/productManagement/viewProductList/staffProductList.jsp").forward(request, response);
     }
 
     /**
