@@ -204,10 +204,11 @@ public class ImportStockDetailDAO extends DBContext {
         }
     }
 
-    public boolean deductStockFIFO(int productID, int quantityToDeduct) throws SQLException {
+    public List<int[]> deductStockFIFO(int productID, int quantityToDeduct) throws SQLException {
 
         PreparedStatement ps = null;
         ResultSet rs = null;
+        List<int[]> deductedList = new ArrayList<>(); // lưu [detailID, deductedQuantity]
 
         try {
             conn.setAutoCommit(false); // bắt đầu transaction
@@ -219,19 +220,18 @@ public class ImportStockDetailDAO extends DBContext {
             rs = ps.executeQuery();
             if (!rs.next()) {
                 conn.rollback();
-                return false; // product không tồn tại
+                return null; // product không tồn tại
             }
             int currentQty = rs.getInt("Quantity");
             if (currentQty < quantityToDeduct) {
                 conn.rollback();
-                return false; // không đủ hàng
+                return null; // không đủ hàng
             }
             rs.close();
             ps.close();
 
             // 2. Lấy danh sách ImportStockDetails theo FIFO
-            String fifoSql
-                    = "SELECT d.ImportStockDetailsID, d.StockLeft "
+            String fifoSql = "SELECT d.ImportStockDetailsID, d.StockLeft "
                     + "FROM ImportStockDetails d "
                     + "JOIN ImportStocks i ON d.ImportID = i.ImportID "
                     + "WHERE d.ProductID = ? AND d.StockLeft > 0 "
@@ -241,8 +241,6 @@ public class ImportStockDetailDAO extends DBContext {
             rs = ps.executeQuery();
 
             List<int[]> fifoList = new ArrayList<>();
-            // mỗi phần tử: [detailID, stockLeft]
-
             while (rs.next()) {
                 fifoList.add(new int[]{
                     rs.getInt("ImportStockDetailsID"),
@@ -262,11 +260,9 @@ public class ImportStockDetailDAO extends DBContext {
 
                 int detailID = detail[0];
                 int stockLeft = detail[1];
-
                 int deduct = Math.min(stockLeft, remaining);
 
-                String updateDetailSql
-                        = "UPDATE ImportStockDetails "
+                String updateDetailSql = "UPDATE ImportStockDetails "
                         + "SET StockLeft = StockLeft - ? "
                         + "WHERE ImportStockDetailsID = ?";
                 PreparedStatement psUpdate = conn.prepareStatement(updateDetailSql);
@@ -275,32 +271,33 @@ public class ImportStockDetailDAO extends DBContext {
                 psUpdate.executeUpdate();
                 psUpdate.close();
 
+                // lưu cặp [ID lô, số lượng trừ]
+                deductedList.add(new int[]{detailID, deduct});
                 remaining -= deduct;
             }
 
             if (remaining > 0) {
                 conn.rollback();
-                return false; // không đủ stock
+                return null; // không đủ stock
             }
 
             // 4. Update bảng Products
-            String updateProductSql
-                    = "UPDATE Products SET Quantity = Quantity - ? WHERE ProductID = ?";
+            String updateProductSql = "UPDATE Products SET Quantity = Quantity - ? WHERE ProductID = ?";
             PreparedStatement psUpdate = conn.prepareStatement(updateProductSql);
             psUpdate.setInt(1, quantityToDeduct);
             psUpdate.setInt(2, productID);
             psUpdate.executeUpdate();
             psUpdate.close();
 
-            // 5. Commit transaction
             conn.commit();
-            return true;
+            return deductedList; // trả về danh sách chi tiết lô đã trừ
+
         } catch (Exception e) {
             if (conn != null) {
                 conn.rollback();
             }
             e.printStackTrace();
-            return false;
+            return null;
         } finally {
             if (rs != null) {
                 rs.close();
@@ -314,5 +311,83 @@ public class ImportStockDetailDAO extends DBContext {
             }
         }
     }
+
+    // Trả hàng lại theo batch List<int[]> {ImportStockDetailsID, quantity}
+    public boolean increaseStockBack(List<int[]> batchList) {
+        if (batchList == null || batchList.isEmpty()) {
+            return true;
+        }
+
+        String update = "UPDATE ImportStockDetails SET StockLeft = StockLeft + ? WHERE ImportStockDetailsID = ?";
+
+        try ( PreparedStatement ps = conn.prepareStatement(update)) {
+            conn.setAutoCommit(false);  // bắt đầu transaction
+            try {
+                // Duyệt từng lô và add vào batch
+                for (int[] pair : batchList) {
+                    int importDetailID = pair[0];
+                    int quantity = pair[1];
+
+                    // In log dễ kiểm tra
+                    System.out.println("Returning " + quantity + " units to ImportStockDetailsID " + importDetailID);
+
+                    ps.setInt(1, quantity);
+                    ps.setInt(2, importDetailID);
+                    ps.addBatch();
+                }
+
+                int[] counts = ps.executeBatch();
+
+                // Kiểm tra nếu có lô nào update 0 dòng => rollback
+                for (int c : counts) {
+                    if (c == 0) {
+                        conn.rollback();
+                        System.err.println("increaseStockBack: rollback, some rows not updated");
+                        return false;
+                    }
+                }
+
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                return false;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Chỉ dùng trong DAO, private hoặc public static
+private List<int[]> parseBatchString(String batchStr) {
+    List<int[]> list = new ArrayList<>();
+    if (batchStr == null || batchStr.trim().isEmpty()) return list;
+
+    batchStr = batchStr.trim();
+    if (batchStr.startsWith("[") && batchStr.endsWith("]")) {
+        batchStr = batchStr.substring(1, batchStr.length() - 1);
+    }
+
+    String[] pairs = batchStr.split(",");
+    for (String p : pairs) {
+        String[] parts = p.trim().split(":");
+        if (parts.length == 2) {
+            try {
+                int id = Integer.parseInt(parts[0].trim());
+                int qty = Integer.parseInt(parts[1].trim());
+                list.add(new int[]{id, qty});
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid batch format: " + p);
+            }
+        }
+    }
+    return list;
+}
+
 
 }

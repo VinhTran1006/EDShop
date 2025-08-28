@@ -6,6 +6,8 @@ package controller;
 
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
+import dao.ProductDAO;
+import dao.ImportStockDetailDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -14,7 +16,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Order;
 import model.OrderDetail;
-
+import java.util.stream.Collectors;
 
 /**
  *
@@ -24,7 +26,8 @@ import model.OrderDetail;
 public class UpdateOrderStatusServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -85,63 +88,116 @@ public class UpdateOrderStatusServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-    String status = request.getParameter("update");
-    String orderID = request.getParameter("orderID");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String status = request.getParameter("update");
+        String orderID = request.getParameter("orderID");
 
-    try {
-        OrderDAO oDAO = new OrderDAO();
-OrderDetailDAO odDAO = new OrderDetailDAO();
+        try {
+            OrderDAO oDAO = new OrderDAO();
+            OrderDetailDAO odDAO = new OrderDetailDAO();
 
-        if (status != null && orderID != null) {
-            int count = oDAO.updateOrder(Integer.parseInt(orderID), status);
+            if (status != null && orderID != null) {
+                int count = oDAO.updateOrder(Integer.parseInt(orderID), status);
 
-            if (count > 0) {
-                // ✅ Nếu status = cancel thì hoàn kho
-                if ("Cancelled".equalsIgnoreCase(status)) {
-                    List<OrderDetail> list = odDAO.getOrderDetail(orderID);
+                if (count > 0) {
+                    // ✅ Nếu status = cancel thì hoàn kho
+                    if ("Cancelled".equalsIgnoreCase(status)) {
+                        List<OrderDetail> list = odDAO.getOrderDetail(orderID);
+                        ProductDAO pDAO = new ProductDAO();
+                        ImportStockDetailDAO sDetailDAO = new ImportStockDetailDAO();
 
-                    // Tạo ProductDAO để update stock
-                    dao.ProductDAO pDAO = new dao.ProductDAO();
+                        System.out.println("Cancelling order: " + orderID + ", total items: " + list.size());
 
-                    for (OrderDetail od : list) {
-                        pDAO.increaseStock(od.getProductID(), od.getQuantity());
+                        for (OrderDetail od : list) {
+                            System.out.println("OrderDetailID: " + od.getOrderDetailsID());
+                            System.out.println("ProductID: " + od.getProductID());
+                            System.out.println("Quantity to return: " + od.getQuantity());
+
+                            // 1. Trả lại tổng số lượng sản phẩm
+                            try {
+                                pDAO.increaseStock(od.getProductID(), od.getQuantity());
+                                System.out.println("Product stock increased successfully for ProductID: " + od.getProductID());
+                            } catch (Exception e) {
+                                System.err.println("Failed to increase product stock for ProductID: " + od.getProductID());
+                                e.printStackTrace();
+                            }
+
+                            // 2. Trả lại số lượng từng lô
+                            List<int[]> batchList = od.getImportDetailBatch();
+                            if (batchList != null && !batchList.isEmpty()) {
+                                System.out.println("Returning stock to batches for OrderDetailID: " + od.getOrderDetailsID());
+                                for (int[] pair : batchList) {
+                                    System.out.println("Batch ImportStockDetailsID: " + pair[0] + ", quantity: " + pair[1]);
+                                }
+
+                                boolean ok = sDetailDAO.increaseStockBack(batchList);
+                                if (!ok) {
+                                    System.err.println("Failed to rollback stock for OrderDetailID: " + od.getOrderDetailsID());
+                                } else {
+                                    System.out.println("Batch stock rollback successful for OrderDetailID: " + od.getOrderDetailsID());
+                                }
+                            } else {
+                                System.out.println("No batch stock to rollback for OrderDetailID: " + od.getOrderDetailsID());
+                            }
+                        }
+
+                        System.out.println("Order cancellation process completed for orderID: " + orderID);
                     }
-                }
-                
-                if ("waiting for delivery".equalsIgnoreCase(status)) {
-                    List<OrderDetail> list = odDAO.getOrderDetail(orderID);
 
-                    // Tạo ProductDAO để update stock
-                    dao.ImportStockDetailDAO sDetailDAO = new dao.ImportStockDetailDAO();
+                    if ("packing".equalsIgnoreCase(status)) {
+                        List<OrderDetail> list = odDAO.getOrderDetail(orderID);
 
-                    for (OrderDetail od : list) {
-                        System.out.println(od.getProductID());
-                        System.out.println(od.getQuantity());
-                        sDetailDAO.deductStockFIFO(od.getProductID(), od.getQuantity());
+                        // Tạo DAO để update stock
+                        dao.ImportStockDetailDAO sDetailDAO = new dao.ImportStockDetailDAO();
+                        dao.ProductDAO pDAO = new dao.ProductDAO();
+                        for (OrderDetail od : list) {
+                            System.out.println("ProductID: " + od.getProductID());
+                            System.out.println("Quantity: " + od.getQuantity());
+
+                            // 1. Trừ kho theo FIFO và nhận về danh sách [ImportStockDetailsID, quantityDeducted]
+                            List<int[]> deductedList = sDetailDAO.deductStockFIFO(od.getProductID(), od.getQuantity());
+
+                            if (deductedList != null && !deductedList.isEmpty()) {
+                                // 2. Lưu toàn bộ chi tiết lô đã trừ vào object
+                                od.setImportDetailBatch(deductedList);
+
+                                // 3. Chuyển sang chuỗi dễ đọc để lưu DB
+                                String batchStr = deductedList.stream()
+                                        .map(arr -> arr[0] + ":" + arr[1])
+                                        .collect(Collectors.joining(", ", "[", "]"));
+
+                                // 4. Ghi vào DB dựa trên orderDetailsID
+                                boolean updated = odDAO.updateImportDetailBatch(od.getOrderDetailsID(), batchStr);
+                                if (!updated) {
+                                    System.err.println("Failed to update importDetailBatch for OrderDetailID: " + od.getOrderDetailsID());
+                                }
+
+                                // 5. In ra log
+                                System.out.println("Batch details saved: " + batchStr);
+                            }
+                        }
+
                     }
+
+                    // ✅ Thành công
+                    response.sendRedirect(request.getContextPath() + "/ViewOrderList?success=update");
+                } else {
+                    // ❌ Không update được
+                    response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=update-failed");
                 }
-                // ✅ Thành công
-                
-                response.sendRedirect(request.getContextPath() + "/ViewOrderList?success=update");
             } else {
-                // ❌ Không update được
-                response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=update-failed");
+                response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-params");
             }
-        } else {
-            response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-params");
+
+        } catch (NumberFormatException e) {
+            e.printStackTrace(); // In log server
+            response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-orderid");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=exception");
         }
-
-    } catch (NumberFormatException e) {
-        e.printStackTrace(); // In log server
-        response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-orderid");
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=exception");
     }
-}
-
 
     /**
      * Returns a short description of the servlet.

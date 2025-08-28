@@ -732,6 +732,21 @@ public class ProductDAO extends DBContext {
             return false;
         }
     }
+    
+    public boolean decreaseQuantity(int productId, int quantityChange) {
+        String sql = "UPDATE Products SET quantity = quantity - ? WHERE productID = ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, quantityChange); // Use negative value to decrease
+            ps.setInt(2, productId);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     // Nguyễn Thế Vinh
     public void increaseStock(int productID, int quantity) {
