@@ -60,7 +60,7 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void doGet(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String orderID = request.getParameter("orderID");
         OrderDAO oDAO = new OrderDAO();
@@ -71,10 +71,10 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
         if (o != null) {
             request.setAttribute("dataDetail", list);
             request.setAttribute("data", o);
-            request.getRequestDispatcher("/WEB-INF/View/admin/orderManagement/orderDetailsView.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/View/staff/orderManagement/orderDetailsView.jsp").forward(request, response);
 
         } else {
-            response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin");
+            response.sendRedirect(request.getContextPath() + "/ViewOrderListServlet");
         }
     }
 
@@ -86,7 +86,7 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void doPost(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String status = request.getParameter("update");
         String orderID = request.getParameter("orderID");
@@ -175,23 +175,23 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
                             }
                         }
 
-                    
+
                     // ✅ Thành công
-                    response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?success=update");
+                    response.sendRedirect(request.getContextPath() + "/ViewOrderList?success=update");
                 } else {
                     // ❌ Không update được
-                    response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=update-failed");
+                    response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=update-failed");
                 }
             } else {
-                response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=invalid-params");
+                response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-params");
             }
 
         } catch (NumberFormatException e) {
             e.printStackTrace(); // In log server
-            response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=invalid-orderid");
+            response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-orderid");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=exception");
+            response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=exception");
         }
     }
 

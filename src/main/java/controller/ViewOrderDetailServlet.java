@@ -75,7 +75,7 @@ public class ViewOrderDetailServlet extends HttpServlet {
         if (o != null) {
             request.getRequestDispatcher("/WEB-INF/View/staff/orderManagement/orderDetailsView.jsp")
                     .forward(request, response);
-        } else {
+} else {
             response.sendRedirect(request.getContextPath() + "/ViewOrderListServlet");
         }
     }
