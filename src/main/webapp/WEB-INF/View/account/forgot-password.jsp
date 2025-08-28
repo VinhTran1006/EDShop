@@ -271,8 +271,6 @@
                     });
                 }
             });
-            localStorage.removeItem("otpExpiry_register");
-            localStorage.removeItem("otpExpiry_forgot");
         </script>
         <jsp:include page="/WEB-INF/View/customer/homePage/footer.jsp" />
     </body>

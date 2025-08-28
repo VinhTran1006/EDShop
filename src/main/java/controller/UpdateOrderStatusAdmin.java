@@ -83,48 +83,61 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-protected void doPost(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response)
-        throws ServletException, IOException {
-    String status = request.getParameter("update");
-    String orderID = request.getParameter("orderID");
+    protected void doPost(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response)
+            throws ServletException, IOException {
+        String status = request.getParameter("update");
+        String orderID = request.getParameter("orderID");
 
-    try {
-        OrderDAO oDAO = new OrderDAO();
-OrderDetailDAO odDAO = new OrderDetailDAO();
+        try {
+            OrderDAO oDAO = new OrderDAO();
+            OrderDetailDAO odDAO = new OrderDetailDAO();
 
-        if (status != null && orderID != null) {
-            int count = oDAO.updateOrder(Integer.parseInt(orderID), status);
+            if (status != null && orderID != null) {
+                int count = oDAO.updateOrder(Integer.parseInt(orderID), status);
 
-            if (count > 0) {
-                // ✅ Nếu status = cancel thì hoàn kho
-                if ("Cancelled".equalsIgnoreCase(status)) {
-                    List<OrderDetail> list = odDAO.getOrderDetail(orderID);
+                if (count > 0) {
+                    // ✅ Nếu status = cancel thì hoàn kho
+                    if ("Cancelled".equalsIgnoreCase(status)) {
+                        List<OrderDetail> list = odDAO.getOrderDetail(orderID);
 
-                    // Tạo ProductDAO để update stock
-                    dao.ProductDAO pDAO = new dao.ProductDAO();
+                        // Tạo ProductDAO để update stock
+                        dao.ProductDAO pDAO = new dao.ProductDAO();
 
-                    for (OrderDetail od : list) {
-                        pDAO.increaseStock(od.getProductID(), od.getQuantity());
+                        for (OrderDetail od : list) {
+                            pDAO.increaseStock(od.getProductID(), od.getQuantity());
+                        }
                     }
-                }
-                // ✅ Thành công
-                response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?success=update");
-            } else {
-                // ❌ Không update được
-                response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=update-failed");
-            }
-        } else {
-            response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=invalid-params");
-        }
 
-    } catch (NumberFormatException e) {
-        e.printStackTrace(); // In log server
-        response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=invalid-orderid");
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=exception");
+                    if ("waiting for delivery".equalsIgnoreCase(status)) {
+                        List<OrderDetail> list = odDAO.getOrderDetail(orderID);
+
+                        // Tạo ProductDAO để update stock
+                        dao.ImportStockDetailDAO sDetailDAO = new dao.ImportStockDetailDAO();
+
+                        for (OrderDetail od : list) {
+                            System.out.println(od.getProductID());
+                            System.out.println(od.getQuantity());
+                            sDetailDAO.deductStockFIFO(od.getProductID(), od.getQuantity());
+                        }
+                    }
+                    // ✅ Thành công
+                    response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?success=update");
+                } else {
+                    // ❌ Không update được
+                    response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=update-failed");
+                }
+            } else {
+                response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=invalid-params");
+            }
+
+        } catch (NumberFormatException e) {
+            e.printStackTrace(); // In log server
+            response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=invalid-orderid");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/ViewOrderListServletAdmin?error=exception");
+        }
     }
-}
 
     /**
      * Returns a short description of the servlet.

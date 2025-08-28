@@ -230,7 +230,7 @@
 
                 <div style="width: 53%;">
                     <div style="display: flex; gap: 4px; font-size: 14px; color: #555; margin-top: 2%; margin-bottom: 2%;">
-                        <a href="/" style="text-decoration: none; color: #007bff;">Home</a> >
+                        <a href="Home" style="text-decoration: none; color: #007bff;">Home</a> >
                         <a href="#" style="text-decoration: none; color: #007bff;"><%= categoryname%></a> >
                         <a href="#" style="text-decoration: none; color: #000;"><%= product.getProductName()%></a>
                     </div>

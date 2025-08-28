@@ -67,14 +67,6 @@
                 <input type="text" class="form-control" name="warranty"/>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Quantity</label>
-                <c:if test="${not empty sessionScope.errorQuantity}">
-                    <span style="color:red">${sessionScope.errorQuantity}</span>
-                </c:if>
-                <c:remove var="errorQuantity" scope="session"/>
-                <input type="text" class="form-control" name="quantity"/>
-            </div>
 
             <div class="mb-3">
                 <label class="form-label">Suppliers</label>

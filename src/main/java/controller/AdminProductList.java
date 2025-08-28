@@ -77,11 +77,11 @@ public class AdminProductList extends HttpServlet {
         if (filter == null || filter.equals("All")) {
             productList = proDAO.getProductListAdmin();
         } else if (filter.equals("Featured")) {
-            productList = proDAO.getProductIsFeatured();
+            productList = proDAO.getProductIsFeaturedAdmin();
         } else if (filter.equals("Bestseller")) {
-            productList = proDAO.getProductIsBestSeller();
+            productList = proDAO.getProductIsBestSellerAdmin();
         } else if (filter.equals("New")) {
-            productList = proDAO.getProductIsNew();
+            productList = proDAO.getProductIsNewAdmin();
         } 
         cateList = cateDAO.getAllCategory();
         brandList = brandDAO.getAllBrand();

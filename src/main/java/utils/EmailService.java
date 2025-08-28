@@ -22,7 +22,7 @@ public class EmailService {
     final String senderPassword = System.getenv("EMAIL_PASSWORD");
 
     if (senderEmail == null || senderPassword == null) {
-        System.err.println("❌ Lỗi: Không tìm thấy thông tin đăng nhập email.");
+        System.err.println("❌ Error: Email login information not found.");
         return false;
     }
 
@@ -46,7 +46,7 @@ public class EmailService {
 
         String contactBlock = "<div style='display: flex; align-items: center; margin-top: 30px;'>"
                 + "  <div style='margin-right: 20px;'>"
-                + "    <img src='https://drive.google.com/uc?export=view&id=1L_7sTrEP_dT2hM2oQyloOaZBRKJ8HjLB' alt='TShop' width='80'/>"
+                + "    <img src='https://res.cloudinary.com/dzaojduwo/image/upload/v1756348123/uw1wv9zut5zrz6smsvd9.png' alt='TShop' width='80'/>"
                 + "  </div>"
                 + "  <div style='font-size:13px; line-height: 1.5;'>"
                 + "    <div><span style='color:orange;'>ED Shop</span></div>"
@@ -80,7 +80,7 @@ public class EmailService {
         System.out.println("✅ Email sent successfully to " + recipientEmail);
         return true;
     } catch (MessagingException e) {
-        System.err.println("❌ Lỗi khi gửi email: " + e.getMessage());
+        System.err.println("❌ Error sending email: " + e.getMessage());
         e.printStackTrace();
         return false;
     }
@@ -92,7 +92,7 @@ public class EmailService {
         final String senderPassword = System.getenv("EMAIL_PASSWORD");
 
         if (senderEmail == null || senderPassword == null) {
-            System.err.println("❌ Lỗi: Không tìm thấy thông tin đăng nhập email.");
+            System.err.println("❌ Error: Email login information not found.");
             return false;
         }
 
@@ -117,7 +117,7 @@ public class EmailService {
                     + "<p>Now you can log in and enjoy our services.</p>"
                     + "<div style='display: flex; align-items: center; margin-top: 30px;'>"
                     + "  <div style='margin-right: 20px;'>"
-                    + " <img src='https://drive.google.com/uc?export=view&id=1L_7sTrEP_dT2hM2oQyloOaZBRKJ8HjLB' alt='TShop' width='80'/>"
+                    + " <img src='https://res.cloudinary.com/dzaojduwo/image/upload/v1756348123/uw1wv9zut5zrz6smsvd9.png' alt='TShop' width='80'/>"
                     + "  </div>"
                     + "  <div style='font-size:13px; line-height: 1.5;'>"
                     + "    <div><span style='color:orange;'>ED Shop</span></div>"
@@ -136,7 +136,7 @@ public class EmailService {
             System.out.println("✅ Welcome email sent to " + recipientEmail);
             return true;
         } catch (MessagingException e) {
-            System.err.println("❌ Lỗi khi gửi email: " + e.getMessage());
+            System.err.println("❌ Error sending email: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

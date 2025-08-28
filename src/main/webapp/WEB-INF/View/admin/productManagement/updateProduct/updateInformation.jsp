@@ -91,14 +91,7 @@
                 <input type="text" class="form-control" name="warranty" required value="<%= product.getWarrantyPeriod()%>"/>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Quantity</label>
-                <c:if test="${not empty sessionScope.errorQuantity}">
-                    <span style="color:red">${sessionScope.errorQuantity}</span>
-                </c:if>
-                <c:remove var="errorQuantity" scope="session"/>
-                <input type="text" class="form-control" name="quantity" required value="<%= product.getQuantity()%>"/>
-            </div>
+           
 
             <div class="mb-3">
                 <label class="form-label">Supplier</label>

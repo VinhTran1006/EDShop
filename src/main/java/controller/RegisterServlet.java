@@ -176,7 +176,7 @@ public class RegisterServlet extends HttpServlet {
         OTPManager otpManager = new OTPManager(otpCode, 5);
         long expiryTime = System.currentTimeMillis() + (5 * 60 * 1000);
         session.setAttribute("registerOtpExpiryTime", expiryTime);
-        session.setAttribute("registerOtpManager", otpManager);
+        session.setAttribute("otpManager", otpManager);
         session.setAttribute("otpPurpose", "register");
 
         // Lưu tạm thông tin người dùng chờ xác minh

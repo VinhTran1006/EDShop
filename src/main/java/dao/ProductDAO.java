@@ -140,6 +140,126 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
+    
+    
+    public List<Product> getProductIsNewAdmin() {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT TOP 30 * \n"
+                + "FROM Products WHERE IsActive != 0 \n"
+                + "ORDER BY AddedAt DESC;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int productId = rs.getInt("ProductID");
+                String productName = rs.getString("ProductName");
+                String description = rs.getString("Description");
+                BigDecimal price = rs.getBigDecimal("Price");
+                int supplierId = rs.getInt("SupplierID");
+                int categoryId = rs.getInt("CategoryID");
+                int brandId = rs.getInt("BrandID");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Date addedAt = rs.getDate("AddedAt");
+                boolean isActive = rs.getBoolean("isActive");
+                String imageUrl1 = rs.getString("ImageURL1");
+                String imageUrl2 = rs.getString("ImageURL2");
+                String imageUrl3 = rs.getString("ImageURL3");
+                String imageUrl4 = rs.getString("ImageURL4");
+                int quantity = rs.getInt("Quantity");
+
+                Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
+
+                list.add(product);
+            }
+            return list;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public List<Product> getProductIsFeaturedAdmin() {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT TOP 30 *"
+                + "FROM Products p WHERE IsActive != 0"
+                + "ORDER BY NEWID()";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int productId = rs.getInt("ProductID");
+                String productName = rs.getString("ProductName");
+                String description = rs.getString("Description");
+                BigDecimal price = rs.getBigDecimal("Price");
+                int supplierId = rs.getInt("SupplierID");
+                int categoryId = rs.getInt("CategoryID");
+                int brandId = rs.getInt("BrandID");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Date addedAt = rs.getDate("AddedAt");
+                boolean isActive = rs.getBoolean("isActive");
+                String imageUrl1 = rs.getString("ImageURL1");
+                String imageUrl2 = rs.getString("ImageURL2");
+                String imageUrl3 = rs.getString("ImageURL3");
+                String imageUrl4 = rs.getString("ImageURL4");
+                int quantity = rs.getInt("Quantity");
+
+                Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
+
+                list.add(product);
+            }
+            return list;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public List<Product> getProductIsBestSellerAdmin() {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT TOP 30\n"
+                + "    p.ProductID,p.ProductName,p.Description,p.Price,p.SupplierID,p.ImageURL1,p.ImageURL2,p.ImageURL3,p.ImageURL4,p.AddedAt,p.Quantity,p.CategoryID,p.BrandID,p.WarrantyPeriod, p.isActive,SUM(od.Quantity) AS TotalSold\n"
+                + "FROM Products p\n"
+                + "JOIN OrderDetails od ON od.ProductID = p.ProductID\n"
+                + "JOIN Orders o ON o.OrderID = od.OrderID\n"
+                + "WHERE o.Status = 'Delivered' AND o.OrderedDate >= DATEADD(MONTH, -2, GETDATE()) AND IsActive != 0 \n"
+                + "GROUP BY \n"
+                + "    p.ProductID,p.ProductName,p.Quantity,p.Description,p.ImageURL1,p.ImageURL2,p.ImageURL3,p.ImageURL4,p.Price,p.SupplierID,p.AddedAt,p.CategoryID,p.BrandID,p.WarrantyPeriod, p.isActive\n"
+                + "ORDER BY TotalSold DESC;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int productId = rs.getInt("ProductID");
+                String productName = rs.getString("ProductName");
+                String description = rs.getString("Description");
+                BigDecimal price = rs.getBigDecimal("Price");
+                int supplierId = rs.getInt("SupplierID");
+                int categoryId = rs.getInt("CategoryID");
+                int brandId = rs.getInt("BrandID");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Date addedAt = rs.getDate("AddedAt");
+                boolean isActive = rs.getBoolean("isActive");
+                String imageUrl1 = rs.getString("ImageURL1");
+                String imageUrl2 = rs.getString("ImageURL2");
+                String imageUrl3 = rs.getString("ImageURL3");
+                String imageUrl4 = rs.getString("ImageURL4");
+                int quantity = rs.getInt("Quantity");
+
+                Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
+
+                list.add(product);
+            }
+            return list;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
 
     public List<Product> getProductListCustomer() {
         List<Product> list = new ArrayList<>();
@@ -367,7 +487,7 @@ public class ProductDAO extends DBContext {
             pstmt1.setInt(5, categoryid);
             pstmt1.setInt(6, brandid);
             pstmt1.setInt(7, warranty);
-            pstmt1.setInt(8, quantity);
+            pstmt1.setInt(8, 0);
             pstmt1.setString(9, url1);
             pstmt1.setString(10, url2);
             pstmt1.setString(11, url3);
@@ -418,7 +538,7 @@ public class ProductDAO extends DBContext {
             pstmt1.setInt(5, categoryid);
             pstmt1.setInt(6, brandid);
             pstmt1.setInt(7, warranty);
-            pstmt1.setInt(8, quantity);
+            pstmt1.setInt(8, 0);
             pstmt1.setString(9, url1);
             pstmt1.setString(10, url2);
             pstmt1.setString(11, url3);
