@@ -15,7 +15,9 @@
     </head>
     <body>
         <div class="container">
+
             <jsp:include page="../sideBar.jsp" />
+
             <div class="wrapper">
                 <main class="main-content">
                     <div class="container">
@@ -68,6 +70,7 @@
                                     <tr><th>Address:</th><td>${data.addressSnapshot}</td></tr>
                                 </table>
 
+
                                 <h5 class="section-header"><i class="fa-solid fa-box"></i> Order Items</h5>
                                 <div class="order-items">
                                     <c:forEach items="${dataDetail}" var="detail">
@@ -86,25 +89,12 @@
                                         <div class="alert alert-danger">${errorMessage}</div>
                                     </c:if>
 
-                                    <form action="${pageContext.request.contextPath}/UpdateOrderStatusAdmin" method="POST">
-                                        <input type="hidden" name="orderID" value="${data.orderID}" />
-                                        <div class="form-controls">
-                                            <select id="orderStatus" name="update" class="form-select">
-                                                <option value="Waiting" <c:if test="${data.status eq 'Waiting'}">selected</c:if>>Waiting</option>
-                                                <option value="Packing" <c:if test="${data.status eq 'Packing'}">selected</c:if>>Packing</option>
-                                                <option value="Waiting for Delivery" <c:if test="${data.status eq 'Waiting for Delivery'}">selected</c:if>>Waiting for Delivery</option>
-                                                <option value="Delivered" <c:if test="${data.status eq 'Delivered'}">selected</c:if>>Delivered</option>
-                                                <option value="Cancelled" <c:if test="${data.status eq 'Cancelled'}">selected</c:if>>Cancelled</option>
-                                                </select>
-                                                <button type="submit" class="btn btn-success">
-                                                    <i class="fa-solid fa-save"></i> Save Changes
-                                                </button>
+                                    
                                                 <a href="${pageContext.request.contextPath}/ViewOrderListServletAdmin" class="btn btn-outline-primary">
                                                 <i class="fa-solid fa-arrow-left"></i> Back to List
                                             </a>
-                                        </div>
-                                    </form>
-                                </div>
+                                        
+
                             </div>
                         </div>
                     </div>

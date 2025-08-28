@@ -162,8 +162,8 @@ public class OrderDetailDAO extends DBContext {
 
     public List<OrderDetail> getOrderDetailsByOrderID(int orderID) {
         List<OrderDetail> list = new ArrayList<>();
-        String sql
-                = "SELECT od.OrderID, od.ProductID, od.Quantity, od.Price, "
+        String sql = "SELECT od.OrderID, od.ProductID, od.Quantity, od.Price, "
+                + "od.ImportDetailBatch, " // <-- đúng cột
                 + "p.ProductName, c.CategoryName "
                 + "FROM OrderDetails od "
                 + "JOIN Products p ON od.ProductID = p.ProductID "
@@ -182,7 +182,18 @@ public class OrderDetailDAO extends DBContext {
                 detail.setQuantity(rs.getInt("Quantity"));
                 detail.setPrice(rs.getLong("Price"));
 
+                // parse ImportDetailBatch
+                String batchStr = rs.getString("ImportDetailBatch");
+                List<int[]> batchList = parseBatchString(batchStr);
+                detail.setImportDetailBatch(batchList);
+
                 list.add(detail);
+
+                // log để test
+                System.out.println("[DEBUG] OrderDetail loaded: product=" + detail.getProductName()
+                        + ", qty=" + detail.getQuantity()
+                        + ", ImportDetailBatch=" + batchStr
+                        + " -> parsed " + batchList.size() + " pairs");
             }
         } catch (Exception e) {
             e.printStackTrace();

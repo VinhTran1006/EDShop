@@ -90,7 +90,7 @@ public class UpdateOrderStatusServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String status = request.getParameter("update");
+        String status = request.getParameter("update");  // trạng thái muốn chuyển tới
         String orderID = request.getParameter("orderID");
 
         try {
@@ -98,104 +98,90 @@ public class UpdateOrderStatusServlet extends HttpServlet {
             OrderDetailDAO odDAO = new OrderDetailDAO();
 
             if (status != null && orderID != null) {
-                int count = oDAO.updateOrder(Integer.parseInt(orderID), status);
+                int orderIdInt = Integer.parseInt(orderID);
 
-                if (count > 0) {
-                    // ✅ Nếu status = cancel thì hoàn kho
-                    if ("Cancelled".equalsIgnoreCase(status)) {
+                // LẤY ORDER TỪ DB TRƯỚC
+                Order order = oDAO.getOrderByID(orderID);
+                String currentStatus = order.getStatus(); // trạng thái trước update
+
+                // ======================
+                // 1. XỬ LÝ HỦY ĐƠN
+                // ======================
+                if ("Cancelled".equalsIgnoreCase(status)) {
+                    if ("Waiting".equals(currentStatus)) {
+                        // Waiting → Cancelled (không hoàn stock)
+                        oDAO.updateStatus(orderIdInt, "Cancelled");
+
+                    } else if ("Packing".equals(currentStatus)) {
+                        // Packing → Cancelled (hoàn stock)
+                        oDAO.updateStatus(orderIdInt, "Cancelled");
+
                         List<OrderDetail> list = odDAO.getOrderDetail(orderID);
                         ProductDAO pDAO = new ProductDAO();
                         ImportStockDetailDAO sDetailDAO = new ImportStockDetailDAO();
 
-                        System.out.println("Cancelling order: " + orderID + ", total items: " + list.size());
-
                         for (OrderDetail od : list) {
-                            System.out.println("OrderDetailID: " + od.getOrderDetailsID());
-                            System.out.println("ProductID: " + od.getProductID());
-                            System.out.println("Quantity to return: " + od.getQuantity());
-
-                            // 1. Trả lại tổng số lượng sản phẩm
-                            try {
-                                pDAO.increaseStock(od.getProductID(), od.getQuantity());
-                                System.out.println("Product stock increased successfully for ProductID: " + od.getProductID());
-                            } catch (Exception e) {
-                                System.err.println("Failed to increase product stock for ProductID: " + od.getProductID());
-                                e.printStackTrace();
-                            }
-
-                            // 2. Trả lại số lượng từng lô
+                            // 1. Trả lại tổng số lượng
+                            pDAO.increaseStock(od.getProductID(), od.getQuantity());
+                            // 2. Trả lại theo batch
                             List<int[]> batchList = od.getImportDetailBatch();
                             if (batchList != null && !batchList.isEmpty()) {
-                                System.out.println("Returning stock to batches for OrderDetailID: " + od.getOrderDetailsID());
-                                for (int[] pair : batchList) {
-                                    System.out.println("Batch ImportStockDetailsID: " + pair[0] + ", quantity: " + pair[1]);
-                                }
-
-                                boolean ok = sDetailDAO.increaseStockBack(batchList);
-                                if (!ok) {
-                                    System.err.println("Failed to rollback stock for OrderDetailID: " + od.getOrderDetailsID());
-                                } else {
-                                    System.out.println("Batch stock rollback successful for OrderDetailID: " + od.getOrderDetailsID());
-                                }
-                            } else {
-                                System.out.println("No batch stock to rollback for OrderDetailID: " + od.getOrderDetailsID());
+                                sDetailDAO.increaseStockBack(batchList);
                             }
                         }
-
-                        System.out.println("Order cancellation process completed for orderID: " + orderID);
+                    } else {
+                        // Các trạng thái khác không cho cancel
+                        response.sendRedirect("ViewOrderList?error=not-cancelable");
+                        return;
                     }
 
-                    if ("packing".equalsIgnoreCase(status)) {
-                        List<OrderDetail> list = odDAO.getOrderDetail(orderID);
-
-                        // Tạo DAO để update stock
-                        dao.ImportStockDetailDAO sDetailDAO = new dao.ImportStockDetailDAO();
-                        dao.ProductDAO pDAO = new dao.ProductDAO();
-                        for (OrderDetail od : list) {
-                            System.out.println("ProductID: " + od.getProductID());
-                            System.out.println("Quantity: " + od.getQuantity());
-
-                            // 1. Trừ kho theo FIFO và nhận về danh sách [ImportStockDetailsID, quantityDeducted]
-                            List<int[]> deductedList = sDetailDAO.deductStockFIFO(od.getProductID(), od.getQuantity());
-
-                            if (deductedList != null && !deductedList.isEmpty()) {
-                                // 2. Lưu toàn bộ chi tiết lô đã trừ vào object
-                                od.setImportDetailBatch(deductedList);
-
-                                // 3. Chuyển sang chuỗi dễ đọc để lưu DB
-                                String batchStr = deductedList.stream()
-                                        .map(arr -> arr[0] + ":" + arr[1])
-                                        .collect(Collectors.joining(", ", "[", "]"));
-
-                                // 4. Ghi vào DB dựa trên orderDetailsID
-                                boolean updated = odDAO.updateImportDetailBatch(od.getOrderDetailsID(), batchStr);
-                                if (!updated) {
-                                    System.err.println("Failed to update importDetailBatch for OrderDetailID: " + od.getOrderDetailsID());
-                                }
-
-                                // 5. In ra log
-                                System.out.println("Batch details saved: " + batchStr);
-                            }
-                        }
-
-                    }
-
-                    // ✅ Thành công
-                    response.sendRedirect(request.getContextPath() + "/ViewOrderList?success=update");
-                } else {
-                    // ❌ Không update được
-                    response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=update-failed");
+                    response.sendRedirect("ViewOrderList?success=update");
+                    return;
                 }
+
+                // ======================
+                // 2. XỬ LÝ NEXT (CHUYỂN TRẠNG THÁI TIẾN)
+                // ======================
+                if ("Packing".equalsIgnoreCase(status) && "Waiting".equals(currentStatus)) {
+                    // Waiting → Packing (trừ stock FIFO)
+                    oDAO.updateStatus(orderIdInt, "Packing");
+
+                    List<OrderDetail> list = odDAO.getOrderDetail(orderID);
+                    ImportStockDetailDAO sDetailDAO = new ImportStockDetailDAO();
+
+                    for (OrderDetail od : list) {
+                        List<int[]> deductedList = sDetailDAO.deductStockFIFO(od.getProductID(), od.getQuantity());
+                        if (deductedList != null && !deductedList.isEmpty()) {
+                            String batchStr = deductedList.stream()
+                                    .map(arr -> arr[0] + ":" + arr[1])
+                                    .collect(Collectors.joining(", ", "[", "]"));
+                            odDAO.updateImportDetailBatch(od.getOrderDetailsID(), batchStr);
+                        }
+                    }
+
+                } else if ("Waiting for Delivery".equalsIgnoreCase(status) && "Packing".equals(currentStatus)) {
+                    // Packing → Waiting for Delivery
+                    oDAO.updateStatus(orderIdInt, "Waiting for Delivery");
+
+                } else if ("Delivered".equalsIgnoreCase(status) && "Waiting for Delivery".equals(currentStatus)) {
+                    // Waiting for Delivery → Delivered
+                    oDAO.updateStatus(orderIdInt, "Delivered");
+
+                } else {
+                    response.sendRedirect("ViewOrderList?error=invalid-transition");
+                    return;
+                }
+
+                // ✅ Thành công
+                response.sendRedirect("ViewOrderList?success=update");
+
             } else {
-                response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-params");
+                response.sendRedirect("ViewOrderList?error=invalid-params");
             }
 
-        } catch (NumberFormatException e) {
-            e.printStackTrace(); // In log server
-            response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-orderid");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=exception");
+            response.sendRedirect("ViewOrderList?error=exception");
         }
     }
 
