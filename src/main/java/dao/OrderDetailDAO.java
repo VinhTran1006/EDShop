@@ -210,7 +210,7 @@ public class OrderDetailDAO extends DBContext {
 
     // Cập nhật importDetailBatch cho 1 OrderDetail
     public boolean updateImportDetailBatch(int orderDetailsID, String batchStr) {
-        String sql = "UPDATE OrderDetails SET importDetailBatch = ? WHERE OrderDetailsID = ?";
+        String sql = "UPDATE OrderDetails SET ImportDetailBatch = ? WHERE OrderDetailsID = ?";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, batchStr);
             ps.setInt(2, orderDetailsID);
