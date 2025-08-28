@@ -55,7 +55,7 @@ public class ChangePasswordServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Customer cus = (Customer)session.getAttribute("user");
+        Customer cus = (Customer) session.getAttribute("user");
         if (cus == null) {
             response.sendRedirect("Login");
             return;
@@ -75,7 +75,7 @@ public class ChangePasswordServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Customer cus = (Customer)session.getAttribute("user");
+        Customer cus = (Customer) session.getAttribute("user");
         if (cus == null) {
             response.sendRedirect("Login");
             return;
@@ -84,21 +84,17 @@ public class ChangePasswordServlet extends HttpServlet {
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
 
-        // Ghi log để kiểm tra
-        System.out.println("DEBUG - Old Password: " + oldPassword);
-        System.out.println("DEBUG - New Password: " + newPassword);
-        System.out.println("DEBUG - Confirm Password: " + confirmPassword);
-        String passwordPattern = "^.{9,}$";
+        String passwordPattern = "^(?=.*@)[A-Z][A-Za-z0-9@]{7,254}$";
 
         if (!newPassword.equals(confirmPassword)) {
-            request.setAttribute("error", "New password and confirm password do not match.");
-            request.getRequestDispatcher("WEB-INF/View/customer/profile/change-password.jsp").forward(request, response);
+            session.setAttribute("error", "New password and confirm password do not match.");
+            response.sendRedirect("ChangePassword");
             return;
         }
 
         if (!newPassword.matches(passwordPattern)) {
-            request.setAttribute("error", "Password must be at least 9 characters long.");
-            request.getRequestDispatcher("WEB-INF/View/customer/profile/change-password.jsp").forward(request, response);
+            session.setAttribute("error", "Password must be 8-255 characters, start with uppercase and contain '@'.");
+            response.sendRedirect("ChangePassword");
             return;
         }
 
@@ -106,11 +102,12 @@ public class ChangePasswordServlet extends HttpServlet {
         boolean success = dao.changePassword(cus.getCustomerID(), oldPassword, newPassword);
 
         if (success) {
-            request.setAttribute("success", "Password changed successfully!");
+            session.setAttribute("success", "Password changed successfully!");
         } else {
-            request.setAttribute("error", "Old password is incorrect or update failed.");
+            session.setAttribute("error", "Old password is incorrect or update failed.");
         }
-        request.getRequestDispatcher("WEB-INF/View/customer/profile/change-password.jsp").forward(request, response);
+
+        response.sendRedirect("ChangePassword");
     }
 
     /**
