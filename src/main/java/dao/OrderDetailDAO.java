@@ -57,43 +57,75 @@ public class OrderDetailDAO extends DBContext {
             pre.setInt(1, orderID);
             ResultSet rs = pre.executeQuery();
             if (rs.next()) {
-                od = new  OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),rs.getInt(5));
-               
+                od = new OrderDetail(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5));
+
             }
         } catch (SQLException e) {
         }
         return od;
     }
 
-   public List<OrderDetail> getOrderDetail(String orderid) {
-    List<OrderDetail> list = new ArrayList<>();
-    String query = "SELECT od.OrderDetailsID, od.OrderID, od.ProductID, od.Quantity, od.Price, "
-                 + "p.CategoryID, p.ProductName "
-                 + "FROM OrderDetails od "
-                 + "JOIN Products p ON p.ProductID = od.ProductID "
-                 + "WHERE od.OrderID = ?";
+    public List<OrderDetail> getOrderDetail(String orderid) {
+        List<OrderDetail> list = new ArrayList<>();
+        String query = "SELECT od.OrderDetailsID, od.OrderID, od.ProductID, od.Quantity, od.Price, "
+                + "p.CategoryID, p.ProductName, od.importDetailBatch " // <-- thêm cột batch
+                + "FROM OrderDetails od "
+                + "JOIN Products p ON p.ProductID = od.ProductID "
+                + "WHERE od.OrderID = ?";
 
-    try {
-        PreparedStatement pre = conn.prepareStatement(query);
-        pre.setString(1, orderid);
-        ResultSet rs = pre.executeQuery();
-        while (rs.next()) {
-            OrderDetail od = new OrderDetail(
-                    rs.getInt("OrderDetailsID"),
-                    rs.getInt("OrderID"),
-                    rs.getInt("ProductID"),
-                    rs.getInt("Quantity"),
-                    rs.getLong("Price")        
-            );
-              od.setProductName(rs.getString("ProductName"));             
-            list.add(od);
+        try {
+            PreparedStatement pre = conn.prepareStatement(query);
+            pre.setString(1, orderid);
+            ResultSet rs = pre.executeQuery();
+            while (rs.next()) {
+                OrderDetail od = new OrderDetail(
+                        rs.getInt("OrderDetailsID"),
+                        rs.getInt("OrderID"),
+                        rs.getInt("ProductID"),
+                        rs.getInt("Quantity"),
+                        rs.getLong("Price")
+                );
+                od.setProductName(rs.getString("ProductName"));
+
+                // ✅ Parse importDetailBatch thành List<int[]>
+                String batchStr = rs.getString("importDetailBatch");
+                od.setImportDetailBatch(parseBatchString(batchStr));
+
+                list.add(od);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return list;
     }
-    return list;
-}
 
+// Hàm parse batch
+    private List<int[]> parseBatchString(String batchStr) {
+        List<int[]> list = new ArrayList<>();
+        if (batchStr == null || batchStr.trim().isEmpty()) {
+            return list;
+        }
+
+        batchStr = batchStr.trim();
+        if (batchStr.startsWith("[") && batchStr.endsWith("]")) {
+            batchStr = batchStr.substring(1, batchStr.length() - 1);
+        }
+
+        String[] pairs = batchStr.split(",");
+        for (String p : pairs) {
+            String[] parts = p.trim().split(":");
+            if (parts.length == 2) {
+                try {
+                    int id = Integer.parseInt(parts[0].trim());
+                    int qty = Integer.parseInt(parts[1].trim());
+                    list.add(new int[]{id, qty});
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid batch format: " + p);
+                }
+            }
+        }
+        return list;
+    }
 
     public boolean getCustomerByProductID(int customerId, int productId) {
         boolean isOk = false;
@@ -149,7 +181,7 @@ public class OrderDetailDAO extends DBContext {
                 detail.setProductName(rs.getString("ProductName"));
                 detail.setQuantity(rs.getInt("Quantity"));
                 detail.setPrice(rs.getLong("Price"));
-                
+
                 list.add(detail);
             }
         } catch (Exception e) {
@@ -161,15 +193,29 @@ public class OrderDetailDAO extends DBContext {
 
     public boolean createOrderDetail(OrderDetail orderDetail) {
         String sql = "INSERT INTO OrderDetails (orderID, productID, quantity, price) VALUES (?, ?, ?, ?)";
-        
+
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, orderDetail.getOrderID());
             ps.setInt(2, orderDetail.getProductID());
             ps.setInt(3, orderDetail.getQuantity());
             ps.setLong(4, orderDetail.getPrice());
-            
+
             return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Cập nhật importDetailBatch cho 1 OrderDetail
+    public boolean updateImportDetailBatch(int orderDetailsID, String batchStr) {
+        String sql = "UPDATE OrderDetails SET importDetailBatch = ? WHERE OrderDetailsID = ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, batchStr);
+            ps.setInt(2, orderDetailsID);
+            int rows = ps.executeUpdate();
+            return rows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

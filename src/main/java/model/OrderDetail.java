@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.util.List;
+
 /**
  *
  * @author VinhNTCE181630
@@ -16,6 +18,8 @@ public class OrderDetail {
     private int quantity;
     private long price;
     private String productName;
+    // Lưu danh sách cặp [ImportStockDetailsID, quantityDeducted]
+    private List<int[]> importDetailBatch;
 
     public OrderDetail() {
     }
@@ -68,13 +72,21 @@ public class OrderDetail {
         this.price = price;
     }
 
-
     public String getProductName() {
         return productName;
     }
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    // getter/setter
+    public List<int[]> getImportDetailBatch() {
+        return importDetailBatch;
+    }
+
+    public void setImportDetailBatch(List<int[]> importDetailBatch) {
+        this.importDetailBatch = importDetailBatch;
     }
 
 }
