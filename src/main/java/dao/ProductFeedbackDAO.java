@@ -313,7 +313,7 @@ public class ProductFeedbackDAO extends DBContext {
 
 
     public int UpdateReply(ProductFeedback feedback, String reply) {
-        String query = "UPDATE ProductFeedbacks SET Reply= ? WHERE FeedbackID = ?";
+        String query = "UPDATE ProductFeedbacks SET Reply= ?, ReplyDate = GETDATE() WHERE FeedbackID = ?";
         int result = 0;
 
         try {

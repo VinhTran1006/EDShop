@@ -67,6 +67,52 @@
                 border-radius: 8px;
                 font-weight: 600;
             }
+            /* Tất cả nút hành động */
+.btn-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 8px;     /* bo góc nhẹ */
+    font-size: 14px;        /* font dễ đọc */
+    font-weight: 600;
+    padding: 6px 14px;      /* padding cân đối */
+    min-width: 160px;       /* đảm bảo các nút cùng kích thước */
+    height: 38px;           /* chiều cao đồng bộ */
+    border: none;
+    color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-status:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* Màu theo chức năng */
+.btn-next-packing {
+    background-color: #0d6efd;   /* xanh dương */
+}
+.btn-next-delivery {
+    background-color: #6366f1;   /* tím */
+}
+.btn-next-delivered {
+    background-color: #22c55e;   /* xanh lá */
+}
+.btn-cancel {
+    background-color: #ef4444;   /* đỏ */
+}
+.btn-detail {
+    background-color: #3b82f6;   /* xanh dương nhạt */
+}
+
+/* Khoảng cách giữa các nút */
+.d-flex.gap-2 > form,
+.d-flex.gap-2 > a {
+    margin-bottom: 4px; /* khoảng cách dọc nếu wrap xuống dòng */
+}
+
         </style>
 
     </head>
@@ -129,25 +175,65 @@
                                                 </c:when>
                                             </c:choose>
                                         </td>
-
                                         <td>
-                                            <div class="d-flex gap-2">
-                                                <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-flex gap-2">
-                                                    <input type="hidden" name="orderID" value="${order.orderID}" />
-                                                    <select name="update" class="form-select form-select-sm orderStatus" 
-                                                            onchange="disableOptions(this)">
-                                                        <option value="Waiting" <c:if test="${order.status eq 'Waiting'}">selected</c:if>>Waiting</option>
-                                                        <option value="Packing" <c:if test="${order.status eq 'Packing'}">selected</c:if>>Packing</option>
-                                                        <option value="Waiting for Delivery" <c:if test="${order.status eq 'Waiting for Delivery'}">selected</c:if>>Waiting for Delivery</option>
-                                                        <option value="Delivered" <c:if test="${order.status eq 'Delivered'}">selected</c:if>>Delivered</option>
-                                                        <option value="Cancelled" <c:if test="${order.status eq 'Cancelled'}">selected</c:if>>Cancelled</option>
-                                                        </select>
-                                                        <button type="submit" class="btn btn-success btn-sm">Save</button>
-                                                    </form>
-                                                    <a href="ViewOrderDetail?orderID=${order.orderID}" class="btn btn-primary btn-sm">Detail</a>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <!-- Next button form -->
+                                                <c:choose>
+                                                    <c:when test="${order.status eq 'Waiting'}">
+                                                        <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline">
+                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                            <input type="hidden" name="update" value="Packing"/>
+                                                            <button type="submit" class="btn-status btn-next-packing">
+                                                                <i class="fa-solid fa-arrow-right"></i> Next (Packing)
+                                                            </button>
+                                                        </form>
+
+                                                        <!-- Cancel button form -->
+                                                        <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline cancel-form">
+                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                            <input type="hidden" name="update" value="Cancelled"/>
+                                                            <button type="button" class="btn-status btn-cancel cancel-btn">
+                                                                <i class="fa-solid fa-xmark"></i> Cancel
+                                                            </button>
+                                                        </form>
+                                                    </c:when>
+
+                                                    <c:when test="${order.status eq 'Packing'}">
+                                                        <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline">
+                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                            <input type="hidden" name="update" value="Waiting for Delivery"/>
+                                                            <button type="submit" class="btn-status btn-next-delivery">
+                                                                <i class="fa-solid fa-arrow-right"></i> Next (Waiting for Delivery)
+                                                            </button>
+                                                        </form>
+
+                                                        <!-- Cancel button form -->
+                                                        <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline cancel-form">
+                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                            <input type="hidden" name="update" value="Cancelled"/>
+                                                            <button type="button" class="btn-status btn-cancel cancel-btn">
+                                                                <i class="fa-solid fa-xmark"></i> Cancel
+                                                            </button>
+                                                        </form>
+                                                    </c:when>
+
+                                                    <c:when test="${order.status eq 'Waiting for Delivery'}">
+                                                        <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline">
+                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                            <input type="hidden" name="update" value="Delivered"/>
+                                                            <button type="submit" class="btn-status btn-next-delivered">
+                                                                <i class="fa-solid fa-arrow-right"></i> Next (Delivered)
+                                                            </button>
+                                                        </form>
+                                                    </c:when>
+                                                </c:choose>
+
+                                                <!-- Nút Detail -->
+                                                <a href="ViewOrderDetail?orderID=${order.orderID}" class="btn-status btn-detail">
+                                                    <i class="fa-solid fa-eye"></i> Detail
+                                                </a>
                                             </div>
                                         </td>
-
 
                                     </tr>
                                 </c:forEach>
@@ -168,73 +254,95 @@
         %>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
-    function disableOptions(selectEl) {
-        const status = selectEl.value;
-        const options = selectEl.options;
+            function disableOptions(selectEl) {
+                const status = selectEl.value;
+                const options = selectEl.options;
 
-        // reset all
-        for (let i = 0; i < options.length; i++) {
-            options[i].disabled = false;
-        }
+                // reset all
+                for (let i = 0; i < options.length; i++) {
+                    options[i].disabled = false;
+                }
 
-        if (status === 'Waiting for Delivery') {
-            options[0].disabled = true; // Waiting
-            options[1].disabled = true; // Packing
-            options[4].disabled = true; // Cancelled
-        } else if (status === 'Waiting') {
-            options[2].disabled = true; // Waiting for Delivery
-            options[3].disabled = true; // Delivered
-        } else if (status === 'Packing') {
-            options[0].disabled = true; // Waiting
-            options[3].disabled = true; // Delivered
-        } else if (status === 'Delivered') {
-            options[0].disabled = true;
-            options[1].disabled = true;
-            options[2].disabled = true;
-            options[4].disabled = true;
-        } else if (status === 'Cancelled') {
-            options[0].disabled = true;
-            options[1].disabled = true;
-            options[2].disabled = true;
-            options[3].disabled = true;
-        }
-    }
+                if (status === 'Waiting for Delivery') {
+                    options[0].disabled = true; // Waiting
+                    options[1].disabled = true; // Packing
+                    options[4].disabled = true; // Cancelled
+                } else if (status === 'Waiting') {
+                    options[2].disabled = true; // Waiting for Delivery
+                    options[3].disabled = true; // Delivered
+                } else if (status === 'Packing') {
+                    options[0].disabled = true; // Waiting
+                    options[3].disabled = true; // Delivered
+                } else if (status === 'Delivered') {
+                    options[0].disabled = true;
+                    options[1].disabled = true;
+                    options[2].disabled = true;
+                    options[4].disabled = true;
+                } else if (status === 'Cancelled') {
+                    options[0].disabled = true;
+                    options[1].disabled = true;
+                    options[2].disabled = true;
+                    options[3].disabled = true;
+                }
+            }
 
-    // ✅ xử lý Swal + dọn URL
-    window.addEventListener("load", function () {
-        <% if ("update".equals(success)) { %>
-            Swal.fire({
-                icon: 'success',
-                title: 'Updated successfully!',
-                text: 'Order status has been updated.',
-                timer: 3000,
-                confirmButtonText: 'OK'
+            // ✅ xử lý Swal + dọn URL
+            window.addEventListener("load", function () {
+            <% if ("update".equals(success)) { %>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated successfully!',
+                    text: 'Order status has been updated.',
+                    timer: 3000,
+                    confirmButtonText: 'OK'
+                });
+            <% } else if ("1".equals(error)) { %>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Unable to update order status.',
+                    timer: 3000,
+                    confirmButtonText: 'Retry'
+                });
+            <% }%>
+
+                if (window.history.replaceState) {
+                    const url = new URL(window.location);
+                    url.searchParams.delete('success');
+                    url.searchParams.delete('error');
+                    window.history.replaceState({}, document.title, url.pathname);
+                }
             });
-        <% } else if ("1".equals(error)) { %>
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: 'Unable to update order status.',
-                timer: 3000,
-                confirmButtonText: 'Retry'
+
+            // ✅ xử lý disableOptions cho tất cả select
+            window.addEventListener("load", function () {
+                document.querySelectorAll('.orderStatus').forEach(function (selectEl) {
+                    disableOptions(selectEl);
+                });
             });
-        <% }%>
 
-        if (window.history.replaceState) {
-            const url = new URL(window.location);
-            url.searchParams.delete('success');
-            url.searchParams.delete('error');
-            window.history.replaceState({}, document.title, url.pathname);
-        }
-    });
+        </script>
 
-    // ✅ xử lý disableOptions cho tất cả select
-    window.addEventListener("load", function () {
-        document.querySelectorAll('.orderStatus').forEach(function (selectEl) {
-            disableOptions(selectEl);
-        });
-    });
-</script>
+        <script>
+            document.querySelectorAll('.btn-cancel').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You want to cancel this order!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, cancel it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            btn.closest('form').submit();
+                        }
+                    })
+                });
+            });
+        </script>
 
     </body>
 </html>

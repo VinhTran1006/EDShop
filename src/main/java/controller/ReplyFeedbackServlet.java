@@ -82,7 +82,7 @@ public class ReplyFeedbackServlet extends HttpServlet {
         if (staff != null) {
             try {
                 int feedbackID = Integer.parseInt(request.getParameter("feedbackID"));
-                String answer = request.getParameter("Answer");
+                String answer = request.getParameter("answer");
 
                 int stID = staff.getStaffID(); // Lấy trực tiếp từ object Staff
 
