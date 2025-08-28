@@ -79,7 +79,7 @@ public class ReplyFeedbackForAdmin extends HttpServlet {
             System.out.println("Staff k empty");
             try {
                 int feedbackID = Integer.parseInt(request.getParameter("feedbackID"));
-                String answer = request.getParameter("Answer");
+                String answer = request.getParameter("answer");
                 
                 System.out.println("fb ID " + feedbackID);
 

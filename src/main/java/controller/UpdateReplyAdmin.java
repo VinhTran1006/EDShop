@@ -71,22 +71,23 @@ public class UpdateReplyAdmin extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         ProductFeedbackDAO rrDAO = new ProductFeedbackDAO();
         String answerUpdate = request.getParameter("answer");
-        String replyID_raw = request.getParameter("feedbackID");
-        System.out.println("UpdateReplyServlet received: replyID = " + replyID_raw + ", answer = " + answerUpdate);
+        String feedbackID_raw = request.getParameter("feedbackID");
+        System.out.println("UpdateReplyServlet received: feedbackID = " + feedbackID_raw + ", answer = " + answerUpdate);
 
         try {
-            int replyID = Integer.parseInt(replyID_raw);
-            if (replyID > 0 && answerUpdate != null && !answerUpdate.trim().isEmpty()) {
-                ProductFeedback reply = rrDAO.getReplyByFeedbackID(replyID);
-                if (reply == null) {
-                    System.out.println("Reply not found for ID = " + replyID);
-                    response.getWriter().write("Failed");
-                    return;
-                }
-                int result = rrDAO.UpdateReply(reply, answerUpdate);
+            int feedbackID = Integer.parseInt(feedbackID_raw);
+
+            if (feedbackID > 0 && answerUpdate != null && !answerUpdate.trim().isEmpty()) {
+                // Tạo đối tượng feedback chỉ để truyền ID
+                ProductFeedback fb = new ProductFeedback();
+                fb.setFeedbackID(feedbackID);
+
+                int result = rrDAO.UpdateReply(fb, answerUpdate);
                 System.out.println("Update result: " + result);
+
                 if (result > 0) {
                     response.getWriter().write("Success");
                 } else {
