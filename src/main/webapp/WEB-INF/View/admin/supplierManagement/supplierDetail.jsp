@@ -7,6 +7,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Supplier Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/sideBar.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -414,12 +415,12 @@
 
                                 <div class="button-group">
                                     <a href="ViewSupplier" class="btn btn-outline-primary">
-                                        <i class="fa-solid fa-arrow-left"></i> Back to List
+                                         Back to List
                                     </a>
                                     
                                     <div class="action-buttons">
                                         <a href="UpdateSupplier?id=<%= supplier.getSupplierID() %>" class="btn btn-warning">
-                                            <i class="fa-solid fa-edit"></i> Edit
+                                             Edit
                                         </a>
                                         
                                         <form class="delete-form" action="DeleteSupplier" method="post">
@@ -429,7 +430,7 @@
                                                 data-supplier-id="<%= supplier.getSupplierID() %>"
                                                 data-tax-id="<%= supplier.getTaxID()%>"
                                                 data-supplier-name="<%= supplier.getName() %>">
-                                                <i class="fa-solid fa-trash"></i> Delete
+                                                 Delete
                                             </button>
                                         </form>
                                     </div>
