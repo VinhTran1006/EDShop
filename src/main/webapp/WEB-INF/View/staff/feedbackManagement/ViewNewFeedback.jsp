@@ -283,7 +283,7 @@
                         <div id="replyForm-${rate.feedbackID}" class="reply-form mt-2">
                             <form method="POST" action="ReplyFeedback">
                                 <input type="hidden" name="feedbackID" value="${rate.feedbackID}">
-                                <textarea required="true" name="Answer" class="form-control" placeholder="Write your reply..."></textarea>
+                                <textarea required="true" name="answer" class="form-control" placeholder="Write your reply..."></textarea>
                                 <button type="submit" class="btn btn-primary btn-sm mt-2">Submit Reply</button>
                             </form>
                         </div>
@@ -336,7 +336,7 @@
                             }
                         }
                     };
-                    xhr.send("feedbackID=" + feedbackID + "&Answer=" + encodeURIComponent(replyText));
+                    xhr.send("feedbackID=" + feedbackID + "&answer=" + encodeURIComponent(replyText));
                 }
 
 
@@ -493,7 +493,7 @@
                         text: 'Your reply was sent successfully.',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        window.location.href = '/TMobile/ViewFeedbackForStaff?feedbackID=<%=feedbackID%>';
+                        window.location.href = '/EDShop/ViewFeedbackForStaff?feedbackID=<%=feedbackID%>';
                     });
                 <% } else if ("failed".equals(success)) { %>
                     Swal.fire({
@@ -511,7 +511,7 @@
                         text: 'Something went wrong while processing your reply.',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        window.location.href = '/TMobile/ViewFeedbackForStaff?feedbackID=<%=feedbackID%>';
+                        window.location.href = '/EDShop/ViewFeedbackForStaff?feedbackID=<%=feedbackID%>';
                     });
                 <% } else if ("nostaff".equals(success)) {%>
                     Swal.fire({
@@ -520,7 +520,7 @@
                         text: 'Staff ID not found for this account.',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        window.location.href = '/TMobile/ViewFeedbackForStaff?feedbackID=<%=feedbackID%>';
+                        window.location.href = '/EDShop/ViewFeedbackForStaff?feedbackID=<%=feedbackID%>';
                     });
                 <% }%>
                 };
