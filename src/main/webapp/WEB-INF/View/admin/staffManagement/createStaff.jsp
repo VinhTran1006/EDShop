@@ -163,7 +163,6 @@
                                         <option value="">Select Gender</option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
                                     </select>
                                 </div>
 
@@ -172,7 +171,6 @@
                                     <select id="role" name="role" class="form-select" required>
                                         <option value="">Select Role</option>
                                         <option value="Admin">Admin</option>
-                                        <option value="Manager">Manager</option>
                                         <option value="Staff">Staff</option>
                                     </select>
                                 </div>

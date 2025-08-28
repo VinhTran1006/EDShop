@@ -231,7 +231,7 @@ public class AccountDAO extends DBContext {
     }
 
     public boolean adminResetStaffPassword(int staffId, String newPass) {
-        String sql = "UPDATE Staff SET PasswordHash = ? WHERE StaffID = ?";
+        String sql = "UPDATE Staffs SET PasswordHash = ? WHERE StaffID = ?";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, hashMD5(newPass));
             ps.setInt(2, staffId);

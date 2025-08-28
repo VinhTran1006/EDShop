@@ -5,8 +5,8 @@
 --%>
 
 <%@page import="model.Staff"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-
     Staff sta = (Staff) request.getAttribute("data");
 %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -30,6 +30,24 @@
                 </div>
                 <form method="post" action="StaffList?action=detail">
                     <div class="card-body">
+                        <!-- Hiển thị thông báo thành công khi change password -->
+                        <c:if test="${not empty sessionScope.passwordChangeSuccess}">
+                            <div class="alert alert-success text-center">
+                                ${sessionScope.passwordChangeSuccess}
+                            </div>
+                            <c:remove var="passwordChangeSuccess" scope="session"/>
+                        </c:if>
+                        
+                        <!-- Hiển thị thông báo thành công từ các action khác -->
+                        <c:if test="${not empty success}">
+                            <div class="alert alert-success text-center">${success}</div>
+                        </c:if>
+                        
+                        <!-- Hiển thị thông báo lỗi -->
+                        <c:if test="${not empty error}">
+                            <div class="alert alert-danger text-center">${error}</div>
+                        </c:if>
+                        
                         <table class="table table-borderless">
                             <tr>
                                 <th>Staff ID:</th>
@@ -79,15 +97,32 @@
                         </table>
                         <div class="d-flex justify-content-between mt-4">
                             <div>
-                                <a href="ChangePasswordStaff" class="btn btn-secondary"><i class="bi bi-tools"></i> Reset Password</a>
-                                <a href="StaffList" class="btn btn-outline-primary" id="back"><i class="bi bi-arrow-return-left"></i> Back to list</a>
-                            </div>
-                            <div>
-                                <a href="UpdateStaffServlet?action=update&id=<%= sta.getStaffID()%>" class="btn btn-warning">Update</a>
-                                <a href="DeleteStaffServlet?action=delete&id=<%= sta.getStaffID()%>" class="btn btn-danger">Delete</a>
+                                <a href="${pageContext.request.contextPath}/ChangePasswordStaff?staffId=<%= sta.getStaffID()%>" 
+                                   class="btn btn-secondary">
+                                    <i class="bi bi-tools"></i> Reset Password
+                                </a>
+                                <a href="StaffList" class="btn btn-outline-primary" id="back">
+                                    <i class="bi bi-arrow-return-left"></i> Back to list
+                                </a>
                             </div>
                         </div>
+                    </div>
                 </form>
                 <% }%>
-                </body>
-                </html>
+            </div>
+        </div>
+        
+        <script>
+            // Auto-hide success messages after 5 seconds
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        alert.style.display = 'none';
+                    }, 500);
+                });
+            }, 5000);
+        </script>
+    </body>
+</html>
