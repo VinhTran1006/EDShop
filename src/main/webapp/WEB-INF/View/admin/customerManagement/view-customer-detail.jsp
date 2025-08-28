@@ -350,7 +350,7 @@
                                     <table class="info-table">
                                         <tr>
                                             <th>Customer ID:</th>
-                                            <td>#<%= custo.getCustomerID()%></td>
+                                            <td><%= custo.getCustomerID()%></td>
                                         </tr>
                                         <tr>
                                             <th>Full Name:</th>
