@@ -118,6 +118,107 @@
                     width: 100%;
                 }
             }
+            .login-to-cart-btn {
+                background: linear-gradient(135deg, #ff6b35, #f7931e);
+                color: white;
+                border: none;
+                padding: 14px 28px;
+                border-radius: 12px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: 600;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+                box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+                position: relative;
+                overflow: hidden;
+                min-width: 200px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .login-to-cart-btn:hover {
+                background: linear-gradient(135deg, #e55a2b, #e07b1a);
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+                color: white;
+                text-decoration: none;
+            }
+
+            .login-to-cart-btn:active {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+            }
+
+            .login-to-cart-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            .login-to-cart-btn:hover::before {
+                left: 100%;
+            }
+
+            .login-to-cart-btn i {
+                margin-right: 10px;
+                font-size: 18px;
+                animation: bounce 2s infinite;
+            }
+
+            @keyframes bounce {
+                0%, 20%, 50%, 80%, 100% {
+                    transform: translateY(0);
+                }
+                40% {
+                    transform: translateY(-4px);
+                }
+                60% {
+                    transform: translateY(-2px);
+                }
+            }
+
+            /* Alternative Blue Theme */
+            .login-to-cart-btn.blue-theme {
+                background: linear-gradient(135deg, #007bff, #0056b3);
+                box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+            }
+
+            .login-to-cart-btn.blue-theme:hover {
+                background: linear-gradient(135deg, #0056b3, #004085);
+                box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+            }
+
+            /* Alternative Green Theme */
+            .login-to-cart-btn.green-theme {
+                background: linear-gradient(135deg, #28a745, #1e7e34);
+                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            }
+
+            .login-to-cart-btn.green-theme:hover {
+                background: linear-gradient(135deg, #1e7e34, #155724);
+                box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+            }
+
+            /* Alternative Purple Theme */
+            .login-to-cart-btn.purple-theme {
+                background: linear-gradient(135deg, #6f42c1, #5a32a3);
+                box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
+            }
+
+            .login-to-cart-btn.purple-theme:hover {
+                background: linear-gradient(135deg, #5a32a3, #4c2a85);
+                box-shadow: 0 8px 25px rgba(111, 66, 193, 0.4);
+            }
         </style>
     </head>
 
@@ -165,9 +266,10 @@
                             </div>
 
                             <!-- ADD TO CART BUTTON -->
+                            <!-- ADD TO CART BUTTON -->
                             <div class="add-to-cart-wrapper">
                                 <c:choose>
-                                    <c:when test="${sessionScope.user != null}">
+                                    <c:when test="${sessionScope.cus != null}">
                                         <!-- Người dùng đã đăng nhập -->
                                         <c:choose>
                                             <c:when test="${product.quantity > 0}">
@@ -190,6 +292,27 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </c:when>
+                                    <c:otherwise>
+                                        <!-- Người dùng chưa đăng nhập -->
+                                        <c:choose>
+                                            <c:when test="${product.quantity > 0}">
+                                                <!-- Còn hàng nhưng chưa đăng nhập -->
+                                                <a href="Login" style="text-decoration: none;">
+                                                    <button class="login-to-cart-btn">
+                                                        <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
+                                                        Login to Add to Cart
+                                                    </button>
+                                                </a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <!-- Hết hàng -->
+                                                <button class="out-of-stock-btn" disabled>
+                                                    <i class="fas fa-times-circle" style="margin-right: 8px;"></i>
+                                                    Out of Stock
+                                                </button>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:otherwise>
                                 </c:choose>
                             </div>
                         </div>
