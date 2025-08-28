@@ -98,8 +98,7 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
             if (status != null && orderID != null) {
                 int count = oDAO.updateOrder(Integer.parseInt(orderID), status);
 
-                if (count > 0) {
-                    // ✅ Nếu status = cancel thì hoàn kho
+                // ✅ Nếu status = cancel thì hoàn kho
                     if ("Cancelled".equalsIgnoreCase(status)) {
                         List<OrderDetail> list = odDAO.getOrderDetail(orderID);
                         ProductDAO pDAO = new ProductDAO();
@@ -176,7 +175,6 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
                             }
                         }
 
-                    }
 
                     // ✅ Thành công
                     response.sendRedirect(request.getContextPath() + "/ViewOrderList?success=update");

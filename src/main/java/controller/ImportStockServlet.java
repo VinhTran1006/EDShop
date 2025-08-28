@@ -296,6 +296,8 @@ public class ImportStockServlet extends HttpServlet {
             session.removeAttribute("selectedProducts");
             session.removeAttribute("supplier");
             session.removeAttribute("products");
+            session.removeAttribute("totalAmount");
+            request.setAttribute("totalAmount", 0);
 
             response.sendRedirect("ImportStock?success=imported");
             return;

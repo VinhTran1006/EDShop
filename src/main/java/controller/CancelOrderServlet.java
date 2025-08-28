@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.ImportStockDetailDAO;
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
 import dao.ProductDAO;
@@ -28,7 +29,8 @@ import model.OrderDetail;
 public class CancelOrderServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -77,25 +79,45 @@ public class CancelOrderServlet extends HttpServlet {
         Customer customer = (Customer) session.getAttribute("cus");
 
         if (customer == null) {
-
             response.sendRedirect("Login");
             return;
         }
+
         int orderID = Integer.parseInt(request.getParameter("orderID"));
+        String oID = request.getParameter("orderID");
         OrderDAO dao = new OrderDAO();
         Order order = dao.getOrderByID(orderID + "");
 
-        if ("Waiting".equals(order.getStatus()) || "Packing".equals(order.getStatus())) {
+        if ("Waiting".equals(order.getStatus())) {
+            // Waiting → chưa trừ stock → chỉ đổi trạng thái
             dao.updateStatus(orderID, "Cancelled");
-            OrderDetailDAO itemDAO = new OrderDetailDAO();
-            ProductDAO productDAO = new ProductDAO();
-            List<OrderDetail> items = itemDAO.getOrderDetailsByOrderID(orderID);
-
-            for (OrderDetail item : items) {
-                productDAO.increaseStock(item.getProductID(), item.getQuantity());
-            }
             response.sendRedirect("ViewOrderOfCustomer?success=cancel");
+
+        } else if ("Packing".equals(order.getStatus())) {
+            // Packing → đã trừ stock → đổi trạng thái và trả lại stock
+            dao.updateStatus(orderID, "Cancelled");
+
+            // --- gọi lại hàm trả stock ---
+            OrderDetailDAO odDAO = new OrderDetailDAO();
+            ProductDAO pDAO = new ProductDAO();
+            ImportStockDetailDAO sDetailDAO = new ImportStockDetailDAO();
+
+            List<OrderDetail> list = odDAO.getOrderDetail(oID);
+            for (OrderDetail od : list) {
+                // 1. Trả lại tổng số lượng
+                pDAO.increaseStock(od.getProductID(), od.getQuantity());
+
+                // 2. Trả lại số lượng từng lô
+                List<int[]> batchList = od.getImportDetailBatch();
+                if (batchList != null && !batchList.isEmpty()) {
+                    sDetailDAO.increaseStockBack(batchList);
+                }
+            }
+
+            response.sendRedirect("ViewOrderOfCustomer?success=cancel");
+
         } else {
+            // Các trạng thái khác thì không hủy được
             response.sendRedirect("ViewOrderOfCustomer?error=not-cancelable");
         }
 
