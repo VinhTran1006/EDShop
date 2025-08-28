@@ -6,197 +6,138 @@
         <title>Create New Staff</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <style>
-            body {
-                background-color: #f8f9fa;
-                font-family: 'Arial', sans-serif;
-            }
-
-            .card {
-                border-radius: 10px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                border: none;
-                max-width: 800px;
-                margin: 0 auto;
-            }
-
-            .card-header {
-                border-radius: 10px 10px 0 0 !important;
-                padding: 0.75rem 1.5rem;
-                background-color: #0d6efd;
-                color: white;
-                font-size: 1.25rem;
-                font-weight: 600;
-            }
-
-            .form-section {
-                margin-bottom: 2rem;
-            }
-
-            .section-title {
-                color: #000000;
-                border-bottom: 1px solid #dee2e6;
-                padding-bottom: 0.5rem;
-                margin-bottom: 1.5rem;
-                font-weight: 600;
-            }
-
-            .form-label {
-                font-weight: 600;
-                color: #000000;
-                margin-bottom: 0.25rem;
-            }
-
-            .form-control, .form-select {
-                border-radius: 5px;
-                padding: 0.5rem 0.75rem;
-                border: 1px solid #ced4da;
-            }
-
-            .form-control:focus, .form-select:focus {
-                border-color: #80bdff;
-                box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
-            }
-
-            .btn {
-                border-radius: 5px;
-                padding: 0.5rem 1.5rem;
-                font-weight: 500;
-            }
-
-            .btn-primary {
-                background-color: #28a745; /* Nền xanh lá cố định */
-                border: none;
-                color: white; /* Chữ trắng */
-            }
-
-            /* Đảm bảo màu xanh lá trong mọi trạng thái */
-            .btn-primary:focus,
-            .btn-primary:active,
-            .btn-primary:hover {
-                background-color: #28a745 !important; /* Giữ nguyên màu xanh lá */
-                border: none !important;
-                color: white !important;
-                box-shadow: none !important; /* Loại bỏ bóng mặc định của Bootstrap */
-            }
-
-            .btn-secondary {
-                background-color: #ced4da; /* Nền xám đậm */
-                border-color: #ced4da;
-                color: white; /* Chữ trắng */
-            }
-
-            .btn-secondary:hover {
-                background-color: #adb5bd; /* Xám đậm hơn khi hover */
-                color: white;
-            }
-
-            .text-danger {
-                font-size: 0.85rem;
-            }
-
-            .alert {
-                border-radius: 5px;
-            }
-        </style>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/sideBar.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/admin.css">
     </head>
     <body>
-        <div class="container mt-4">
-            <div class="card mx-auto shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Create New Staff</h4>
-                </div>
-                <div class="card-body">
-                    <%
-                        String errorMessage = (String) request.getAttribute("errorMessage");
-                        if (errorMessage != null) {
-                    %>
-                    <div class="alert alert-danger" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i><%= errorMessage%>
+        <div class="container">
+            <jsp:include page="../sideBar.jsp" />
+            <div class="wrapper">
+                <main class="main-content">
+                    <div class="container">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fas fa-user-plus"></i> Create New Staff</h4>
+                            </div>
+
+                            <div class="card-body">
+                                <%
+                                    String errorMessage = (String) request.getAttribute("errorMessage");
+                                    if (errorMessage != null) {
+                                %>
+                                <div class="alert alert-danger" role="alert">
+                                    <i class="fas fa-exclamation-circle me-2"></i><%= errorMessage%>
+                                </div>
+                                <%
+                                    }
+                                %>
+
+                                <form action="CreateStaffServlet" method="post">
+                                    <!-- Account Information Section -->
+                                    <div class="form-section">
+                                        <table class="supplier-form-table">
+                                            <tr>
+                                                <th class="required">Email:</th>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <input type="email" id="email" name="email" class="form-control supplier-input" required>
+                                                        <div id="emailError" class="text-danger small mt-1"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="required">Password:</th>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <input type="password" id="password" name="password" class="form-control supplier-input" required>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="required">Full Name:</th>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <input type="text" id="fullName" name="fullName" class="form-control supplier-input" required>
+                                                        <div id="fullNameError" class="text-danger small mt-1"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Phone Number:</th>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <input type="text" id="phoneNumber" name="phoneNumber" class="form-control supplier-input">
+                                                        <div id="phoneError" class="text-danger small mt-1"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Birth Date:</th>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <input type="date" id="birthDate" name="birthDate" class="form-control supplier-input">
+                                                        <div id="birthDateError" class="text-danger small mt-1"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Gender:</th>
+                                                <td>
+                                                    <select id="gender" name="gender" class="form-control supplier-input">
+                                                        <option value="">Select Gender</option>
+                                                        <option value="Male">Male</option>
+                                                        <option value="Female">Female</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="required">Role:</th>
+                                                <td>
+                                                    <select id="role" name="role" class="form-control supplier-input" required>
+                                                        <option value="">Select Role</option>
+                                                        <option value="Admin">Admin</option>
+                                                        <option value="Staff">Staff</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="required">Hired Date:</th>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <input type="date" id="hiredDate" name="hiredDate" class="form-control supplier-input" required>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="required">Status:</th>
+                                                <td>
+                                                    <div class="form-check form-check-inline">
+                                                        <input type="radio" name="isActive" id="active" value="true" class="form-check-input" required checked>
+                                                        <label for="active" class="form-check-label">
+                                                            Active
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input type="radio" name="isActive" id="inactive" value="false" class="form-check-input" required>
+                                                        <label for="inactive" class="form-check-label">
+                                                            Inactive
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="button-container">
+                                        <button type="submit" class="btn btn-success">Create Staff</button>
+                                        <a href="StaffList" class="btn btn-secondary">Cancel</a>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
                     </div>
-                    <%
-                        }
-                    %>
-                    <form action="CreateStaffServlet" method="post" class="row g-3">
-                        <!-- Account Information -->
-                        <div class="col-12 form-section">
-                            <h5 class="section-title"><i class="fas fa-user-circle me-2"></i>Account Information</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="email" class="form-label">Email:</label>
-                                    <input type="email" id="email" name="email" class="form-control" required>
-                                    <div id="emailError" class="text-danger small mt-1"></div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="password" class="form-label">Password:</label>
-                                    <input type="password" id="password" name="password" class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Staff Information -->
-                        <div class="col-12 form-section">
-                            <h5 class="section-title"><i class="fas fa-id-card me-2"></i>Staff Information</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="fullName" class="form-label">Full Name:</label>
-                                    <input type="text" id="fullName" name="fullName" class="form-control" required>
-                                    <div id="fullNameError" class="text-danger small mt-1"></div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="phoneNumber" class="form-label">Phone Number:</label>
-                                    <input type="text" id="phoneNumber" name="phoneNumber" class="form-control">
-                                    <div id="phoneError" class="text-danger small mt-1"></div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="birthDate" class="form-label">Birth Date:</label>
-                                    <input type="date" id="birthDate" name="birthDate" class="form-control">
-                                    <div id="birthDateError" class="text-danger small mt-1"></div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="gender" class="form-label">Gender:</label>
-                                    <select id="gender" name="gender" class="form-select">
-                                        <option value="">Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="role" class="form-label">Role:</label>
-                                    <select id="role" name="role" class="form-select" required>
-                                        <option value="">Select Role</option>
-                                        <option value="Admin">Admin</option>
-                                        <option value="Staff">Staff</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="hiredDate" class="form-label">Hired Date:</label>
-                                    <input type="date" id="hiredDate" name="hiredDate" class="form-control" required>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="isActive" class="form-label">Status:</label>
-                                    <select id="isActive" name="isActive" class="form-select" required>
-                                        <option value="true">Active</option>
-                                        <option value="false">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 mt-4 text-end">
-                            <button type="submit" class="btn btn-primary me-2">Create</button>
-                            <a href="StaffList" class="btn btn-secondary">Cancel</a>
-                        </div>
-                    </form>
-
-                </div>
+                </main>
             </div>
         </div>
 
@@ -300,7 +241,7 @@
             });
 
             const fullNameInput = document.getElementById("fullName");
-            const fullNameError = document.getElementById("fullNameError"); // Sử dụng div trực tiếp
+            const fullNameError = document.getElementById("fullNameError");
 
             fullNameInput.addEventListener("blur", function () {
                 let name = fullNameInput.value.trim();
@@ -310,7 +251,6 @@
                 fullNameInput.value = name;
 
                 const namePattern = /^([A-ZÀ-ỸĐ][a-zà-ỹđ]+)(\s[A-ZÀ-ỸĐ][a-zà-ỹđ]+)*$/u;
-
 
                 if (!namePattern.test(name)) {
                     fullNameError.textContent = "Names must be initialed, contain no numbers or special characters, and have no spaces.";
