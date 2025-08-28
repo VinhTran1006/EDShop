@@ -12,7 +12,7 @@ public class SupplierDAO extends DBContext {
     // Lấy toàn bộ danh sách Suppliers
     public List<Suppliers> getAllSuppliers() {
         List<Suppliers> list = new ArrayList<>();
-        String sql = "SELECT SupplierID, TaxID, Name, Email, PhoneNumber, Address, ContactPerson, Description, IsActive = 'true' FROM Suppliers";
+        String sql = "SELECT SupplierID, TaxID, Name, Email, PhoneNumber, Address, ContactPerson, Description, IsActive FROM Suppliers where IsActive='1'";
         try ( PreparedStatement st = conn.prepareStatement(sql);  ResultSet rs = st.executeQuery()) {
 
             while (rs.next()) {
@@ -105,7 +105,7 @@ public class SupplierDAO extends DBContext {
 
     // Xóa Supplier
     public int deleteSupplier(int id) {
-        String sql = "DELETE FROM Suppliers WHERE SupplierID=?";
+        String sql = "UPDATE Suppliers SET IsActive = '0' WHERE SupplierID=?";
         try ( PreparedStatement st = conn.prepareStatement(sql)) {
             st.setInt(1, id);
             return st.executeUpdate();
