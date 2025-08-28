@@ -147,24 +147,15 @@
                                 </table>
 
 
-                                <h5><i class="fa-solid fa-cogs"></i> Manage Order</h5>
+                                
 
                                 <c:if test="${not empty errorMessage}">
                                     <div class="alert alert-danger mt-2">${errorMessage}</div>
                                 </c:if>
 
-                                <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-flex gap-3 flex-wrap align-items-center mt-3">
-                                    <input type="hidden" name="orderID" value="${data.orderID}" />
-                                    <select id="orderStatus" name="update" class="form-select w-auto">
-                                        <option value="Waiting" <c:if test="${data.status eq 'Waiting'}">selected</c:if>>Waiting</option>
-                                        <option value="Packing" <c:if test="${data.status eq 'Packing'}">selected</c:if>>Packing</option>
-                                        <option value="Waiting for Delivery" <c:if test="${data.status eq 'Waiting for Delivery'}">selected</c:if>>Waiting for Delivery</option>
-                                        <option value="Delivered" <c:if test="${data.status eq 'Delivered'}">selected</c:if>>Delivered</option>
-                                        <option value="Cancelled" <c:if test="${data.status eq 'Cancelled'}">selected</c:if>>Cancelled</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-success">Save</button>
+                                
                                         <a href="${pageContext.request.contextPath}/ViewOrderList" class="btn btn-outline-primary">Back to list</a>
-                                </form>
+                                
                             </div>
                         </div>
                 </main>

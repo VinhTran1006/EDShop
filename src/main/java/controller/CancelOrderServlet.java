@@ -84,41 +84,52 @@ public class CancelOrderServlet extends HttpServlet {
         }
 
         int orderID = Integer.parseInt(request.getParameter("orderID"));
-        String oID = request.getParameter("orderID");
         OrderDAO dao = new OrderDAO();
-        Order order = dao.getOrderByID(orderID + "");
+        Order order = dao.getOrderByID(String.valueOf(orderID));
 
-        if ("Waiting".equals(order.getStatus())) {
-            // Waiting → chưa trừ stock → chỉ đổi trạng thái
+        String currentStatus = order.getStatus();
+
+        if ("Waiting".equals(currentStatus)) {
+            // Waiting → Cancelled (không hoàn stock)
             dao.updateStatus(orderID, "Cancelled");
             response.sendRedirect("ViewOrderOfCustomer?success=cancel");
 
-        } else if ("Packing".equals(order.getStatus())) {
-            // Packing → đã trừ stock → đổi trạng thái và trả lại stock
+        } else if ("Packing".equals(currentStatus)) {
+            // Packing → Cancelled (có hoàn stock)
             dao.updateStatus(orderID, "Cancelled");
+            System.out.println("[CancelOrder] OrderID=" + orderID + " | Status: Packing → Cancelled");
 
-            // --- gọi lại hàm trả stock ---
-            OrderDetailDAO odDAO = new OrderDetailDAO();
-            ProductDAO pDAO = new ProductDAO();
-            ImportStockDetailDAO sDetailDAO = new ImportStockDetailDAO();
+            OrderDetailDAO itemDAO = new OrderDetailDAO();
+            ProductDAO productDAO = new ProductDAO();
+            ImportStockDetailDAO stockDetailDAO = new ImportStockDetailDAO();
 
-            List<OrderDetail> list = odDAO.getOrderDetail(oID);
-            for (OrderDetail od : list) {
-                // 1. Trả lại tổng số lượng
-                pDAO.increaseStock(od.getProductID(), od.getQuantity());
+            List<OrderDetail> items = itemDAO.getOrderDetailsByOrderID(orderID);
 
-                // 2. Trả lại số lượng từng lô
-                List<int[]> batchList = od.getImportDetailBatch();
+            for (OrderDetail item : items) {
+                // 1. Trả lại tổng số lượng tồn kho cho Product
+                productDAO.increaseStock(item.getProductID(), item.getQuantity());
+                System.out.println("[CancelOrder] ProductID=" + item.getProductID()
+                        + " | Qty=" + item.getQuantity()
+                        + " → Returned to Product stock");
+
+                // 2. Trả lại theo batch ImportStockDetails
+                List<int[]> batchList = item.getImportDetailBatch();
                 if (batchList != null && !batchList.isEmpty()) {
-                    sDetailDAO.increaseStockBack(batchList);
+                    for (int[] batch : batchList) {
+                        int importDetailID = batch[0];
+                        int qty = batch[1];
+                        System.out.println("[CancelOrder]   Batch importDetailID=" + importDetailID
+                                + ", Qty=" + qty
+                                + " → Returned to ImportStockDetails");
+                    }
+                    stockDetailDAO.increaseStockBack(batchList);
+                } else {
+                    System.out.println("[CancelOrder]   No batch info for ProductID=" + item.getProductID());
                 }
             }
 
             response.sendRedirect("ViewOrderOfCustomer?success=cancel");
 
-        } else {
-            // Các trạng thái khác thì không hủy được
-            response.sendRedirect("ViewOrderOfCustomer?error=not-cancelable");
         }
 
     }

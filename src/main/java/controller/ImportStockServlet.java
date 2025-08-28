@@ -291,7 +291,7 @@ public class ImportStockServlet extends HttpServlet {
                 productDAO.increaseStock(p.getProductID(), newStock);
             }
 
-            importStockDAO.importStock(importId);
+            
 
             session.removeAttribute("selectedProducts");
             session.removeAttribute("supplier");

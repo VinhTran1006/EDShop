@@ -215,17 +215,7 @@ public class ImportStockDAO extends DBContext {
         return -1;
     }
 
-    public boolean importStock(int importID) {
-        String sql = "UPDATE ImportStocks SET isImported = 1 WHERE importID = ?";
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, importID);
-            int affectedRows = ps.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+ 
     // ✅ Daily Import
 
     public Map<String, Integer> getDailyImport() {
