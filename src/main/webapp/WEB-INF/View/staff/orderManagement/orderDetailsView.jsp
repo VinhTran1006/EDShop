@@ -420,17 +420,10 @@
                                     <tr><th>Address:</th><td>${data.addressSnapshot}</td></tr>
                                 </table>
 
-                                <h5 class="section-header"><i class="fa-solid fa-box"></i> Order Items</h5>
-                                <table class="items-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Product</th>
-                                            <th style="width: 120px;">Quantity</th>
-                                            <th style="width: 150px;">Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach items="${dataDetail}" var="detail">
+                                    <h5 class="mt-4"><i class="fa-solid fa-box"></i> Order Items</h5>
+                                    <table class="table table-bordered align-middle text-center">
+                                        <thead class="table-light">
+
                                             <tr>
                                                 <td class="text-start"><strong>${detail.productName}</strong></td>
                                                 <td>${detail.quantity}</td>
@@ -473,42 +466,48 @@
             </div>
         </div>
 
-        <script>
-//            function disableOptions() {
-//                const status = document.getElementById('orderStatus').value;
-//                const options = document.getElementById('orderStatus').options;
-//
-//                // Reset all options
-//                for (let i = 0; i < options.length; i++) {
-//                    options[i].disabled = false;
-//                }
-//
-//                if (status === 'Waiting for Delivery') {
-//                    options[0].disabled = true; // Waiting
-//                    options[1].disabled = true; // Packing
-//                    options[4].disabled = true; // Cancelled
-//                } else if (status === 'Packing') {
-//                    options[0].disabled = true; // Waiting
-//                } else if (status === 'Delivered') {
-//                    options[0].disabled = true;
-//                    options[1].disabled = true;
-//                    options[2].disabled = true;
-//                    options[4].disabled = true;
-//                } else if (status === 'Cancelled') {
-//                    options[0].disabled = true;
-//                    options[1].disabled = true;
-//                    options[2].disabled = true;
-//                    options[3].disabled = true;
-//                }
-//            }
-//
-//            // Initialize on page load
-//            document.addEventListener('DOMContentLoaded', function () {
-//                disableOptions();
-//
-//                // Add change event listener
-//                document.getElementById('orderStatus').addEventListener('change', disableOptions);
-//            });
-        </script>
+    <script>
+
+        function disableOptions() {
+            const status = document.getElementById('orderStatus').value;
+            const options = document.getElementById('orderStatus').options;
+            // reset all
+            for (let i = 0; i < options.length; i++) {
+                options[i].disabled = false;
+            }
+
+            if (status === 'Waiting for Delivery') {
+                // disable Waiting, Packaging, Cancelled
+                options[0].disabled = true; // Waiting
+                options[1].disabled = true; // Packaging
+                options[4].disabled = true; // Cancelled
+            } else if (status === 'Waiting') {
+                options[2].disabled = true;
+                options[3].disabled = true;
+
+            } else if (status === 'Packing') {
+                // disable Waiting
+                options[0].disabled = true; // Waiting
+                options[3].disabled = true;
+
+            } else if (status === 'Delivered') {
+                // disable Waiting, Packaging, Waiting for Delivery, Cancelled
+                options[0].disabled = true;
+                options[1].disabled = true;
+                options[2].disabled = true;
+                options[4].disabled = true;
+            } else if (status === 'Cancelled') {
+                // disable tất cả trừ Cancelled
+                options[0].disabled = true;
+                options[1].disabled = true;
+                options[2].disabled = true;
+                options[3].disabled = true;
+            }
+        }
+
+        // gọi khi load trang để setup ban đầu
+        disableOptions();
+    </script>
+
     </body>
 </html>
