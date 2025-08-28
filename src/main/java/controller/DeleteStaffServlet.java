@@ -7,6 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet(name = "DeleteStaffServlet", urlPatterns = {"/DeleteStaffServlet"})
 public class DeleteStaffServlet extends HttpServlet {
@@ -14,6 +15,7 @@ public class DeleteStaffServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         String action = request.getParameter("action");
         if ("delete".equals(action)) {
             try {
@@ -21,7 +23,8 @@ public class DeleteStaffServlet extends HttpServlet {
                 StaffDAO staffDAO = new StaffDAO();
                 boolean isSuccess = staffDAO.deleteStaff(staffId); // Đảm bảo phương thức này đúng
                 if (isSuccess) {
-                    response.sendRedirect("StaffList?successdelete=1");
+                    session.setAttribute("successdelete", "1");
+                    response.sendRedirect("StaffList");
                 } else {
                     response.sendRedirect("StaffList?errordelete=1");
                 }

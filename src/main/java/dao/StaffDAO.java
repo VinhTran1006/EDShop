@@ -12,11 +12,10 @@ public class StaffDAO extends DBContext {
         super();
     }
 
-    
     // Lấy tất cả Staff
     public List<Staff> getAllStaff() {
         List<Staff> list = new ArrayList<>();
-        String sql = "SELECT * FROM Staffs";
+        String sql = "SELECT * FROM Staffs WHERE Role = 'Staff' AND IsActive = 1";
         try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
@@ -138,7 +137,7 @@ public class StaffDAO extends DBContext {
 
     // Xóa Staff
     public boolean deleteStaff(int staffId) {
-        String sql = "DELETE FROM Staffs WHERE StaffID = ?";
+        String sql = "UPDATE Staffs SET IsActive = 0 WHERE StaffID = ?";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, staffId);
             return ps.executeUpdate() > 0;
@@ -151,7 +150,7 @@ public class StaffDAO extends DBContext {
     // Tìm kiếm Staff theo tên hoặc email
     public List<Staff> searchStaff(String keyword) {
         List<Staff> list = new ArrayList<>();
-        String sql = "SELECT * FROM Staffs WHERE LOWER(FullName) LIKE ? OR LOWER(Email) LIKE ?";
+        String sql = "SELECT * FROM Staffs WHERE Role = 'Staff' AND (LOWER(FullName) LIKE ? OR LOWER(Email) LIKE ?)";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword.toLowerCase() + "%");
             ps.setString(2, "%" + keyword.toLowerCase() + "%");
@@ -205,6 +204,20 @@ public class StaffDAO extends DBContext {
         return 0;
     }
 
+    public boolean isEmailExists(String email) {
+        String sql = "SELECT COUNT(*) FROM Staffs WHERE Email = ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
     public static void main(String[] args) {
         int i;
         StaffDAO dao = new StaffDAO();

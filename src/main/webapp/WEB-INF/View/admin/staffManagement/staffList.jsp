@@ -27,7 +27,6 @@
                     <h1>Staff Management</h1>
                     <button class="create-btn" onclick="location.href = 'CreateStaffServlet'">Create</button>
 
-
                     <!-- Search Form -->
                     <form class="search-form" action="StaffList" method="get">
                         <input type="hidden" name="action" value="search">
@@ -58,10 +57,9 @@
                                 <td><%= sta.getFullName()%></td>
                                 <td><%= sta.getHiredDate()%></td>
                                 <td class="action-col">
-<a href="StaffList?action=detail&id=<%= sta.getStaffID()%>" class="btn btn-primary">Detail</a>
+                                    <a href="StaffList?action=detail&id=<%= sta.getStaffID()%>" class="btn btn-primary">Detail</a>
                                     <a href="UpdateStaffServlet?action=update&id=<%= sta.getStaffID()%>" class="btn btn-warning">Edit</a>
                                     <button class="btn btn-danger" onclick="confirmDeleteStaff(<%= sta.getStaffID()%>)">Delete</button>
-
                                 </td>
                             </tr>
                             <%
@@ -94,19 +92,26 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
-<% String successdelete = request.getParameter("successdelete"); %>
-<% String errordelete = request.getParameter("errordelete"); %>
-<% String successedit = request.getParameter("successedit"); %>
-<% String erroredit = request.getParameter("erroredit"); %>
-<% String successcreate = request.getParameter("successcreate"); %>
-<% String errorcreate = request.getParameter("errorcreate"); %>
 
+<%
+    // Lấy thông báo từ session thay vì request parameters
+    String successdelete = (String) session.getAttribute("successdelete");
+    String errordelete = (String) session.getAttribute("errordelete");
+    String successedit = (String) session.getAttribute("successedit");
+    String erroredit = (String) session.getAttribute("erroredit");
+    String successcreate = (String) session.getAttribute("successcreate");
+    String errorcreate = (String) session.getAttribute("errorcreate");
 
+    // Xóa các thông báo khỏi session sau khi đã lấy
+    session.removeAttribute("successdelete");
+    session.removeAttribute("errordelete");
+    session.removeAttribute("successedit");
+    session.removeAttribute("erroredit");
+    session.removeAttribute("successcreate");
+    session.removeAttribute("errorcreate");
+%>
 
 <script>
-
-
-
                                         function confirmDeleteStaff(staffID) {
                                             Swal.fire({
                                                 title: 'Are you sure?',
@@ -122,7 +127,8 @@
                                                     window.location.href = 'DeleteStaffServlet?action=delete&id=' + staffID;
                                                 }
                                             });
-}
+                                        }
+
                                         window.onload = function () {
     <% if ("1".equals(successdelete)) { %>
                                             Swal.fire({
@@ -138,7 +144,8 @@
                                                 text: 'Could not delete the staff.',
                                                 timer: 2000
                                             });
-    <% }%>
+    <% } %>
+
     <% if ("1".equals(successedit)) { %>
                                             Swal.fire({
                                                 icon: 'success',
@@ -153,7 +160,9 @@
                                                 text: 'Could not edit the staff.',
                                                 timer: 2000
                                             });
-    <% }%>    <% if ("1".equals(successcreate)) { %>
+    <% } %>
+
+    <% if ("1".equals(successcreate)) { %>
                                             Swal.fire({
                                                 icon: 'success',
                                                 title: 'Created!',
@@ -164,7 +173,7 @@
                                             Swal.fire({
                                                 icon: 'error',
                                                 title: 'Failed!',
-                                                text: 'Could not created the staff.',
+                                                text: 'Could not create the staff.',
                                                 timer: 2000
                                             });
     <% }%>

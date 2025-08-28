@@ -18,6 +18,9 @@
         <div class="card mx-auto shadow" style="max-width: 600px;">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">Reset Staff Password</h4>
+                <c:if test="${not empty staff}">
+                    <small class="text-light">Staff: ${staff.fullName} (${staff.email})</small>
+                </c:if>
             </div>
             <div class="card-body">
                 <!-- Hiển thị thông báo -->
@@ -31,13 +34,17 @@
                 </c:if>
                 
                 <!-- Form đổi mật khẩu -->
-                <form action="${pageContext.request.contextPath}/ChangePasswordStaff" method="post">
+                <form action="${pageContext.request.contextPath}/ChangePasswordStaff" method="post" onsubmit="return validateForm()">
+                    <!-- Hidden field để truyền staffId -->
+                    <input type="hidden" name="staffId" value="${param.staffId != null ? param.staffId : staffId}">
+                    
                     <table class="table table-borderless">
                         <tr>
                             <th>New Password:</th>
                             <td>
                                 <input type="password" id="newPassword" name="newPassword"
                                        class="form-control" placeholder="Enter new password" required>
+                                <small class="text-muted">Password must be at least 9 characters long</small>
                             </td>
                         </tr>
                         <tr>
@@ -51,7 +58,19 @@
                     
                     <div class="d-flex justify-content-between mt-4">
                         <div>
-                            <a href="${pageContext.request.contextPath}/StaffList" class="btn btn-outline-primary"><i class="bi bi-arrow-return-left"></i> Back to list</a>
+                            <c:choose>
+                                <c:when test="${param.staffId != null || staffId != null}">
+                                    <a href="${pageContext.request.contextPath}/StaffList?action=detail&id=${param.staffId != null ? param.staffId : staffId}" 
+                                       class="btn btn-outline-primary">
+                                        <i class="bi bi-arrow-return-left"></i> Back to Staff Detail
+                                    </a>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="${pageContext.request.contextPath}/StaffList" class="btn btn-outline-primary">
+                                        <i class="bi bi-arrow-return-left"></i> Back to Staff List
+                                    </a>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                         <div>
                             <button type="submit" class="btn btn-warning">Reset Password</button>
@@ -61,5 +80,24 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function validateForm() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword.length < 9) {
+                alert('Password must be at least 9 characters long.');
+                return false;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                alert('New password and confirm password do not match.');
+                return false;
+            }
+            
+            return true;
+        }
+    </script>
 </body>
 </html>
