@@ -77,6 +77,8 @@
                 border-radius: 8px;
                 font-weight: 600;
             }
+            
+            
         </style>
 
     </head>
@@ -102,7 +104,6 @@
                                     <th>Order ID</th>
                                     <th>Customer Name</th>
                                     <th>Phone</th>
-                                    <th>Address</th>
                                     <th>Total Amount</th>
                                     <th>Order Date</th>
                                     <th>Order Update</th>
@@ -116,7 +117,6 @@
                                         <td>#${order.orderID}</td>
                                         <td>${order.customer.fullName}</td>
                                         <td>${order.customer.phoneNumber}</td>
-                                        <td>${order.addressSnapshot}</td>
                                         <td><fmt:formatNumber value="${order.totalAmount}" type="currency" currencySymbol="₫" /></td>
                                         <td>${order.orderDate}</td>
                                         <td>${order.updatedAt}</td>

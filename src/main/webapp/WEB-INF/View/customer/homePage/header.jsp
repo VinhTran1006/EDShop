@@ -220,13 +220,6 @@
                                 <span>Address</span>
                             </a>
                         </li>
-                        <li>
-                            <a class="user-dropdown-item" href="ViewCustomerVoucher">
-                                <i class="bi bi-ticket-perforated"></i>
-                                <span>Voucher</span>
-                            </a>
-                        </li>
-
                         <li><hr class="user-dropdown-divider"></li>
                         <li>
                             <a class="user-dropdown-item text-danger" href="Logout">

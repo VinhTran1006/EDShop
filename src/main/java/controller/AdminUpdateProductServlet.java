@@ -150,7 +150,6 @@ public class AdminUpdateProductServlet extends HttpServlet {
         session.removeAttribute("errorDescription");
         session.removeAttribute("errorPrice");
         session.removeAttribute("errorWarranty");
-        session.removeAttribute("errorQuantity");
         session.removeAttribute("existedProduct");
         String productName = request.getParameter("productName");
         if (productName == null || productName.trim().isEmpty()) {
@@ -214,26 +213,6 @@ public class AdminUpdateProductServlet extends HttpServlet {
                 }
             } catch (NumberFormatException e) {
                 session.setAttribute("errorWarranty", "Warranty must be a valid integer.");
-                error = true;
-            }
-        }
-        String quantityRaw = request.getParameter("quantity");
-
-        if (quantityRaw == null || quantityRaw.trim().isEmpty()) {
-            session.setAttribute("errorQuantity", "Quantity cannot be empty.");
-            error = true;
-        } else {
-            try {
-                quantity = Integer.parseInt(quantityRaw);
-                if (quantity <= 0) {
-                    session.setAttribute("errorQuantity", "Quantity must be a positive integer.");
-                    error = true;
-                } else if (quantity > 1000) {
-                    session.setAttribute("errorQuantity", "Quantity must be smaller than 1000");
-                    error = true;
-                }
-            } catch (NumberFormatException e) {
-                session.setAttribute("errorQuantity", "Quantity must be a valid integer.");
                 error = true;
             }
         }

@@ -45,18 +45,11 @@
                 font-weight: 600;
                 color: #fff;
                 font-size: 14px;
+                background: #FFFFFF
             }
-
-            .card h4 {
-                font-weight: 700;
-            }
-
-            .form-select {
-                border-radius: 8px;
-            }
-
-            .btn {
-                border-radius: 8px;
+            th {
+                background: #ffffff !important;
+                color: #ffffff;
                 font-weight: 600;
             }
             
@@ -132,44 +125,96 @@
                                 <table class="table table-bordered align-middle text-center">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Product</th>
-                                            <th style="width: 120px;">Quantity</th>
-                                            <th style="width: 150px;">Price</th>
+                                            <th class="orderdetailth">Status:</th>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${data.status eq 'Waiting'}">
+                                                        <span class="badge bg-warning">Waiting</span>
+                                                    </c:when>
+                                                    <c:when test="${data.status eq 'Packing'}">
+                                                        <span class="badge bg-primary">Packing</span>
+                                                    </c:when>
+                                                    <c:when test="${data.status eq 'Waiting for Delivery'}">
+                                                        <span class="badge status-3">Waiting for Delivery</span>
+                                                    </c:when>
+                                                    <c:when test="${data.status eq 'Delivered'}">
+                                                        <span class="badge bg-success">Delivered</span>
+                                                    </c:when>
+                                                    <c:when test="${data.status eq 'Cancelled'}">
+                                                        <span class="badge bg-danger">Cancelled</span>
+                                                    </c:when>
+                                                </c:choose>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
+                                        <c:set var="subtotal" value="0" scope="page" />
                                         <c:forEach items="${dataDetail}" var="detail">
-                                            <tr>
-                                                <td class="text-start"><strong>${detail.productName}</strong></td>
-                                                <td>${detail.quantity}</td>
-                                                <td><fmt:formatNumber value="${detail.price}" type="number" groupingUsed="true"/>₫</td>
-                                            </tr>
+                                            <c:set var="subtotal" value="${subtotal + (detail.quantity * detail.price)}" />
                                         </c:forEach>
-                                    </tbody>
-                                </table>
+
+                                        <tr><th>Subtotal:</th>
+                                            <td><fmt:formatNumber value="${subtotal}" type="number" groupingUsed="true"/>₫</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Discount:</th>
+                                            <td>
+                                                <fmt:formatNumber 
+                                                    value="${(data.totalAmount - subtotal)}" 
+                                                    type="number" 
+                                                    groupingUsed="true"/>₫ 
+                                                (<c:out value="${data.discount}"/>%)
+                                            </td>
+                                        </tr>
 
 
-                                <h5><i class="fa-solid fa-cogs"></i> Manage Order</h5>
+                                        <tr><th>Total Amount:</th><td><fmt:formatNumber value="${data.totalAmount}" type="number" groupingUsed="true" />₫</td></tr>
+                                        <tr><th>Customer Name:</th><td>${data.customer.fullName}</td></tr>
+                                        <tr><th>Phone:</th><td>${data.customer.phoneNumber}</td></tr>
+                                        <tr><th>Address:</th><td>${data.addressSnapshot}</td></tr>
+                                    </table>
 
-                                <c:if test="${not empty errorMessage}">
-                                    <div class="alert alert-danger mt-2">${errorMessage}</div>
-                                </c:if>
+                                    <h5 class="mt-4"><i class="fa-solid fa-box"></i> Order Items</h5>
+                                    <table class="table table-bordered align-middle text-center">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Product</th>
+                                                <th style="width: 120px;">Quantity</th>
+                                                <th style="width: 150px;">Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach items="${dataDetail}" var="detail">
+                                                <tr>
+                                                    <td class="text-start"><strong>${detail.productName}</strong></td>
+                                                    <td>${detail.quantity}</td>
+                                                    <td><fmt:formatNumber value="${detail.price}" type="number" groupingUsed="true"/>₫</td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
 
-                                <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-flex gap-3 flex-wrap align-items-center mt-3">
-                                    <input type="hidden" name="orderID" value="${data.orderID}" />
-                                    <select id="orderStatus" name="update" class="form-select w-auto">
-                                        <option value="Waiting" <c:if test="${data.status eq 'Waiting'}">selected</c:if>>Waiting</option>
-                                        <option value="Packing" <c:if test="${data.status eq 'Packing'}">selected</c:if>>Packing</option>
-                                        <option value="Waiting for Delivery" <c:if test="${data.status eq 'Waiting for Delivery'}">selected</c:if>>Waiting for Delivery</option>
-                                        <option value="Delivered" <c:if test="${data.status eq 'Delivered'}">selected</c:if>>Delivered</option>
-                                        <option value="Cancelled" <c:if test="${data.status eq 'Cancelled'}">selected</c:if>>Cancelled</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-success">Save</button>
-                                        <a href="${pageContext.request.contextPath}/ViewOrderList" class="btn btn-outline-primary">Back to list</a>
-                                </form>
+
+                                    <h5><i class="fa-solid fa-cogs"></i> Manage Order</h5>
+
+                                    <c:if test="${not empty errorMessage}">
+                                        <div class="alert alert-danger mt-2">${errorMessage}</div>
+                                    </c:if>
+
+                                    <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-flex gap-3 flex-wrap align-items-center mt-3">
+                                        <input type="hidden" name="orderID" value="${data.orderID}" />
+                                        <select id="orderStatus" name="update" class="form-select w-auto">
+                                            <option value="Waiting" <c:if test="${data.status eq 'Waiting'}">selected</c:if>>Waiting</option>
+                                            <option value="Packing" <c:if test="${data.status eq 'Packing'}">selected</c:if>>Packing</option>
+                                            <option value="Waiting for Delivery" <c:if test="${data.status eq 'Waiting for Delivery'}">selected</c:if>>Waiting for Delivery</option>
+                                            <option value="Delivered" <c:if test="${data.status eq 'Delivered'}">selected</c:if>>Delivered</option>
+                                            <option value="Cancelled" <c:if test="${data.status eq 'Cancelled'}">selected</c:if>>Cancelled</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-success">Save</button>
+                                            <a href="${pageContext.request.contextPath}/ViewOrderList" class="btn btn-outline-primary">Back to list</a>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                </main>
+                    </main>
+                </div>
             </div>
         </div>
     </div>
@@ -220,5 +265,5 @@
 //        disableOptions();
     </script>
 
-</body>
+    </body>
 </html>
