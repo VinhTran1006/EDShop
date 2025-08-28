@@ -48,8 +48,8 @@
                                    class="form-control"
                                    required
                                    maxlength="255"
-                                   pattern="^[A-Za-z\s]{1,255}$"
-                                   title="Please enter letters only (no numbers or special characters, not just spaces, and maximum 255 characters).">
+                                   pattern="^[\p{L}\s]{2,255}$"
+                                   title="Please enter letters only (Full name must be 2-255 letters, spaces allowed, no numbers or special characters.).">
                         </div>
 
                         <div class="form-group">
