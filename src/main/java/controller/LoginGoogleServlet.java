@@ -39,7 +39,7 @@ public class LoginGoogleServlet extends HttpServlet {
 
     String CLIENT_ID = System.getenv("GOOGLE_CLIENT_ID");
     String CLIENT_SECRET = System.getenv("GOOGLE_CLIENT_SECRET");
-    private static final String REDIRECT_URI = "http://localhost:8080/TMobile/LoginGoogle";
+    private static final String REDIRECT_URI = "http://localhost:8080/EDShop/LoginGoogle";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -112,7 +112,7 @@ public class LoginGoogleServlet extends HttpServlet {
         }
 
         if (!isActive) {
-            session.setAttribute("errorMessage", "Tài khoản của bạn hiện tại đã bị khóa và không thể đăng nhập được!");
+            session.setAttribute("errorMessage", "Your account is now locked and cannot be logged in!");
             response.sendRedirect("Login");
             return;
         }
@@ -135,10 +135,11 @@ public class LoginGoogleServlet extends HttpServlet {
             Customer c = (Customer) acc;
             // xử lý cho customer
             session.setAttribute("user", c);
+            session.setAttribute("cus", c);
             response.sendRedirect("Home");
         } else if (acc instanceof Staff) {
             session.removeAttribute("user");
-            session.setAttribute("errorMessage", "Tài khoản này không thể đăng nhập vì role không phù hợp với trang!");
+            session.setAttribute("errorMessage", "This account cannot log in because the role does not match the current page!");
             response.sendRedirect("Login");
         }
     }
@@ -161,28 +162,55 @@ public class LoginGoogleServlet extends HttpServlet {
         String name = (String) session.getAttribute("name");
         String phone = request.getParameter("phone");
 
+        String phonePattern = "^\\d{10}$";
+
         if (email != null && phone != null && !phone.isEmpty()) {
             boolean existed = dao.checkEmailExisted(email);
             if (existed) {
-                request.setAttribute("error", "Email đã tồn tại trong hệ thống.");
+                request.setAttribute("error", "Email already exists in the system.");
                 request.getRequestDispatcher("WEB-INF/View/account/save-phone.jsp").forward(request, response);
                 return;
             }
-            // ✅ Tạo mới account Google
-            dao.addNewAccountGoogle(email, name, phone); // 👈 sửa để có phone
+
+            // Validate phone
+            if (!phone.matches(phonePattern)) {
+                setFlashError(session,
+                        "Phone number must be exactly 10 digits and contain only numbers.",
+                        phone);
+                request.getRequestDispatcher("WEB-INF/View/account/save-phone.jsp").forward(request, response);
+                return;
+            }
+
+            // Validate phone unique
+            if (dao.checkPhoneExisted(phone)) {
+                setFlashError(session,
+                        "This phone number is already registered.",
+                        phone);
+                request.getRequestDispatcher("WEB-INF/View/account/save-phone.jsp").forward(request, response);
+                return;
+            }
+
+            // Tạo mới account Google
+            dao.addNewAccountGoogle(email, name, phone); // sửa để có phone
             Object acc = dao.getAccountByEmail(email);
             String role = dao.getRoleByEmail(email);
 
             // Lưu session
             session.setAttribute("user", acc);
             session.setAttribute("role", role);
+            session.setAttribute("cus", acc);
 //            session.setAttribute("accountId", acc.getAccountID());
 
             response.sendRedirect("Home");
         } else {
-            request.setAttribute("error", "Vui lòng nhập số điện thoại.");
-            request.getRequestDispatcher("WEB-INF/View/account/save-phone.jsp").forward(request, response);
+            session.setAttribute("error", "Please enter phone number.");
+            response.sendRedirect("SavePhone");
         }
+    }
+
+    private void setFlashError(HttpSession session, String message, String phone) {
+        session.setAttribute("error", message);
+        session.setAttribute("tempPhone", phone);
     }
 
     /**

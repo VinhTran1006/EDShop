@@ -19,17 +19,15 @@ public class ProfileDAO extends DBContext {
         super();
     }
 
-
-
     public Customer getCustomerByCustomerID(int customerID) {
         Customer cus = null;
         String sql = "SELECT c.CustomerID, a.Email, a.PasswordHash, c.FullName, c.PhoneNumber, "
-                   + "c.BirthDate, c.Gender, a.IsActive, a.EmailVerified, a.CreatedAt "
-                   + "FROM Customers a JOIN Customers c ON c.AccountID = a.AccountID "
-                   + "WHERE c.CustomerID = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                + "c.BirthDate, c.Gender, a.IsActive, a.EmailVerified, a.CreatedAt "
+                + "FROM Customers a JOIN Customers c ON c.AccountID = a.AccountID "
+                + "WHERE c.CustomerID = ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, customerID);
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     cus = mapResultSetToCustomer(rs);
                 }
@@ -42,7 +40,7 @@ public class ProfileDAO extends DBContext {
 
     public int getAccountIDByCustomerID(int customerID) {
         String sql = "SELECT CustomerID FROM Customers WHERE CustomerID = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, customerID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -56,7 +54,7 @@ public class ProfileDAO extends DBContext {
 
     public boolean updateProfileCustomer(int customerID, String fullName, String phone, Date birthDate, String gender) {
         String sql = "UPDATE Customers SET FullName = ?, PhoneNumber = ?, BirthDate = ?, Gender = ? WHERE CustomerID = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, fullName);
             ps.setString(2, phone);
             ps.setDate(3, new java.sql.Date(birthDate.getTime()));
@@ -98,5 +96,35 @@ public class ProfileDAO extends DBContext {
 
         return cus;
     }
-}
 
+    public boolean isPhoneExists(String phone, int excludeCustomerID) {
+        String sqlCustomer = "SELECT COUNT(*) FROM Customers WHERE PhoneNumber = ? AND CustomerID <> ?";
+        String sqlStaff = "SELECT COUNT(*) FROM Staffs WHERE PhoneNumber = ?";
+
+        try {
+            // Check trong Customers (loại trừ chính mình)
+            try ( PreparedStatement ps1 = conn.prepareStatement(sqlCustomer)) {
+                ps1.setString(1, phone);
+                ps1.setInt(2, excludeCustomerID);
+                ResultSet rs1 = ps1.executeQuery();
+                if (rs1.next() && rs1.getInt(1) > 0) {
+                    return true; // trùng trong Customers
+                }
+            }
+
+            // Check trong Staffs
+            try ( PreparedStatement ps2 = conn.prepareStatement(sqlStaff)) {
+                ps2.setString(1, phone);
+                ResultSet rs2 = ps2.executeQuery();
+                if (rs2.next() && rs2.getInt(1) > 0) {
+                    return true; // trùng trong Staffs
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false; // không trùng
+    }
+}

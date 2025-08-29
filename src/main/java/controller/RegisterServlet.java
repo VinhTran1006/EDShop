@@ -98,6 +98,7 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        AccountDAO dao = new AccountDAO();
         HttpSession session = request.getSession();
         String phone = request.getParameter("phone").trim();
         String email = request.getParameter("email").trim();
@@ -106,13 +107,13 @@ public class RegisterServlet extends HttpServlet {
         String confirmPassword = request.getParameter("confirmPassword").trim();
 
         String passwordPattern = "^(?=.*@)[A-Z][A-Za-z0-9@]{7,254}$";
-        String namePattern = "^[\\p{L}\\s]{2,255}$";
+        String namePattern = "^[\\p{L}\\s]{2,50}$";
         String phonePattern = "^\\d{10}$";
         String emailPattern = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
 
         if (!fullName.matches(namePattern)) {
             setFlashError(session,
-                    "Full name must be 2-255 letters, spaces allowed, no numbers or special characters.",
+                    "Full name must be 2-50 letters, spaces allowed, no numbers or special characters.",
                     phone, fullName, email);
             request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
             return;
@@ -122,6 +123,15 @@ public class RegisterServlet extends HttpServlet {
         if (!phone.matches(phonePattern)) {
             setFlashError(session,
                     "Phone number must be exactly 10 digits and contain only numbers.",
+                    phone, fullName, email);
+            request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
+            return;
+        }
+
+        // Validate phone unique
+        if (dao.checkPhoneExisted(phone)) {
+            setFlashError(session,
+                    "This phone number is already registered.",
                     phone, fullName, email);
             request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
             return;
@@ -157,7 +167,6 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        AccountDAO dao = new AccountDAO();
         if (dao.checkEmailExisted(email)) {
             setFlashError(session, "This email is already registered.", phone, fullName, email);
             request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);

@@ -229,8 +229,9 @@
                     <div class="input-group">
                         <i class="bi bi-telephone-fill input-icon"></i>
                         <input type="tel" name="phone" class="form-control with-icon"
-                               pattern="^\d{10}$" maxlength="10" placeholder="Enter your phone number"
-                               required value="<%= phoneVal != null ? phoneVal : ""%>">
+                               pattern="0[0-9]{9}$" maxlength="10" placeholder="Enter your phone number"
+                               required value="<%= phoneVal != null ? phoneVal : ""%>"
+                               title="Please enter numbers only (no letters or special characters, no spaces and exactly 10 characters and must start with 0).">
                     </div>
 
                     <div class="input-group">
@@ -242,9 +243,10 @@
 
                     <div class="input-group">
                         <i class="bi bi-person-fill input-icon"></i>
-                        <input type="text" name="fullName" class="form-control with-icon"
-                               pattern="^[\p{L}\s]{2,255}$" placeholder="Enter your full name" required
-                               value="<%= fullNameVal != null ? fullNameVal : ""%>">
+                        <input type="text" name="fullName" class="form-control with-icon"                           
+                               pattern="^[\p{L}\s]{2,50}$" placeholder="Enter your full name" required maxlength="50"
+                               value="<%= fullNameVal != null ? fullNameVal : ""%>"
+                               title="Please enter letters only (Full name must be 2-50 letters, spaces allowed, no numbers or special characters.).">
                     </div>
 
                     <div class="input-group password-group">
@@ -318,7 +320,7 @@
                 const strengthBar = document.getElementById('strengthBar');
 
                 const phoneRegex = /^\d{10}$/;
-                const nameRegex = /^[\p{L}\s]{2,255}$/u;
+                const nameRegex = /^[\p{L}\s]{2,50}$/u;
                 const passwordRegex = /^(?=.*@)[A-Z][A-Za-z0-9@]{7,254}$/;
 
                 if (form) {

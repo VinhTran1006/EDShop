@@ -346,6 +346,38 @@ public class AccountDAO extends DBContext {
         return sb.toString();
     }
 
+    // ----------------------
+// CHECK PHONE EXIST
+// ----------------------
+    public boolean checkPhoneExisted(String phone) {
+        String sqlCustomer = "SELECT 1 FROM Customers WHERE PhoneNumber = ?";
+        String sqlStaff = "SELECT 1 FROM Staffs WHERE PhoneNumber = ?";
+
+        try ( PreparedStatement ps1 = conn.prepareStatement(sqlCustomer)) {
+            ps1.setString(1, phone);
+            try ( ResultSet rs = ps1.executeQuery()) {
+                if (rs.next()) {
+                    return true; // đã tồn tại trong Customers
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try ( PreparedStatement ps2 = conn.prepareStatement(sqlStaff)) {
+            ps2.setString(1, phone);
+            try ( ResultSet rs = ps2.executeQuery()) {
+                if (rs.next()) {
+                    return true; // đã tồn tại trong Staffs
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public static void main(String[] args) {
         AccountDAO dao = new AccountDAO();
 
