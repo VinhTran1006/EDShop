@@ -57,8 +57,8 @@
                 background-color: #0d6efd;
                 color: #fff;
             }
-            .status-Waiting for Delivery {
-                background-color: #6366f1;
+            .status-Waiting.for.Delivery {
+                background-color: #6366f1 !important;
                 color: #fff;
             }
             .status-Delivered {
