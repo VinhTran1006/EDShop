@@ -229,7 +229,8 @@
                     <div class="input-group password-group">
                         <i class="bi bi-lock-fill input-icon"></i>
                         <input type="password" name="newPassword" class="form-control with-icon"
-                               placeholder="Enter new password" required minlength="8" id="newPassword">
+                               placeholder="Enter new password" required minlength="8" maxlength="30" id="newPassword"
+                               title="Password must be 8–30 characters long, start with an uppercase letter, and contain at least one '@'.">
                         <i class="bi bi-eye-slash toggle-password" style="position:absolute; right:15px; top:40%; transform:translateY(-50%); cursor:pointer;"></i>
                         <div class="password-strength">
                             <div class="password-strength-bar" id="strengthBar"></div>
@@ -239,7 +240,9 @@
                     <div class="input-group password-group">
                         <i class="bi bi-shield-lock-fill input-icon"></i>
                         <input type="password" name="confirmPassword" class="form-control with-icon"
-                               placeholder="Confirm new password" required minlength="8" id="confirmPassword">
+                               placeholder="Confirm new password" required required minlength="8" maxlength="30" 
+                               title="Password must be 8–30 characters long, start with an uppercase letter, and contain at least one '@'."
+                               id="confirmPassword">
                         <i class="bi bi-eye-slash toggle-password" style="position:absolute; right:15px; top:40%; transform:translateY(-50%); cursor:pointer;"></i>
                     </div>
 

@@ -130,7 +130,11 @@
                         </div>
                         <div class="input-group password-group">
                             <i class="bi bi-key input-icon"></i>
-                            <input type="password" class="form-control with-icon" name="newPassword" id="newPassword" placeholder="Enter your new password!" required>
+                            <input type="password" class="form-control with-icon" name="newPassword" id="newPassword" 
+                                   placeholder="Enter your new password!" 
+                                   required
+                                   minlength="8" maxlength="30"
+                                   title="Password must be 8?30 characters long, start with an uppercase letter, and contain at least one '@'.">
                             <i class="bi bi-eye-slash toggle-password"></i>
                             <div class="password-strength">
                                 <div class="password-strength-bar" id="strengthBar"></div>
@@ -139,7 +143,11 @@
 
                         <div class="input-group password-group">
                             <i class="bi bi-key-fill input-icon"></i>
-                            <input type="password" class="form-control with-icon" name="confirmPassword" id="confirmPassword" placeholder="Confirm your new password!" required>
+                            <input type="password" class="form-control with-icon" name="confirmPassword" id="confirmPassword" 
+                                   placeholder="Confirm your new password!" 
+                                   required
+                                   minlength="8" maxlength="30"
+                                   title="Password must be 8?30 characters long, start with an uppercase letter, and contain at least one '@'.">
                             <i class="bi bi-eye-slash toggle-password"></i>
                         </div>
                         <div class="profile-actions">
