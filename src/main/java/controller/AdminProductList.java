@@ -82,7 +82,9 @@ public class AdminProductList extends HttpServlet {
             productList = proDAO.getProductIsBestSellerAdmin();
         } else if (filter.equals("New")) {
             productList = proDAO.getProductIsNewAdmin();
-        } 
+        } else if (filter.equals("Lowstock")) {
+            productList = proDAO.getLowStockProduct();
+        }
         cateList = cateDAO.getAllCategory();
         brandList = brandDAO.getAllBrand();
         String keyword = request.getParameter("keyword");

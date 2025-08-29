@@ -139,6 +139,7 @@
                     <option value="Featured" <%= "Featured".equals(selectedFilter) ? "selected" : ""%>>Featured</option>
                     <option value="Bestseller" <%= "Bestseller".equals(selectedFilter) ? "selected" : ""%>>Bestseller</option>
                     <option value="New" <%= "New".equals(selectedFilter) ? "selected" : ""%>>New</option>
+                    <option value="Lowstock" <%= "Lowstock".equals(selectedFilter) ? "selected" : ""%>>Low Stock</option>
                 </select>
             </form>
         </div>

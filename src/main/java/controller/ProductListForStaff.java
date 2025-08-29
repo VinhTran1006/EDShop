@@ -78,6 +78,8 @@ public class ProductListForStaff extends HttpServlet {
             productList = proDAO.getProductIsBestSeller();
         } else if (filter.equals("New")) {
             productList = proDAO.getProductIsNew();
+        } else if (filter.equals("Lowstock")) {
+            productList = proDAO.getLowStockProduct();
         }
         cateList = cateDAO.getAllCategory();
         brandList = brandDAO.getAllBrand();
