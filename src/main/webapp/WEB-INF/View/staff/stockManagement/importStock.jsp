@@ -171,9 +171,9 @@
 
                     <h1>Import Stock</h1>
 
-<!--                    <form class="search-form mb-4" method="get" style="min-height: 45px;">
-
-                    </form>-->
+                    <!--                    <form class="search-form mb-4" method="get" style="min-height: 45px;">
+                    
+                                        </form>-->
                     <!-- Selected Supplier -->
                     <c:set value="${sessionScope.supplier}" var="sup" />
                     <div class="table-container mb-4" style="max-width: 1150px; margin: 0 auto;">
@@ -351,7 +351,15 @@
                                                         <td>${p.getProductID()}</td>
                                                         <td>${p.getProductName()}</td>
                                                         <td>
-                                                            <input type="number" class="form-control product-quantity" data-id="${p.getProductID()}" min="1" placeholder="Enter quantity">
+                                                            <input 
+                                                                type="number" 
+                                                                class="form-control product-quantity" 
+                                                                data-id="${p.getProductID()}" 
+                                                                min="1" 
+                                                                max="100" 
+                                                                oninput="if (parseInt(this.value) > parseInt(this.max)) this.value = this.max; if (parseInt(this.value) < parseInt(this.min)) this.value = this.min;" 
+                                                                placeholder="Quantity (max 100)">
+
                                                         </td>
                                                         <td>
                                                             <input type="number" class="form-control product-price" data-id="${p.getProductID()}"  data-saleprice="${p.getPrice()}" min="1000" step="0.01" placeholder="Enter price">
