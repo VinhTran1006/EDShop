@@ -34,7 +34,7 @@
                                 <table class="info-table">
                                     <tr><th>Order ID:</th><td>${data.orderID}</td></tr>
                                     <tr><th>Order Date:</th><td>${fn:substring(data.orderDate, 0, 16)}</td></tr>
-                                    <tr><th>Update Date:</th><td>${fn:substring(data.deliveredDate, 0, 16)}</td></tr>
+                                    <tr><th>Update Date:</th><td>${fn:substring(data.updatedAt, 0, 16)}</td></tr>
                                     <tr>
                                         <th>Status:</th>
                                         <td>
