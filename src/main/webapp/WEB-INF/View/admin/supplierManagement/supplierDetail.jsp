@@ -359,7 +359,7 @@
             <jsp:include page="../sideBar.jsp" />
             <div class="wrapper">
                 <main class="main-content">
-                    <div class="container mt-5">
+                    <div class="container">
                         <div class="card">
                             <div class="card-header">
                                 <h4><i class="fa-solid fa-truck-field"></i> Supplier Details</h4>

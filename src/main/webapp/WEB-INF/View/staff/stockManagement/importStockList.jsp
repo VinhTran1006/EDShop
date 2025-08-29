@@ -10,6 +10,15 @@
         <meta charset="UTF-8">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css">
+        <style>
+            .main-content{
+                padding-top: 60px !important;
+                margin-left: 200px !important;
+            }
+            .main-content h1{
+                margin-top: 5px !important;
+            }
+        </style>
     </head>
     <body>
         <div class="container">

@@ -15,8 +15,7 @@
     .header-container {
         background: white;
         border-bottom: 1px solid #e9ecef;
-        padding: 16px 24px;
-        margin-bottom: 24px;
+        padding: 5px 24px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
@@ -56,11 +55,11 @@
     .header-container {
         position: fixed;
         top: 0;
-        left: 250px;
-        width: calc(100% - 250px);
+        left: 220px;
+        right: 0;
         background: white;
         border-bottom: 1px solid #e9ecef;
-        padding: 16px 24px;
+        padding: 5px 24px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         z-index: 1000;
     }
@@ -189,6 +188,7 @@
             </div>
             <div class="user-details">
                 <h5>${staff.fullName}</h5>
+                <small>Staff</small>
             </div>
         </div>
 
