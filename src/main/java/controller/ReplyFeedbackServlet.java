@@ -78,7 +78,6 @@ public class ReplyFeedbackServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false); // không tạo session mới nếu mất
         Staff staff = (Staff) session.getAttribute("staff");
-
         if (staff != null) {
             try {
                 int feedbackID = Integer.parseInt(request.getParameter("feedbackID"));

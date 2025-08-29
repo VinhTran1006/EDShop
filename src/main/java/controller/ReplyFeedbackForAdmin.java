@@ -72,16 +72,15 @@ public class ReplyFeedbackForAdmin extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession(false); // không tạo session mới nếu mất
-        Staff staff = (Staff) session.getAttribute("staff");
-          System.out.println("qua servlet");
+        Staff staff = (Staff) session.getAttribute("admin");
+        System.out.println("null roi");
         if (staff != null) {
-            System.out.println("Staff k empty");
+            System.out.println("Admin");
             try {
                 int feedbackID = Integer.parseInt(request.getParameter("feedbackID"));
                 String answer = request.getParameter("answer");
-                
-                System.out.println("fb ID " + feedbackID);
 
                 int stID = staff.getStaffID(); // Lấy trực tiếp từ object Staff
 
