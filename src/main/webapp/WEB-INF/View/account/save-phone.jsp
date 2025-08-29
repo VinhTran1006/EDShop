@@ -37,6 +37,14 @@
                 text-align: center;
             }
 
+            .login-title .title-wrapper {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px; /* khoảng cách icon với chữ */
+                font-size: 28px; /* chỉnh size chữ cho cân */
+                font-weight: 600;
+            }
+
             .welcome-message {
                 color: #667eea;
                 font-size: 18px;
@@ -104,44 +112,53 @@
         <div class="login-container">
             <div class="login-card">
                 <h1 class="login-title">
-                    <i class="bi bi-person-check me-2"></i>
-                    Hoàn tất đăng ký
+                    <span class="title-wrapper">
+                        <i class="bi bi-person-check me-2"></i>
+                        Complete registration
+                    </span>
                 </h1>
 
                 <div class="welcome-message">
                     <i class="bi bi-emoji-smile me-2"></i>
-                    Chào <%= session.getAttribute("name") != null ? session.getAttribute("name") : "bạn"%>!
+                    Hi <%= session.getAttribute("name") != null ? session.getAttribute("name") : "bạn"%>!
                 </div>
 
                 <div class="instruction-text">
-                    Bạn chưa có tài khoản trong hệ thống. Vui lòng nhập số điện thoại để hoàn tất đăng ký:
+                    Please enter your phone number to complete registration:
                 </div>
 
                 <form action="LoginGoogle" method="post">
                     <div class="mb-4">
                         <label for="phone" class="form-label">
-                            <i class="bi bi-telephone me-2"></i>Số điện thoại
+                            <i class="bi bi-telephone me-2"></i>Phone Number
                         </label>
                         <input type="text" 
                                class="form-control" 
                                id="phone" 
                                name="phone" 
                                required 
-                               placeholder="Nhập số điện thoại của bạn"
-                               maxlength="12">
+                               placeholder="Enter your phone number"
+                               maxlength="10"
+                               pattern="0[0-9]{9}"
+                               value="<%= session.getAttribute("tempPhone") != null ? session.getAttribute("tempPhone") : ""%>"
+                               title="Please enter numbers only (no letters or special characters, no spaces and exactly 10 characters and must start with 0).">
                     </div>
 
                     <button type="submit" class="btn btn-confirm">
                         <i class="bi bi-check-circle me-2"></i>
-                        Xác nhận
+                        Confirm
                     </button>
                 </form>
 
-                <% if (request.getAttribute("error") != null) {%>
+                <% if (session.getAttribute("error") != null) {%>
                 <div class="error-message">
                     <i class="bi bi-exclamation-triangle me-2"></i>
-                    <%= request.getAttribute("error")%>
+                    <%= session.getAttribute("error")%>
                 </div>
+                <%
+                    session.removeAttribute("error");
+                    session.removeAttribute("tempPhone");
+                %>
                 <% }%>
             </div>
         </div>

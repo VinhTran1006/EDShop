@@ -1,11 +1,11 @@
 <%@page import="model.Customer"%>
 <%
-        Customer acc = (Customer) session.getAttribute("user");
-        Customer user = (Customer) session.getAttribute("cus");
-        if (acc == null || user == null) {
-            response.sendRedirect("Login");
-            return;
-        }
+    Customer acc = (Customer) session.getAttribute("user");
+    Customer user = (Customer) session.getAttribute("cus");
+    if (acc == null || user == null) {
+        response.sendRedirect("Login");
+        return;
+    }
 
     String currentPage = request.getRequestURI();
 %>
@@ -14,9 +14,13 @@
         <div class="avatar bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width:48px;height:48px;">
             <i class="bi bi-person-circle fs-2 text-primary"></i>
         </div>
-        <div>
-            <div style="font-weight: 600;"><%= acc != null ? acc.getFullName() : "Customer"%></div>
-            <div class="text-muted" style="font-size:13px;"><%= user != null ? acc.getPhoneNumber(): ""%></div>
+        <div style="min-width:0; flex:1;">
+            <div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;">
+                <%= acc != null ? acc.getFullName() : "Customer"%>
+            </div>
+            <div class="text-muted" style="font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                <%= user != null ? acc.getPhoneNumber() : ""%>
+            </div>
         </div>
     </div>
     <ul class="nav flex-column account-menu">

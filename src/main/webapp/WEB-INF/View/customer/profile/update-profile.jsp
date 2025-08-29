@@ -34,6 +34,19 @@
                         There is no customer with that ID
                     </div>
                     <% } else {%>
+
+                    <%
+                        String errorMsg = (String) session.getAttribute("error");
+                        if (errorMsg != null) {
+                    %>
+                    <div class="alert alert-danger mb-3" style="max-width: 500px;">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <%= errorMsg%>
+                    </div>
+                    <%
+                            session.removeAttribute("error");
+                        }
+                    %>
                     <form method="post" action="UpdateProfile">
                         <input type="hidden" name="id" value="<%= cus.getCustomerID()%>">
 
@@ -44,12 +57,14 @@
                             </label>
                             <input type="text"
                                    name="fullname"
-                                   value="<%= cus.getFullName() != null ? cus.getFullName() : ""%>"
+                                   value="<%= request.getSession().getAttribute("tempFullName") != null
+                                           ? request.getSession().getAttribute("tempFullName")
+                                           : (cus.getFullName() != null ? cus.getFullName() : "")%>"
                                    class="form-control"
                                    required
-                                   maxlength="255"
-                                   pattern="^[\p{L}\s]{2,255}$"
-                                   title="Please enter letters only (Full name must be 2-255 letters, spaces allowed, no numbers or special characters.).">
+                                   maxlength="50"
+                                   pattern="^[\p{L}\s]{2,50}$"
+                                   title="Please enter letters only (Full name must be 2-50 letters, spaces allowed, no numbers or special characters.).">
                         </div>
 
                         <div class="form-group">
@@ -59,11 +74,14 @@
                             </label>
                             <input type="tel"
                                    name="phone"
-                                   value="<%= cus.getPhoneNumber() != null ? cus.getPhoneNumber() : ""%>"
+                                   value="<%= request.getSession().getAttribute("tempPhone") != null
+                                           ? request.getSession().getAttribute("tempPhone")
+                                           : (cus.getPhoneNumber() != null ? cus.getPhoneNumber() : "")%>"
                                    class="form-control"
                                    required
-                                   pattern="[0-9]{10}"
-                                   title="Please enter numbers only (no letters or special characters, no spaces and exactly 10 characters).">
+                                   maxlength="10"
+                                   pattern="0[0-9]{9}"
+                                   title="Please enter numbers only (no letters or special characters, no spaces and exactly 10 characters and must start with 0).">
                         </div>
 
                         <div class="form-group">
@@ -73,11 +91,22 @@
                             </label>
                             <input type="date"
                                    name="dob"
-                                   value="<%= cus.getBirthDate() != null ? cus.getBirthDate() : ""%>"
+                                   value="<%= request.getSession().getAttribute("tempDob") != null
+                                           ? request.getSession().getAttribute("tempDob")
+                                           : (cus.getBirthDate() != null ? cus.getBirthDate() : "")%>"
                                    class="form-control"
-                                   max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date())%>">
+                                   required
+                                   max="<%= java.time.LocalDate.now().minusYears(18).toString() %>"
+                                   min="<%= java.time.LocalDate.now().minusYears(100).withDayOfYear(1).toString()%>">
+
                         </div>
 
+                        <%
+                            String gender = cus.getGender();
+                            if (request.getSession().getAttribute("tempGender") != null) {
+                                gender = request.getSession().getAttribute("tempGender").toString();
+                            }
+                        %>
                         <div class="form-group">
                             <label>
                                 <i class="bi bi-gender-ambiguous profile-icon"></i>
