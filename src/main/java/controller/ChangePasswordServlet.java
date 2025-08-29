@@ -84,7 +84,7 @@ public class ChangePasswordServlet extends HttpServlet {
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
 
-        String passwordPattern = "^(?=.*@)[A-Z][A-Za-z0-9@]{7,254}$";
+        String passwordPattern = "^(?=.*@)[A-Z][A-Za-z0-9@]{7,30}$";
 
         if (!newPassword.equals(confirmPassword)) {
             session.setAttribute("error", "New password and confirm password do not match.");
@@ -93,7 +93,7 @@ public class ChangePasswordServlet extends HttpServlet {
         }
 
         if (!newPassword.matches(passwordPattern)) {
-            session.setAttribute("error", "Password must be 8-255 characters, start with uppercase and contain '@'.");
+            session.setAttribute("error", "Password must be 8-30 characters, start with uppercase and contain '@'.");
             response.sendRedirect("ChangePassword");
             return;
         }

@@ -106,7 +106,7 @@ public class RegisterServlet extends HttpServlet {
         String password = request.getParameter("password").trim();
         String confirmPassword = request.getParameter("confirmPassword").trim();
 
-        String passwordPattern = "^(?=.*@)[A-Z][A-Za-z0-9@]{7,254}$";
+        String passwordPattern = "^(?=.*@)[A-Z][A-Za-z0-9@]{7,30}$";
         String namePattern = "^[\\p{L}\\s]{2,50}$";
         String phonePattern = "^\\d{10}$";
         String emailPattern = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
@@ -155,7 +155,7 @@ public class RegisterServlet extends HttpServlet {
         }
 
         if (!password.matches(passwordPattern)) {
-            setFlashError(session, "Password must be 8–255 characters long, start with an uppercase letter, and contain at least one '@'.",
+            setFlashError(session, "Password must be 8–30 characters long, start with an uppercase letter, and contain at least one '@'.",
                     phone, fullName, email);
             request.getRequestDispatcher("/WEB-INF/View/account/register.jsp").forward(request, response);
             return;
