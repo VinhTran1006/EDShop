@@ -95,7 +95,7 @@
 
             <div class="mb-3">
                 <label class="form-label">Supplier</label>
-                <select class="form-control" id="supplier" name="supplier">
+                <select class="form-control" id="supplier" name="supplier" required>
                     <option value="">-- Select Supplier --</option>
                     <% for (Suppliers sup : supList) {
                             boolean isSelected = (sup.getSupplierID() == product.getSupplierID());
@@ -119,12 +119,12 @@
                        readonly />
 
                 <!-- Gửi id về server -->
-                <input type="hidden" name="category" value="<%= product.getCategoryID()%>">
+                <input type="hidden" name="category" value="<%= product.getCategoryID()%>" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Brand</label>
-                <select class="form-control" id="brand" name="brand">
+                <select class="form-control" id="brand" name="brand" required>
                     <option value="">-- Select brand --</option>
                     <% for (Brand b : brandList) {
                             boolean isSelected = (b.getBrandId() == product.getBrandID());

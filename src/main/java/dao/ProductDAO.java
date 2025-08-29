@@ -957,7 +957,7 @@ public class ProductDAO extends DBContext {
         return false;
     }
     
-     public boolean checkExistUpdate(String productName, int brandId, int productId) {
+        public boolean checkExistUpdate(String productName, int brandId, int productId) {
         String sql = "SELECT * "
                 + "FROM Products WHERE ProductName = ? AND BrandID = ? AND IsActive != 0 AND ProductID != ?";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {

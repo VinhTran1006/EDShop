@@ -276,7 +276,7 @@ public class AdminUpdateProductServlet extends HttpServlet {
                 -> (oldUrl == null || oldUrl.isEmpty())
                 ? "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png"
                 : oldUrl);
-
+        
         //        <====================================== Xử lý ảnh ===========================================>
         if (!error) {
             proDAO.updateProduct(productId, productName, discription, price, Suppliers, Category, Brand, warranty, quantity, imageUrlMap.get("fileMain"), imageUrlMap.get("file1"), imageUrlMap.get("file2"), imageUrlMap.get("file3"));
