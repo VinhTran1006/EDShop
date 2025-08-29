@@ -19,7 +19,7 @@
 
         <!-- SweetAlert2 -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-       
+
     </head>
     <body>
         <div class="container">
@@ -104,7 +104,7 @@
                                             <c:if test="${empty rate.reply}">
                                                 <button class="btn btn-primary"
                                                         onclick="toggleReplyForm(${rate.feedbackID})">
-                                                     Reply
+                                                    Reply
                                                 </button>
                                             </c:if>
 
@@ -127,9 +127,9 @@
                                         <div id="replyForm-${rate.feedbackID}" class="reply-form mt-2">
                                             <form method="POST" action="ReplyFeedbackForAdmin">
                                                 <input type="hidden" name="feedbackID" value="${rate.feedbackID}">
-                                                <textarea required="true" name="Answer" class="form-control" placeholder="Write your reply..."></textarea>
+                                                <textarea required="true" name="answer" class="form-control" placeholder="Write your reply..."></textarea>
                                                 <button type="submit" class="btn btn-success mt-2">
-                                                     Submit Reply
+                                                    Submit Reply
                                                 </button>
                                             </form>
                                         </div>
@@ -159,7 +159,7 @@
 
                 // Chuyển hướng sau 2 giây
                 setTimeout(function () {
-                    window.location.href = "ViewListFeedback"; // Cập nhật URL nếu cần
+                    window.location.href = "ViewFeedbackForAdmin"; // Cập nhật URL nếu cần
                 }, 2000);
             }
 
@@ -180,7 +180,7 @@
                         }
                     }
                 };
-                xhr.send("feedbackID=" + feedbackID + "&Answer=" + encodeURIComponent(replyText));
+                xhr.send("feedbackID=" + feedbackID + "&answer=" + encodeURIComponent(replyText));
             }
 
             function toggleReplyForm(feedbackID) {
@@ -335,7 +335,7 @@
                     text: 'Your reply was sent successfully.',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                    window.location.href = '/TMobile/ViewFeedbackForAdmin?feedbackID=<%=feedbackID%>';
+                    window.location.href = '/EDShop/ViewFeedbackForAdmin?feedbackID=<%=feedbackID%>';
                 });
             <% } else if ("failed".equals(success)) { %>
                 Swal.fire({
@@ -353,7 +353,7 @@
                     text: 'Something went wrong while processing your reply.',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                    window.location.href = '/TMobile/ViewFeedbackForAdmin?feedbackID=<%=feedbackID%>';
+                    window.location.href = '/EDShop/ViewFeedbackForAdmin?feedbackID=<%=feedbackID%>';
                 });
             <% } else if ("nostaff".equals(success)) {%>
                 Swal.fire({
@@ -362,11 +362,10 @@
                     text: 'Staff ID not found for this account.',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                    window.location.href = '/TMobile/ViewFeedbackForAdmin?feedbackID=<%=feedbackID%>';
+                    window.location.href = '/EDShop/ViewFeedbackForAdmin?feedbackID=<%=feedbackID%>';
                 });
             <% }%>
             };
-
         </script>
 
     </body>
