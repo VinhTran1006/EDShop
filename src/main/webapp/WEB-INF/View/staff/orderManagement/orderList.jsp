@@ -11,9 +11,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <!-- Bootstrap & FontAwesome -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css" />
@@ -68,51 +67,53 @@
                 font-weight: 600;
             }
             /* Tất cả nút hành động */
-.btn-status {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    border-radius: 8px;     /* bo góc nhẹ */
-    font-size: 14px;        /* font dễ đọc */
-    font-weight: 600;
-    padding: 6px 14px;      /* padding cân đối */
-    min-width: 160px;       /* đảm bảo các nút cùng kích thước */
-    height: 38px;           /* chiều cao đồng bộ */
-    border: none;
-    color: #fff;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
+            .btn-status {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                border-radius: 8px;     /* bo góc nhẹ */
+                font-size: 14px;        /* font dễ đọc */
+                font-weight: 600;
+                padding: 6px 14px;      /* padding cân đối */
+                min-width: 160px;       /* đảm bảo các nút cùng kích thước */
+                height: 38px;           /* chiều cao đồng bộ */
+                border: none;
+                color: #fff;
+                transition: all 0.2s ease;
+                cursor: pointer;
+            }
 
-.btn-status:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-}
+            .btn-status:hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+            }
 
-/* Màu theo chức năng */
-.btn-next-packing {
-    background-color: #0d6efd;   /* xanh dương */
-}
-.btn-next-delivery {
-    background-color: #6366f1;   /* tím */
-}
-.btn-next-delivered {
-    background-color: #22c55e;   /* xanh lá */
-}
-.btn-cancel {
-    background-color: #ef4444;   /* đỏ */
-}
-.btn-detail {
-    background-color: #3b82f6;   /* xanh dương nhạt */
-}
+            /* Màu theo chức năng */
+            .btn-next-packing {
+                background-color: #0d6efd;   /* xanh dương */
+            }
+            .btn-next-delivery {
+                background-color: #6366f1;   /* tím */
+            }
+            .btn-next-delivered {
+                background-color: #22c55e;   /* xanh lá */
+            }
+            .btn-cancel {
+                background-color: #ef4444;   /* đỏ */
+            }
+            .btn-detail {
+                background-color: #3b82f6;   /* xanh dương nhạt */
+            }
 
-/* Khoảng cách giữa các nút */
-.d-flex.gap-2 > form,
-.d-flex.gap-2 > a {
-    margin-bottom: 4px; /* khoảng cách dọc nếu wrap xuống dòng */
-}
-
+            /* Khoảng cách giữa các nút */
+            .d-flex.gap-2 > form,
+            .d-flex.gap-2 > a {
+                margin-bottom: 4px; /* khoảng cách dọc nếu wrap xuống dòng */
+            }
+            .main-content{
+                padding-top: 50px !important;
+            }
         </style>
 
     </head>
@@ -122,129 +123,128 @@
             <jsp:include page="../sideBar.jsp" />
             <div class="wrapper">
                 <main class="main-content">
-                    <jsp:include page="../header.jsp" />
-
-                    <h1>Orders</h1>
-
-                    <!-- Search Form -->
-                    <form class="search-form" method="get" action="ViewOrderList">
-                        <input type="text" name="search" placeholder="Search by Name, Phone..." value="${searchQuery}" />
-                        <button type="submit" class="search-btn">Search</button>
-                    </form>
-                    <!-- Order Table -->
-                    <c:if test="${not empty orderList}">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Customer Name</th>
-                                    <th>Phone</th>
-                                    <th>Total Amount</th>
-                                    <th>Order Date</th>
-                                    <th>Order Update</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="order" items="${orderList}">
+                    <div class="container">
+                        <jsp:include page="../header.jsp" />
+                        <h1>Orders</h1>
+                        <!-- Search Form -->
+                        <form class="search-form" method="get" action="ViewOrderList">
+                            <input type="text" name="search" placeholder="Search by Name, Phone..." value="${searchQuery}" />
+                            <button type="submit" class="search-btn">Search</button>
+                        </form>
+                        <!-- Order Table -->
+                        <c:if test="${not empty orderList}">
+                            <table>
+                                <thead>
                                     <tr>
-                                        <td>#${order.orderID}</td>
-                                        <td>${order.customer.fullName}</td>
-                                        <td>${order.customer.phoneNumber}</td>
-                                        <td><fmt:formatNumber value="${order.totalAmount}" type="currency" currencySymbol="₫" /></td>
-                                        <td>${fn:substring(order.orderDate, 0, 16)}</td>
-                                        <td>${fn:substring(order.deliveredDate, 0, 16)}</td>
+                                        <th>Order ID</th>
+                                        <th>Customer Name</th>
+                                        <th>Phone</th>
+                                        <th>Total Amount</th>
+                                        <th>Order Date</th>
+                                        <th>Order Update</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="order" items="${orderList}">
+                                        <tr>
+                                            <td>${order.orderID}</td>
+                                            <td>${order.customer.fullName}</td>
+                                            <td>${order.customer.phoneNumber}</td>
+                                            <td><fmt:formatNumber value="${order.totalAmount}" type="currency" currencySymbol="₫" /></td>
+                                            <td>${fn:substring(order.orderDate, 0, 16)}</td>
+                                            <td>${fn:substring(order.deliveredDate, 0, 16)}</td>
 
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${order.status eq 'Waiting'}">
-                                                    <span class="badge status-1">Waiting</span>
-                                                </c:when>
-                                                <c:when test="${order.status eq 'Packing'}">
-                                                    <span class="badge status-2">Packing</span>
-                                                </c:when>
-                                                <c:when test="${order.status eq 'Waiting for Delivery'}">
-                                                    <span class="badge status-3">Waiting for Delivery</span>
-                                                </c:when>
-                                                <c:when test="${order.status eq 'Delivered'}">
-                                                    <span class="badge status-4">Delivered</span>
-                                                </c:when>
-                                                <c:when test="${order.status eq 'Cancelled'}">
-                                                    <span class="badge status-5">Cancelled</span>
-                                                </c:when>
-                                            </c:choose>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                <!-- Next button form -->
+                                            <td>
                                                 <c:choose>
                                                     <c:when test="${order.status eq 'Waiting'}">
-                                                        <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline">
-                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
-                                                            <input type="hidden" name="update" value="Packing"/>
-                                                            <button type="submit" class="btn-status btn-next-packing">
-                                                                <i class="fa-solid fa-arrow-right"></i> Next (Packing)
-                                                            </button>
-                                                        </form>
-
-                                                        <!-- Cancel button form -->
-                                                        <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline cancel-form">
-                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
-                                                            <input type="hidden" name="update" value="Cancelled"/>
-                                                            <button type="button" class="btn-status btn-cancel cancel-btn">
-                                                                <i class="fa-solid fa-xmark"></i> Cancel
-                                                            </button>
-                                                        </form>
+                                                        <span class="badge status-1">Waiting</span>
                                                     </c:when>
-
                                                     <c:when test="${order.status eq 'Packing'}">
-                                                        <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline">
-                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
-                                                            <input type="hidden" name="update" value="Waiting for Delivery"/>
-                                                            <button type="submit" class="btn-status btn-next-delivery">
-                                                                <i class="fa-solid fa-arrow-right"></i> Next (Waiting for Delivery)
-                                                            </button>
-                                                        </form>
-
-                                                        <!-- Cancel button form -->
-                                                        <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline cancel-form">
-                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
-                                                            <input type="hidden" name="update" value="Cancelled"/>
-                                                            <button type="button" class="btn-status btn-cancel cancel-btn">
-                                                                <i class="fa-solid fa-xmark"></i> Cancel
-                                                            </button>
-                                                        </form>
+                                                        <span class="badge status-2">Packing</span>
                                                     </c:when>
-
                                                     <c:when test="${order.status eq 'Waiting for Delivery'}">
-                                                        <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline">
-                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
-                                                            <input type="hidden" name="update" value="Delivered"/>
-                                                            <button type="submit" class="btn-status btn-next-delivered">
-                                                                <i class="fa-solid fa-arrow-right"></i> Next (Delivered)
-                                                            </button>
-                                                        </form>
+                                                        <span class="badge status-3">Waiting for Delivery</span>
+                                                    </c:when>
+                                                    <c:when test="${order.status eq 'Delivered'}">
+                                                        <span class="badge status-4">Delivered</span>
+                                                    </c:when>
+                                                    <c:when test="${order.status eq 'Cancelled'}">
+                                                        <span class="badge status-5">Cancelled</span>
                                                     </c:when>
                                                 </c:choose>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    <!-- Next button form -->
+                                                    <c:choose>
+                                                        <c:when test="${order.status eq 'Waiting'}">
+                                                            <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline">
+                                                                <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                                <input type="hidden" name="update" value="Packing"/>
+                                                                <button type="submit" class="btn-status btn-next-packing">
+                                                                    <i class="fa-solid fa-arrow-right"></i> Next (Packing)
+                                                                </button>
+                                                            </form>
 
-                                                <!-- Nút Detail -->
-                                                <a href="ViewOrderDetail?orderID=${order.orderID}" class="btn-status btn-detail">
-                                                    <i class="fa-solid fa-eye"></i> Detail
-                                                </a>
-                                            </div>
-                                        </td>
+                                                            <!-- Cancel button form -->
+                                                            <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline cancel-form">
+                                                                <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                                <input type="hidden" name="update" value="Cancelled"/>
+                                                                <button type="button" class="btn-status btn-cancel cancel-btn">
+                                                                    <i class="fa-solid fa-xmark"></i> Cancel
+                                                                </button>
+                                                            </form>
+                                                        </c:when>
 
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                    </c:if>
+                                                        <c:when test="${order.status eq 'Packing'}">
+                                                            <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline">
+                                                                <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                                <input type="hidden" name="update" value="Waiting for Delivery"/>
+                                                                <button type="submit" class="btn-status btn-next-delivery">
+                                                                    <i class="fa-solid fa-arrow-right"></i> Next (Waiting for Delivery)
+                                                                </button>
+                                                            </form>
 
-                    <!-- If order list is empty -->
-                    <c:if test="${empty orderList}">
-                        <div class="text-center">No orders found!</div>
-                    </c:if>
+                                                            <!-- Cancel button form -->
+                                                            <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline cancel-form">
+                                                                <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                                <input type="hidden" name="update" value="Cancelled"/>
+                                                                <button type="button" class="btn-status btn-cancel cancel-btn">
+                                                                    <i class="fa-solid fa-xmark"></i> Cancel
+                                                                </button>
+                                                            </form>
+                                                        </c:when>
+
+                                                        <c:when test="${order.status eq 'Waiting for Delivery'}">
+                                                            <form action="${pageContext.request.contextPath}/UpdateOrder" method="POST" class="d-inline">
+                                                                <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                                <input type="hidden" name="update" value="Delivered"/>
+                                                                <button type="submit" class="btn-status btn-next-delivered">
+                                                                    <i class="fa-solid fa-arrow-right"></i> Next (Delivered)
+                                                                </button>
+                                                            </form>
+                                                        </c:when>
+                                                    </c:choose>
+
+                                                    <a href="ViewOrderDetail?orderID=${order.orderID}" class="btn-status btn-detail">
+                                                        <i class="fa-solid fa-eye"></i> Detail
+                                                    </a>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+
+                        <!-- If order list is empty -->
+                        <c:if test="${empty orderList}">
+                            <div class="text-center">No orders found!</div>
+                        </c:if>
+                    </div>
                 </main>
             </div>
         </div>

@@ -9,57 +9,13 @@
         <meta charset="UTF-8">
         <title>Order Details</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <!-- Bootstrap & FontAwesome -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-
-        <!-- Custom Styles -->
-
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/admin.css">
         <style>
-            body {
-                background-color: #f4f6fb;
-                font-family: 'Segoe UI', sans-serif;
+            .main-content{
+                padding-top: 60px !important;
             }
-
-            .status-1 {
-                background-color: #f59e0b;
-            } /* Waiting */
-            .status-2 {
-                background-color: #0d6efd;
-            } /* Packaging */
-            .status-3 {
-                background-color: #6366f1;
-            } /* Waiting for Delivery */
-            .status-4 {
-                background-color: #22c55e;
-            } /* Delivered */
-            .status-5 {
-                background-color: #ef4444;
-            } /* Cancelled */
-
-            .badge {
-                padding: 6px 12px;
-                border-radius: 999px;
-                font-weight: 600;
-                color: #fff;
-                font-size: 14px;
-            }
-
-            .card h4 {
-                font-weight: 700;
-            }
-
-            .form-select {
-                border-radius: 8px;
-            }
-
-            .btn {
-                border-radius: 8px;
-                font-weight: 600;
-            }
-
         </style>
     </head>
     <body>
@@ -68,15 +24,14 @@
             <div class="wrapper">
                 <main class="main-content">
                     <jsp:include page="../header.jsp" />
-                    <div class="container mt-5">
-                        <div class="card mx-auto shadow" style="max-width: 850px;">
-
-                            <div class="card-header bg-primary text-white">
-                                <h4 class="mb-0"><i class="fa-solid fa-receipt"></i> Order Detail</h4>
+                    <div class="container">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fa-solid fa-receipt"></i> Order Details</h4>
                             </div>
 
                             <div class="card-body">
-                                <table class="table table-borderless">
+                                <table class="info-table">
                                     <tr><th>Order ID:</th><td>${data.orderID}</td></tr>
                                     <tr><th>Order Date:</th><td>${fn:substring(data.orderDate, 0, 16)}</td></tr>
                                     <tr><th>Update Date:</th><td>${fn:substring(data.deliveredDate, 0, 16)}</td></tr>
@@ -120,94 +75,81 @@
                                             (<c:out value="${data.discount}"/>%)
                                         </td>
                                     </tr>
-                                    <tr><th>Total Amount:</th><td><fmt:formatNumber value="${data.totalAmount}" type="number" groupingUsed="true" />₫</td></tr>
+                                    <tr><th>Total Amount:</th><td><strong><fmt:formatNumber value="${data.totalAmount}" type="number" groupingUsed="true" />₫</strong></td></tr>
                                     <tr><th>Customer Name:</th><td>${data.customer.fullName}</td></tr>
                                     <tr><th>Phone:</th><td>${data.customer.phoneNumber}</td></tr>
                                     <tr><th>Address:</th><td>${data.addressSnapshot}</td></tr>
                                 </table>
 
-                                <h5 class="mt-4"><i class="fa-solid fa-box"></i> Order Items</h5>
-                                <table class="table table-bordered align-middle text-center">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Product</th>
-                                            <th style="width: 120px;">Quantity</th>
-                                            <th style="width: 150px;">Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach items="${dataDetail}" var="detail">
-                                            <tr>
-                                                <td class="text-start"><strong>${detail.productName}</strong></td>
-                                                <td>${detail.quantity}</td>
-                                                <td><fmt:formatNumber value="${detail.price}" type="number" groupingUsed="true"/>₫</td>
-                                            </tr>
-                                        </c:forEach>
-                                    </tbody>
-                                </table>
-
-
-                                
+                                <h5 class="section-header"><i class="fa-solid fa-box"></i> Order Items</h5>
+                                <div class="order-items">
+                                    <c:forEach items="${dataDetail}" var="detail">
+                                        <div class="order-item">
+                                            <div class="item-name">${detail.productName}</div>
+                                            <div class="item-quantity">Quantity: ${detail.quantity}</div>
+                                            <div class="item-price">Price: <fmt:formatNumber value="${detail.price}" type="number" groupingUsed="true" />₫</div>
+                                        </div>
+                                    </c:forEach>
+                                </div>
 
                                 <c:if test="${not empty errorMessage}">
-                                    <div class="alert alert-danger mt-2">${errorMessage}</div>
+                                    <div class="alert alert-danger">${errorMessage}</div>
                                 </c:if>
 
-                                
-                                        <a href="${pageContext.request.contextPath}/ViewOrderList" class="btn btn-outline-primary">Back to list</a>
-                                
+                                <a href="${pageContext.request.contextPath}/ViewOrderList" class="btn btn-outline-primary">
+                                    <i class="fa-solid fa-arrow-left"></i> Back to List
+                                </a>
                             </div>
                         </div>
+                    </div>
                 </main>
             </div>
         </div>
-    </div>
 
-    <!-- JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
+        <script>
+            function disableOptions() {
+                const status = document.getElementById('orderStatus').value;
+                const options = document.getElementById('orderStatus').options;
+                // reset all
+                for (let i = 0; i < options.length; i++) {
+                    options[i].disabled = false;
+                }
 
-        function disableOptions() {
-            const status = document.getElementById('orderStatus').value;
-            const options = document.getElementById('orderStatus').options;
-            // reset all
-            for (let i = 0; i < options.length; i++) {
-                options[i].disabled = false;
+                if (status === 'Waiting for Delivery') {
+                    // disable Waiting, Packaging, Cancelled
+                    options[0].disabled = true; // Waiting
+                    options[1].disabled = true; // Packaging
+                    options[4].disabled = true; // Cancelled
+                } else if (status === 'Waiting') {
+                    options[2].disabled = true;
+                    options[3].disabled = true;
+
+                } else if (status === 'Packing') {
+                    // disable Waiting
+                    options[0].disabled = true; // Waiting
+                    options[3].disabled = true;
+
+                } else if (status === 'Delivered') {
+                    // disable Waiting, Packaging, Waiting for Delivery, Cancelled
+                    options[0].disabled = true;
+                    options[1].disabled = true;
+                    options[2].disabled = true;
+                    options[4].disabled = true;
+                } else if (status === 'Cancelled') {
+                    // disable tất cả trừ Cancelled
+                    options[0].disabled = true;
+                    options[1].disabled = true;
+                    options[2].disabled = true;
+                    options[3].disabled = true;
+                }
             }
 
-            if (status === 'Waiting for Delivery') {
-                // disable Waiting, Packaging, Cancelled
-                options[0].disabled = true; // Waiting
-                options[1].disabled = true; // Packaging
-                options[4].disabled = true; // Cancelled
-            } else if (status === 'Waiting') {
-                options[2].disabled = true;
-                options[3].disabled = true;
+            // gọi khi load trang để setup ban đầu
+            disableOptions();
+        </script>
 
-            } else if (status === 'Packing') {
-                // disable Waiting
-                options[0].disabled = true; // Waiting
-                options[3].disabled = true;
-
-            } else if (status === 'Delivered') {
-                // disable Waiting, Packaging, Waiting for Delivery, Cancelled
-                options[0].disabled = true;
-                options[1].disabled = true;
-                options[2].disabled = true;
-                options[4].disabled = true;
-            } else if (status === 'Cancelled') {
-                // disable tất cả trừ Cancelled
-                options[0].disabled = true;
-                options[1].disabled = true;
-                options[2].disabled = true;
-                options[3].disabled = true;
-            }
-        }
-
-        // gọi khi load trang để setup ban đầu
-        disableOptions();
-    </script>
-
-</body>
+    </body>
 </html>

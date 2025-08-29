@@ -17,6 +17,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Customer Detail</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/sideBar.css">
 
@@ -344,105 +345,108 @@
             .text-muted {
                 color: #7f8c8d;
             }
+            .main-content{
+                padding-top: 60px !important;
+            }
         </style>
     </head>
     <body>
         <div class="container">
             <% if (custo == null) { %>
-                <jsp:include page="../sideBar.jsp" />
-                <div class="wrapper">
-                    <main class="main-content">
-                        <div class="no-data">
-                            <i class="fa-solid fa-user-slash"></i>
-                            <p>There is no customer with that ID</p>
-                            <a href="CustomerList" class="btn btn-outline-primary">
-                                <i class="fa-solid fa-arrow-left"></i> Back to Customer List
-                            </a>
-                        </div>
-                    </main>
-                </div>
-            <% } else { %>
-                <jsp:include page="../sideBar.jsp" />
-                <div class="wrapper">
-                    <main class="main-content">
-                        <jsp:include page="../header.jsp" />
-                        <div class="container mt-5">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4><i class="fa-solid fa-user"></i> Customer Details</h4>
-                                </div>
+            <jsp:include page="../sideBar.jsp" />
+            <div class="wrapper">
+                <main class="main-content">
+                    <div class="no-data">
+                        <i class="fa-solid fa-user-slash"></i>
+                        <p>There is no customer with that ID</p>
+                        <a href="CustomerList" class="btn btn-outline-primary">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Customer List
+                        </a>
+                    </div>
+                </main>
+            </div>
+            <% } else {%>
+            <jsp:include page="../sideBar.jsp" />
+            <div class="wrapper">
+                <main class="main-content">
+                    <jsp:include page="../header.jsp" />
+                    <div class="container mt-5">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fa-solid fa-user"></i> Customer Details</h4>
+                            </div>
 
-                                <div class="card-body">
-                                    <form method="post" action="CustomerList?action=detail">
-                                        <table class="info-table">
-                                            <tr>
-                                                <th>Customer ID:</th>
-                                                <td>#<%= custo.getCustomerID()%></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Full Name:</th>
-                                                <td><%= custo.getFullName()%></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Phone Number:</th>
-                                                <td><%= custo.getPhoneNumber()%></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Email:</th>
-                                                <td><%= custo.getEmail()%></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Status:</th>
-                                                <td>
-                                                    <% if (custo.isActive()) { %>
-                                                        <span class="badge bg-success">Active</span>
-                                                    <% } else { %>
-                                                        <span class="badge bg-danger">Blocked</span>
-                                                    <% } %>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>Date of Birth:</th>
-                                                <td><%= custo.getBirthDate()%></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Gender:</th>
-                                                <td>
-                                                    <div class="gender-display">
-                                                        <% if ("male".equalsIgnoreCase(custo.getGender())) { %>
-                                                            <div class="gender-item">
-                                                                <div class="gender-icon gender-male">
-                                                                    <i class="fa-solid fa-mars"></i>
-                                                                </div>
-                                                                <span>Male</span>
-                                                            </div>
-                                                        <% } else if ("female".equalsIgnoreCase(custo.getGender())) { %>
-                                                            <div class="gender-item">
-                                                                <div class="gender-icon gender-female">
-                                                                    <i class="fa-solid fa-venus"></i>
-                                                                </div>
-                                                                <span>Female</span>
-                                                            </div>
-                                                        <% } else { %>
-                                                            <span class="text-muted">Not specified</span>
-                                                        <% } %>
+                            <div class="card-body">
+                                <form method="post" action="CustomerList?action=detail">
+                                    <table class="info-table">
+                                        <tr>
+                                            <th>Customer ID:</th>
+                                            <td><%= custo.getCustomerID()%></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Full Name:</th>
+                                            <td><%= custo.getFullName()%></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Phone Number:</th>
+                                            <td><%= custo.getPhoneNumber()%></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Email:</th>
+                                            <td><%= custo.getEmail()%></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status:</th>
+                                            <td>
+                                                <% if (custo.isActive()) { %>
+                                                <span class="badge bg-success">Active</span>
+                                                <% } else { %>
+                                                <span class="badge bg-danger">Blocked</span>
+                                                <% }%>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Date of Birth:</th>
+                                            <td><%= custo.getBirthDate()%></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Gender:</th>
+                                            <td>
+                                                <div class="gender-display">
+                                                    <% if ("male".equalsIgnoreCase(custo.getGender())) { %>
+                                                    <div class="gender-item">
+                                                        <div class="gender-icon gender-male">
+                                                            <i class="fa-solid fa-mars"></i>
+                                                        </div>
+                                                        <span>Male</span>
                                                     </div>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                                    <% } else if ("female".equalsIgnoreCase(custo.getGender())) { %>
+                                                    <div class="gender-item">
+                                                        <div class="gender-icon gender-female">
+                                                            <i class="fa-solid fa-venus"></i>
+                                                        </div>
+                                                        <span>Female</span>
+                                                    </div>
+                                                    <% } else { %>
+                                                    <span class="text-muted">Not specified</span>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
 
-                                        <div class="text-center">
-                                            <a href="CustomerList" class="btn btn-primary" id="back">
-                                                <i class="fa-solid fa-arrow-left"></i> Back to Customer List
-                                            </a>
-                                        </div>
-                                    </form>
-                                </div>
+                                    <div class="text-center">
+                                        <a href="CustomerList" class="btn btn-primary" id="back">
+                                            <i class="fa-solid fa-arrow-left"></i> Back to Customer List
+                                        </a>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                    </main>
-                </div>
-            <% } %>
+                    </div>
+                </main>
+            </div>
+            <% }%>
         </div>
     </body>
 </html>

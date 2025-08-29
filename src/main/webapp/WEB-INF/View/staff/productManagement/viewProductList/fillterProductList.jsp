@@ -16,24 +16,26 @@
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 background: #f9fafb;
-                margin: 0;
+                margin: 60px 0 0 200px;
                 padding: 0;
             }
 
             h1 {
                 text-align: center;
                 font-size: 2.5rem;
-                margin-top: 30px;
+                margin-top: 60px !important;
+                margin-left: 200px !important;
                 color: #222;
+                margin-bottom: 0;
             }
 
             .header-row {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 20px;
-                margin: 40px auto;
-                flex-wrap: wrap;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 20px !important;
+                margin: 20px auto !important;
+                flex-wrap: wrap !important;
             }
 
             .header-row p {
@@ -52,6 +54,7 @@
                 border-radius: 8px;
                 border: 1px solid #ddd;
                 box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+                margin-bottom: 0 !important;
             }
 
             .search-form input {

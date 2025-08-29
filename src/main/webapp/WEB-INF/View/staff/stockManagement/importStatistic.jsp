@@ -10,7 +10,6 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css">
 
         <style>
-
             .charts-grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -50,7 +49,13 @@
                 border-color: #667eea;
                 box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
             }
-
+            .main-content{
+                margin-left: 200px !important;
+                padding-top: 60px !important;
+            }
+            .main-content h1{
+                margin-top: 5px !important;
+            }
         </style>
     </head>
 

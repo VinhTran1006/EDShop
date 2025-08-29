@@ -17,6 +17,15 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Css/supplierList5.css">
+        <style>
+            .main-content{
+                padding-top: 60px !important;
+            }
+            .main-content h1{
+                margin-top: 0 !important;
+                margin-bot: 0 !important;
+            }
+        </style>
     </head>
     <body>
         <div class="container">
@@ -27,8 +36,6 @@
                     <jsp:include page="../header.jsp" />
 
                     <h1>Customer List</h1>
-                                    <button class="create-btn" style="float: right; margin-bottom: 7.5px; visibility: hidden;">+ New Import</button>
-
                     <form class="search-form" action="CustomerList" method="get">        
                         <input type="text" name="keyword" class="form-control" placeholder="Search customer by name">
                         <input type="hidden" name="action" value="search">
@@ -88,20 +95,20 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <%
-    String success = request.getParameter("success");
-    if ("assigned".equals(success)) {
-%>
-<script>
-    Swal.fire({
-        icon: 'success',
-        title: 'Assigned!',
-        text: 'Voucher assigned successfully to customer.',
-        confirmButtonText: 'OK'
-    });
-</script>
-<%
-    }
-%>
+            String success = request.getParameter("success");
+            if ("assigned".equals(success)) {
+        %>
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Assigned!',
+                text: 'Voucher assigned successfully to customer.',
+                confirmButtonText: 'OK'
+            });
+        </script>
+        <%
+            }
+        %>
 
     </body>
 </html>
