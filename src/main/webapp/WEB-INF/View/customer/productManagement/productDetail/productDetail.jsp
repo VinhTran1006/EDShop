@@ -15,6 +15,9 @@
     String categoryname = cateDAO.getCategoryNameByCategoryId(product.getCategoryID());
 
 %>
+<%    int floorRating = (int) Math.floor((Double) request.getAttribute("averageRating"));
+    request.setAttribute("floorRating", floorRating);
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -219,6 +222,13 @@
                 background: linear-gradient(135deg, #5a32a3, #4c2a85);
                 box-shadow: 0 8px 25px rgba(111, 66, 193, 0.4);
             }
+            .fa-star {
+                color: #ccc; /* màu xám */
+            }
+            .fa-star.checked, .fa-star-half-alt.checked {
+                color: #f5a623; /* màu vàng */
+            }
+
         </style>
     </head>
 
@@ -334,9 +344,27 @@
                                 <strong style="font-size: 18px;">Average Rating:</strong>
                                 <span style="color: #f5a623; font-size: 18px;">
                                     <c:forEach begin="1" end="5" var="i">
-                                        <i class="fa fa-star ${i <= averageRating ? 'checked' : ''}"></i>
+                                        <c:choose>
+                                            <%-- Sao đầy --%>
+                                            <c:when test="${i <= floorRating}">
+                                                <i class="fa fa-star checked"></i>
+                                            </c:when>
+
+                                            <%-- Sao nửa --%>
+                                            <c:when test="${i == floorRating + 1 && averageRating - floorRating >= 0.5}">
+                                                <i class="fa fa-star-half-alt checked"></i>
+                                            </c:when>
+
+                                            <%-- Sao rỗng --%>
+                                            <c:otherwise>
+                                                <i class="fa fa-star"></i>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:forEach>
+
+
                                     (<fmt:formatNumber value="${averageRating}" maxFractionDigits="1" /> / 5)
+
                                 </span>
                             </div>
                         </c:if>
@@ -348,7 +376,10 @@
                             <div style="border: 1px solid #e1e1e1; border-radius: 8px; padding: 15px; margin-bottom: 20px; background: #fafafa;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <strong>${rating.fullName}</strong> 
-                                    <small style="color: gray;">${rating.createdDate}</small>
+                                    <small style="color: gray;">
+                                        <fmt:formatDate value="${rating.createdDate}" pattern="dd/MM/yyyy HH:mm" />
+                                    </small>
+
                                 </div>
 
                                 <c:set var="stars" value="${rating.star}" />
@@ -366,8 +397,9 @@
 
                                         <c:if test="${not empty rating.replyDate}">
                                             <small style="color: gray; display:block; margin-top:5px;">
-                                                Replied on: ${rating.replyDate}
+                                                Replied on: <fmt:formatDate value="${rating.replyDate}" pattern="dd/MM/yyyy HH:mm" />
                                             </small>
+
                                         </c:if>
                                     </div>
                                 </c:if>

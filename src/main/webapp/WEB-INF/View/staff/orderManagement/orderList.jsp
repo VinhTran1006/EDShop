@@ -154,7 +154,7 @@
                                             <td>${order.customer.phoneNumber}</td>
                                             <td><fmt:formatNumber value="${order.totalAmount}" type="currency" currencySymbol="₫" /></td>
                                             <td>${fn:substring(order.orderDate, 0, 16)}</td>
-                                            <td>${fn:substring(order.deliveredDate, 0, 16)}</td>
+                                            <td>${fn:substring(order.updatedAt, 0, 16)}</td>
 
                                             <td>
                                                 <c:choose>

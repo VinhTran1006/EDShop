@@ -93,7 +93,7 @@ public class OrderDAO extends DBContext {
     }
 
     public boolean updateStatus(int orderId, String newStatus) {
-        String query = "UPDATE Orders SET Status = ? WHERE OrderID = ?";
+        String query = "UPDATE Orders SET Status = ?, UpdatedAt = GETDATE() WHERE OrderID = ?";
         try ( PreparedStatement pre = conn.prepareStatement(query)) {
             pre.setString(1, newStatus); // set chuỗi
             pre.setInt(2, orderId);

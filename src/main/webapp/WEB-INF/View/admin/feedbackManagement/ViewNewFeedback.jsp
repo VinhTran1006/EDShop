@@ -55,8 +55,8 @@
                                                 <div class="star-rating">
                                                     <c:forEach var="i" begin="1" end="5">
                                                         <c:choose>
-                                                            <c:when test="${i <= rate.star}">
-                                                                <i class="fa fa-star"></i>
+                                                            <c:when test="${i <= rate.star + 0}">
+                                                                <i class="fa fa-star text-warning"></i>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <i class="fa fa-star text-muted"></i>
