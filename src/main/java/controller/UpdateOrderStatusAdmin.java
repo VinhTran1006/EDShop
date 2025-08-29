@@ -60,6 +60,7 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String orderID = request.getParameter("orderID");
@@ -71,7 +72,7 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
         if (o != null) {
             request.setAttribute("dataDetail", list);
             request.setAttribute("data", o);
-            request.getRequestDispatcher("/WEB-INF/View/staff/orderManagement/orderDetailsView.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/View/admin/orderManagement/orderDetailsView.jsp").forward(request, response);
 
         } else {
             response.sendRedirect(request.getContextPath() + "/ViewOrderListServlet");
@@ -86,9 +87,10 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String status = request.getParameter("update");
+        String status = request.getParameter("update");  // trạng thái muốn chuyển tới
         String orderID = request.getParameter("orderID");
 
         try {
@@ -102,77 +104,84 @@ public class UpdateOrderStatusAdmin extends HttpServlet {
                 Order order = oDAO.getOrderByID(orderID);
                 String currentStatus = order.getStatus(); // trạng thái trước update
 
-                if ("Waiting".equals(currentStatus)) {
-                    // Chỉ update, không hoàn stock
-                    oDAO.updateStatus(orderIdInt, "Cancelled");
+                // ======================
+                // 1. XỬ LÝ HỦY ĐƠN
+                // ======================
+                if ("Cancelled".equalsIgnoreCase(status)) {
+                    if ("Waiting".equals(currentStatus)) {
+                        // Waiting → Cancelled (không hoàn stock)
+                        oDAO.updateStatus(orderIdInt, "Cancelled");
 
-                } else if ("Packing".equals(currentStatus)) {
-                    // Update
-                    oDAO.updateStatus(orderIdInt, "Cancelled");
+                    } else if ("Packing".equals(currentStatus)) {
+                        // Packing → Cancelled (hoàn stock)
+                        oDAO.updateStatus(orderIdInt, "Cancelled");
 
-                    // Hoàn stock cả tổng và batch
-                    List<OrderDetail> list = odDAO.getOrderDetail(orderID);
-                    ProductDAO pDAO = new ProductDAO();
-                    ImportStockDetailDAO sDetailDAO = new ImportStockDetailDAO();
+                        List<OrderDetail> list = odDAO.getOrderDetail(orderID);
+                        ProductDAO pDAO = new ProductDAO();
+                        ImportStockDetailDAO sDetailDAO = new ImportStockDetailDAO();
 
-                    for (OrderDetail od : list) {
-                        // 1. Trả lại tổng số lượng
-                        pDAO.increaseStock(od.getProductID(), od.getQuantity());
-
-                        // 2. Trả lại theo batch
-                        List<int[]> batchList = od.getImportDetailBatch();
-                        if (batchList != null && !batchList.isEmpty()) {
-                            sDetailDAO.increaseStockBack(batchList);
+                        for (OrderDetail od : list) {
+                            // 1. Trả lại tổng số lượng
+                            pDAO.increaseStock(od.getProductID(), od.getQuantity());
+                            // 2. Trả lại theo batch
+                            List<int[]> batchList = od.getImportDetailBatch();
+                            if (batchList != null && !batchList.isEmpty()) {
+                                sDetailDAO.increaseStockBack(batchList);
+                            }
                         }
+                    } else {
+                        // Các trạng thái khác không cho cancel
+                        response.sendRedirect("ViewOrderListServletAdmin?error=not-cancelable");
+                        return;
                     }
 
-                } else {
-                    // Các trạng thái khác: không cho hủy
-                    response.sendRedirect("ViewOrderOfCustomer?error=not-cancelable");
+                    response.sendRedirect("ViewOrderListServletAdmin?success=update");
                     return;
                 }
 
-                // Xử lý khi chuyển sang Packing (trừ kho FIFO, lưu batch)
-                if ("packing".equalsIgnoreCase(status)) {
-                    List<OrderDetail> list = odDAO.getOrderDetail(orderID);
+                // ======================
+                // 2. XỬ LÝ NEXT (CHUYỂN TRẠNG THÁI TIẾN)
+                // ======================
+                if ("Packing".equalsIgnoreCase(status) && "Waiting".equals(currentStatus)) {
+                    // Waiting → Packing (trừ stock FIFO)
+                    oDAO.updateStatus(orderIdInt, "Packing");
 
+                    List<OrderDetail> list = odDAO.getOrderDetail(orderID);
                     ImportStockDetailDAO sDetailDAO = new ImportStockDetailDAO();
-                    ProductDAO pDAO = new ProductDAO();
 
                     for (OrderDetail od : list) {
                         List<int[]> deductedList = sDetailDAO.deductStockFIFO(od.getProductID(), od.getQuantity());
-
                         if (deductedList != null && !deductedList.isEmpty()) {
-                            od.setImportDetailBatch(deductedList);
-
                             String batchStr = deductedList.stream()
                                     .map(arr -> arr[0] + ":" + arr[1])
                                     .collect(Collectors.joining(", ", "[", "]"));
-
-                            boolean updated = odDAO.updateImportDetailBatch(od.getOrderDetailsID(), batchStr);
-                            if (!updated) {
-                                System.err.println("Failed to update importDetailBatch for OrderDetailID: " + od.getOrderDetailsID());
-                            }
-                            System.out.println("Batch details saved: " + batchStr);
+                            odDAO.updateImportDetailBatch(od.getOrderDetailsID(), batchStr);
                         }
                     }
 
-                    // ✅ Thành công
-                    response.sendRedirect(request.getContextPath() + "/ViewOrderList?success=update");
+                } else if ("Waiting for Delivery".equalsIgnoreCase(status) && "Packing".equals(currentStatus)) {
+                    // Packing → Waiting for Delivery
+                    oDAO.updateStatus(orderIdInt, "Waiting for Delivery");
+
+                } else if ("Delivered".equalsIgnoreCase(status) && "Waiting for Delivery".equals(currentStatus)) {
+                    // Waiting for Delivery → Delivered
+                    oDAO.updateStatus(orderIdInt, "Delivered");
+
                 } else {
-                    // ❌ Không update được
-                    response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=update-failed");
+                    response.sendRedirect("ViewOrderListServletAdmin?error=invalid-transition");
+                    return;
                 }
+
+                // ✅ Thành công
+                response.sendRedirect("ViewOrderListServletAdmin?success=update");
+
             } else {
-                response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-params");
+                response.sendRedirect("ViewOrderListServletAdmin?error=invalid-params");
             }
 
-        } catch (NumberFormatException e) {
-            e.printStackTrace(); // In log server
-            response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=invalid-orderid");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/ViewOrderList?error=exception");
+            response.sendRedirect("ViewOrderListServletAdmin?error=exception");
         }
     }
 
