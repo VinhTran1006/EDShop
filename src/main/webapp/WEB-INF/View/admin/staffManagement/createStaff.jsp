@@ -105,6 +105,7 @@
                                                 <td>
                                                     <div class="input-group">
                                                         <input type="date" id="hiredDate" name="hiredDate" class="form-control supplier-input" required>
+                                                        <div id="hiredDateError" class="text-danger small mt-1"></div>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -143,22 +144,32 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
+            // Updated JavaScript validation code for CreateStaff.jsp
+// Replace the existing script section with this code
+
             const emailInput = document.getElementById("email");
             const emailError = document.getElementById("emailError");
             const submitBtn = document.querySelector("button[type='submit']");
 
             emailInput.addEventListener("blur", function () {
                 const email = emailInput.value.trim();
-                const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+                // Updated email pattern to accept various email domains, not just Gmail
+                const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 emailError.textContent = "";
                 submitBtn.disabled = false;
 
+                if (email === "") {
+                    // Don't show error for empty email as it might be optional in some cases
+                    return;
+                }
+
                 if (!emailPattern.test(email)) {
-                    emailError.textContent = "Email must be a valid Gmail address.";
+                    emailError.textContent = "Please enter a valid email address.";
                     submitBtn.disabled = true;
                     return;
                 }
 
+                // Check if email already exists
                 fetch("CheckEmailServlet?email=" + encodeURIComponent(email))
                         .then(response => response.text())
                         .then(data => {
@@ -224,8 +235,23 @@
                 birthError.textContent = "";
                 submitBtn.disabled = false;
 
-                if (isNaN(birthDate.getTime()))
+                if (!this.value) {
+                    // Don't validate empty birth date
                     return;
+                }
+
+                if (isNaN(birthDate.getTime())) {
+                    birthError.textContent = "Please enter a valid date.";
+                    submitBtn.disabled = true;
+                    return;
+                }
+
+                // Check if birth date is in the future
+                if (birthDate > today) {
+                    birthError.textContent = "Birth date cannot be in the future.";
+                    submitBtn.disabled = true;
+                    return;
+                }
 
                 let age = today.getFullYear() - birthDate.getFullYear();
                 const m = today.getMonth() - birthDate.getMonth();
@@ -240,6 +266,64 @@
                 }
             });
 
+// Add validation for hired date
+            const hiredDateInput = document.getElementById("hiredDate");
+            const hiredDateError = document.createElement("div");
+            hiredDateError.id = "hiredDateError";
+            hiredDateError.className = "text-danger small mt-1";
+            hiredDateInput.parentElement.appendChild(hiredDateError);
+
+            hiredDateInput.addEventListener("blur", function () {
+                const hiredDate = new Date(this.value);
+                const today = new Date();
+
+                hiredDateError.textContent = "";
+                submitBtn.disabled = false;
+
+                if (!this.value) {
+                    hiredDateError.textContent = "Hired date is required.";
+                    submitBtn.disabled = true;
+                    return;
+                }
+
+                if (isNaN(hiredDate.getTime())) {
+                    hiredDateError.textContent = "Please enter a valid hired date.";
+                    submitBtn.disabled = true;
+                    return;
+                }
+
+                // Check if hired date is too far in the future (more than 1 year)
+                const oneYearFromNow = new Date();
+                oneYearFromNow.setFullYear(today.getFullYear() + 1);
+
+                if (hiredDate > oneYearFromNow) {
+                    hiredDateError.textContent = "Hired date cannot be more than 1 year in the future.";
+                    submitBtn.disabled = true;
+                    return;
+                }
+
+                // Check if birth date exists and hired date is valid relative to birth date
+                const birthDateValue = birthInput.value;
+                if (birthDateValue) {
+                    const birthDate = new Date(birthDateValue);
+                    if (!isNaN(birthDate.getTime())) {
+                        const minHiredAge = new Date(birthDate);
+                        minHiredAge.setFullYear(birthDate.getFullYear() + 16); // Minimum 16 years old to be hired
+
+                        if (hiredDate < minHiredAge) {
+                            hiredDateError.textContent = "Staff must be at least 16 years old on the hired date.";
+                            submitBtn.disabled = true;
+                            return;
+                        }
+                    }
+                }
+            });
+
+            hiredDateInput.addEventListener("input", function () {
+                hiredDateError.textContent = "";
+                submitBtn.disabled = false;
+            });
+
             const fullNameInput = document.getElementById("fullName");
             const fullNameError = document.getElementById("fullNameError");
 
@@ -247,13 +331,22 @@
                 let name = fullNameInput.value.trim();
                 fullNameError.textContent = "";
                 submitBtn.disabled = false;
+
+                if (name === "") {
+                    fullNameError.textContent = "Full name is required.";
+                    submitBtn.disabled = true;
+                    return;
+                }
+
+                // Clean up multiple spaces
                 name = name.replace(/\s+/g, " ");
                 fullNameInput.value = name;
 
+                // Updated name pattern to be more flexible with Vietnamese names
                 const namePattern = /^([A-ZÀ-ỸĐ][a-zà-ỹđ]+)(\s[A-ZÀ-ỸĐ][a-zà-ỹđ]+)*$/u;
 
                 if (!namePattern.test(name)) {
-                    fullNameError.textContent = "Names must be initialed, contain no numbers or special characters, and have no spaces.";
+                    fullNameError.textContent = "Names must be capitalized, contain no numbers or special characters.";
                     submitBtn.disabled = true;
                 }
             });
@@ -263,6 +356,7 @@
                 submitBtn.disabled = false;
             });
 
+// Function to check duplicate email (keep existing functionality)
             function checkDuplicateEmail(email) {
                 fetch("CheckEmailServlet?email=" + encodeURIComponent(email))
                         .then(response => response.text())

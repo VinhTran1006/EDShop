@@ -336,12 +336,14 @@ public class CreateOrderServlet extends HttpServlet {
                         voucherDAO.incrementVoucherUsage(voucherId);
                     }
                 }
-
-                // Clear selected cart items
-                for (CartItem item : selectedCartItems) {
-                    cartItemDAO.removeCartItem(item.getCartItemID());
-                }
-
+//
+//                // Clear selected cart items
+//                for (CartItem item : selectedCartItems) {
+//                    cartItemDAO.removeCartItem(item.getCartItemID());
+//                }
+                
+                cartItemDAO.clearCartByCustomerId(customer.getCustomerID());
+                
                 // Clear selected items from session
                 session.removeAttribute("selectedCartItemIds");
 

@@ -41,29 +41,48 @@ public class CreateStaffServlet extends HttpServlet {
             if (email == null || email.trim().isEmpty()
                     || password == null || password.trim().isEmpty()
                     || fullName == null || fullName.trim().isEmpty()
-                    || phone == null || phone.trim().isEmpty()) {
+                    || role == null || role.trim().isEmpty()
+                    || hiredDateStr == null || hiredDateStr.trim().isEmpty()) {
 
-                request.setAttribute("errorMessage", "Vui lòng điền đầy đủ thông tin bắt buộc!");
+                request.setAttribute("errorMessage", "Please fill in all required information!");
                 request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
                 return;
             }
 
-            // Kiểm tra email đã tồn tại
+// Validate email format
+            String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+            if (!email.matches(emailPattern)) {
+                request.setAttribute("errorMessage", "Please enter a valid email address!");
+                request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
+                return;
+            }
+
+// Validate phone number format if provided
+            if (phone != null && !phone.trim().isEmpty()) {
+                String phonePattern = "^0\\d{9}$";
+                if (!phone.matches(phonePattern)) {
+                    request.setAttribute("errorMessage", "Phone number must start with 0 and have exactly 10 digits!");
+                    request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
+                    return;
+                }
+            }
+
+// Kiểm tra email đã tồn tại
             StaffDAO dao = new StaffDAO();
             if (dao.isEmailExists(email)) {
-                request.setAttribute("errorMessage", "Email đã tồn tại trong hệ thống!");
+                request.setAttribute("errorMessage", "This email has been registered");
                 request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
                 return;
             }
 
-            // Kiểm tra số điện thoại đã tồn tại
-            if (dao.isPhoneExists(phone)) {
-                request.setAttribute("errorMessage", "Số điện thoại đã tồn tại trong hệ thống!");
+// Kiểm tra số điện thoại đã tồn tại (nếu có nhập)
+            if (phone != null && !phone.trim().isEmpty() && dao.isPhoneExists(phone)) {
+                request.setAttribute("errorMessage", "Phone number is already registered!");
                 request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
                 return;
             }
 
-            // Chuyển đổi ngày tháng sang java.util.Date
+// Chuyển đổi ngày tháng sang java.util.Date
             java.util.Date birthDate = null;
             java.util.Date hiredDate = null;
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -71,12 +90,62 @@ public class CreateStaffServlet extends HttpServlet {
             try {
                 if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
                     birthDate = dateFormat.parse(birthDateStr);
+
+                    // Validate birth date
+                    java.util.Date today = new java.util.Date();
+                    if (birthDate.after(today)) {
+                        request.setAttribute("errorMessage", "Birth date cannot be in the future!");
+                        request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
+                        return;
+                    }
+
+                    // Check age >= 18
+                    java.util.Calendar birthCal = java.util.Calendar.getInstance();
+                    birthCal.setTime(birthDate);
+                    java.util.Calendar todayCal = java.util.Calendar.getInstance();
+                    todayCal.setTime(today);
+
+                    int age = todayCal.get(java.util.Calendar.YEAR) - birthCal.get(java.util.Calendar.YEAR);
+                    if (todayCal.get(java.util.Calendar.DAY_OF_YEAR) < birthCal.get(java.util.Calendar.DAY_OF_YEAR)) {
+                        age--;
+                    }
+
+                    if (age < 18) {
+                        request.setAttribute("errorMessage", "Staff must be at least 18 years old!");
+                        request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
+                        return;
+                    }
                 }
+
                 if (hiredDateStr != null && !hiredDateStr.trim().isEmpty()) {
                     hiredDate = dateFormat.parse(hiredDateStr);
+
+                    // Validate hired date
+                    java.util.Date today = new java.util.Date();
+                    java.util.Calendar oneYearFromNow = java.util.Calendar.getInstance();
+                    oneYearFromNow.add(java.util.Calendar.YEAR, 1);
+
+                    if (hiredDate.after(oneYearFromNow.getTime())) {
+                        request.setAttribute("errorMessage", "Hired date cannot be more than 1 year in the future!");
+                        request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
+                        return;
+                    }
+
+                    // Validate hired date relative to birth date
+                    if (birthDate != null) {
+                        java.util.Calendar minHiredCal = java.util.Calendar.getInstance();
+                        minHiredCal.setTime(birthDate);
+                        minHiredCal.add(java.util.Calendar.YEAR, 16); // Minimum 16 years old to be hired
+
+                        if (hiredDate.before(minHiredCal.getTime())) {
+                            request.setAttribute("errorMessage", "Staff must be at least 16 years old on the hired date!");
+                            request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
+                            return;
+                        }
+                    }
                 }
             } catch (ParseException e) {
-                request.setAttribute("errorMessage", "Định dạng ngày không hợp lệ!");
+                request.setAttribute("errorMessage", "Invalid date format!");
                 request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
                 return;
             }
@@ -105,7 +174,7 @@ public class CreateStaffServlet extends HttpServlet {
                 session.setAttribute("successcreate", "1");
                 response.sendRedirect("StaffList");
             } else {
-                request.setAttribute("errorMessage", "Có lỗi xảy ra khi tạo nhân viên!");
+                request.setAttribute("errorMessage", "An error occurred while creating the staff!");
                 request.getRequestDispatcher("/WEB-INF/View/admin/staffManagement/createStaff.jsp").forward(request, response);
             }
 
