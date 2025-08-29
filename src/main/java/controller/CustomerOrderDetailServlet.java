@@ -72,10 +72,10 @@ public class CustomerOrderDetailServlet extends HttpServlet {
         OrderDAO odao = new OrderDAO();
         OrderDetailDAO detailDAO = new OrderDetailDAO();
         Customer cus = (Customer) session.getAttribute("cus");
-//        if (cus == null) {
-//            response.sendRedirect("Login");
-//            return;
-//        }
+        if (cus == null) {
+            response.sendRedirect("Login");
+            return;
+        }
         Order order = odao.getOrderByID(orderID + "");
         List<OrderDetail> details = detailDAO.getOrderDetailsByOrderID(orderID);
         List<Order> orders = odao.getOrdersByCustomerID(cus.getCustomerID());
