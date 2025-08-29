@@ -419,7 +419,7 @@ public class ProductFeedbackDAO extends DBContext {
 
     // Đếm số feedback chưa đọc
     public int countUnreadFeedback() {
-            String sql = "SELECT COUNT(*) FROM ProductFeedbacks WHERE Reply is null";
+            String sql = "SELECT COUNT(*) FROM ProductFeedbacks WHERE Reply is null AND IsActive != 0";
         try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);

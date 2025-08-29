@@ -156,8 +156,11 @@ public class AdminAddProductServlet extends HttpServlet {
                 if (price.compareTo(BigDecimal.ZERO) < 0) {
                     session.setAttribute("errorPrice", "Price must be non-negative.");
                     error = true;
-                } else if (price.compareTo(new BigDecimal("1000000000")) > 0) {
+                } else if (price.compareTo(new BigDecimal("1000000000")) >= 0) {
                     session.setAttribute("errorPrice", "Price must be less than or equal to 1,000,000,000.");
+                    error = true;
+                }else if (price.compareTo(new BigDecimal("100000")) < 0){
+                    session.setAttribute("errorPrice", "Price must be bigger than or equal to 100,000.");
                     error = true;
                 }
 

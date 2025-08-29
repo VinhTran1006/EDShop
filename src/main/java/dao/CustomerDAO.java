@@ -132,7 +132,7 @@ public class CustomerDAO extends DBContext {
 
     // Đếm tổng số khách hàng
     public int countTotalCustomers() {
-        String sql = "SELECT COUNT(*) FROM Customers";
+        String sql = "SELECT COUNT(*) FROM Customers WHERE IsActive != 0";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {

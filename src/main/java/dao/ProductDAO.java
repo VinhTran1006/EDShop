@@ -216,6 +216,44 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
+    
+    
+     public List<Product> getLowStockProduct() {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT *"
+                + "FROM Products WHERE IsActive != 0 AND Quantity < 6"
+                + "ORDER BY Quantity";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int productId = rs.getInt("ProductID");
+                String productName = rs.getString("ProductName");
+                String description = rs.getString("Description");
+                BigDecimal price = rs.getBigDecimal("Price");
+                int supplierId = rs.getInt("SupplierID");
+                int categoryId = rs.getInt("CategoryID");
+                int brandId = rs.getInt("BrandID");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Date addedAt = rs.getDate("AddedAt");
+                boolean isActive = rs.getBoolean("isActive");
+                String imageUrl1 = rs.getString("ImageURL1");
+                String imageUrl2 = rs.getString("ImageURL2");
+                String imageUrl3 = rs.getString("ImageURL3");
+                String imageUrl4 = rs.getString("ImageURL4");
+                int quantity = rs.getInt("Quantity");
+
+                Product product = new Product(productId, productName, description, addedAt, price, supplierId, categoryId, brandId, warrantyPeriod, isActive, quantity, imageUrl1, imageUrl2, imageUrl3, imageUrl4);
+
+                list.add(product);
+            }
+            return list;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
 
     public List<Product> getProductIsBestSellerAdmin() {
         List<Product> list = new ArrayList<>();
@@ -782,7 +820,7 @@ public class ProductDAO extends DBContext {
     public int countLowStockDynamic(int threshold) {
         String sql = "SELECT COUNT(*) AS LowStockCount\n"
                 + "FROM Products\n"
-                + "WHERE Quantity <= ?";
+                + "WHERE Quantity <= ? AND IsActive != 0";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, threshold); // Ví dụ, threshold = 5
             try ( ResultSet rs = ps.executeQuery()) {
@@ -941,8 +979,11 @@ public class ProductDAO extends DBContext {
 
         ProductDetail p = new ProductDetail();
         ProductDAO dao = new ProductDAO();
-        p = dao.getProductDetailByProductAndAttribute(2, 2);
-        System.out.println(p.toString());
+        List<Product> list = new ArrayList<>();
+        list = dao.getLowStockProduct();
+        for (Product product : list) {
+            System.out.println(product.toString());
+        }
     }
 
 }
