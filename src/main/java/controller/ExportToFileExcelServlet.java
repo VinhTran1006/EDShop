@@ -8,6 +8,7 @@ import model.Product;
 import model.Suppliers;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import org.apache.poi.xssf.usermodel.*;
@@ -67,11 +68,17 @@ public class ExportToFileExcelServlet extends HttpServlet {
             allDetails.addAll(detailDAO.getDetailsByImportId(imp.getImportID()));
         }
 
+        // === Debug log ===
+        System.out.println("[ExportToFileExcelServlet] importStocks.size = " + importStocks.size());
+        System.out.println("[ExportToFileExcelServlet] allDetails.size = " + allDetails.size());
+
         // 4. Xuất Excel
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=ImportStockDetailReport.xlsx");
 
-        try ( XSSFWorkbook workbook = new XSSFWorkbook()) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook();
+             ServletOutputStream out = response.getOutputStream()) {
+
             XSSFSheet sheet = workbook.createSheet("Import Stock Details");
 
             // ===== Header style =====
@@ -110,7 +117,6 @@ public class ExportToFileExcelServlet extends HttpServlet {
             dateStyle.cloneStyleFrom(textStyle);
             dateStyle.setDataFormat(workbook.createDataFormat().getFormat("yyyy-MM-dd HH:mm"));
 
-            // 2 màu xen kẽ cho cụm
             IndexedColors[] groupColors = new IndexedColors[]{IndexedColors.WHITE, IndexedColors.GREY_25_PERCENT};
 
             // ===== Header =====
@@ -137,14 +143,12 @@ public class ExportToFileExcelServlet extends HttpServlet {
                 Product prod = detail.getProduct();
                 Suppliers sup = (imp != null) ? imp.getSupplier() : null;
 
-                // Nếu importID khác importID trước → đổi màu
                 if (detail.getImportID() != lastImportID) {
                     colorIndex++;
                     lastImportID = detail.getImportID();
                 }
                 IndexedColors currentColor = groupColors[colorIndex % groupColors.length];
 
-                // Tạo style dòng dựa vào màu cụm
                 CellStyle rowStyle = workbook.createCellStyle();
                 rowStyle.cloneStyleFrom(textStyle);
                 rowStyle.setFillForegroundColor(currentColor.getIndex());
@@ -165,21 +169,17 @@ public class ExportToFileExcelServlet extends HttpServlet {
                 rowDateStyle.setFillForegroundColor(currentColor.getIndex());
                 rowDateStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-                // Tạo row
                 row = sheet.createRow(rowNo++);
                 int cellNum = 0;
 
-                // No.
                 Cell c0 = row.createCell(cellNum++);
                 c0.setCellValue(stt++);
                 c0.setCellStyle(rowNumberStyle);
 
-                // Import ID
                 Cell c1 = row.createCell(cellNum++);
                 c1.setCellValue(detail.getImportID());
                 c1.setCellStyle(rowNumberStyle);
 
-                // Import Date
                 Cell c2 = row.createCell(cellNum++);
                 if (imp != null && imp.getImportDate() != null) {
                     c2.setCellValue(imp.getImportDate());
@@ -189,44 +189,35 @@ public class ExportToFileExcelServlet extends HttpServlet {
                     c2.setCellStyle(rowStyle);
                 }
 
-                // Supplier Name
                 Cell c3 = row.createCell(cellNum++);
                 c3.setCellValue(sup != null ? sup.getName() : "");
                 c3.setCellStyle(rowStyle);
 
-                // Product ID
                 Cell c4 = row.createCell(cellNum++);
                 c4.setCellValue(prod != null ? prod.getProductID() : 0);
                 c4.setCellStyle(rowNumberStyle);
 
-                // Product Name
                 Cell c5 = row.createCell(cellNum++);
                 c5.setCellValue(prod != null ? prod.getProductName() : "");
                 c5.setCellStyle(rowStyle);
 
-                // Quantity
                 Cell c6 = row.createCell(cellNum++);
                 c6.setCellValue(detail.getStock());
                 c6.setCellStyle(rowNumberStyle);
-                
-                // Quantity Left
+
                 Cell c7 = row.createCell(cellNum++);
                 c7.setCellValue(detail.getStockLeft());
                 c7.setCellStyle(rowNumberStyle);
-                // Unit Price
+
                 Cell c8 = row.createCell(cellNum++);
                 c8.setCellValue(detail.getUnitPrice().doubleValue());
                 c8.setCellStyle(rowCurrencyStyle);
 
-                // Total Price
                 BigDecimal total = detail.getUnitPrice().multiply(BigDecimal.valueOf(detail.getStock()));
                 Cell c9 = row.createCell(cellNum++);
                 c9.setCellValue(total.doubleValue());
                 c9.setCellStyle(rowCurrencyStyle);
 
-                
-
-                // Staff Name
                 Cell c10 = row.createCell(cellNum++);
                 c10.setCellValue(imp != null ? imp.getFullName() : "");
                 c10.setCellStyle(rowStyle);
@@ -238,9 +229,9 @@ public class ExportToFileExcelServlet extends HttpServlet {
                 sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000);
             }
 
-            workbook.write(response.getOutputStream());
+            workbook.write(out);
+            out.flush();
         }
-
     }
-
 }
+
