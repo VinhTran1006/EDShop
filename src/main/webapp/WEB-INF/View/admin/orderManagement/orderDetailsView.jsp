@@ -30,7 +30,7 @@
                                 <table class="info-table">
                                     <tr><th>Order ID:</th><td>${data.orderID}</td></tr>
                                     <tr><th>Order Date:</th><td>${fn:substring(data.orderDate, 0, 16)}</td></tr>
-                                     <tr><th>Update Date:</th><td>${fn:substring(data.updatedAt, 0, 16)}</td></tr>
+                                    <tr><th>Update Date:</th><td>${fn:substring(data.updatedAt, 0, 16)}</td></tr>
                                     <tr>
                                         <th>Status:</th>
                                         <td>
@@ -61,10 +61,14 @@
                                     <tr><th>Subtotal:</th>
                                         <td><fmt:formatNumber value="${subtotal}" type="number" groupingUsed="true"/>₫</td>
                                     </tr>
-                                    <tr><th>Discount:</th><td>${data.discount}%</td></tr>
-                                    <tr><th>Discount Amount:</th>
-                                        <td>- <fmt:formatNumber value="${subtotal * data.discount / 100}" type="number" groupingUsed="true"/>₫</td>
-                                    </tr>
+                                    <tr><th>Discount:</th> <td>
+                                            <fmt:formatNumber 
+                                                value="${(data.totalAmount - subtotal)}" 
+                                                type="number" 
+                                                    groupingUsed="true"/>₫ 
+                                            (<c:out value="${data.discount}"/>%)
+                                        </td></tr>
+
                                     <tr><th>Total Amount:</th><td><strong><fmt:formatNumber value="${data.totalAmount}" type="number" groupingUsed="true" />₫</strong></td></tr>
                                     <tr><th>Customer Name:</th><td>${data.customer.fullName}</td></tr>
                                     <tr><th>Phone:</th><td>${data.customer.phoneNumber}</td></tr>
@@ -90,15 +94,15 @@
                                         <div class="alert alert-danger">${errorMessage}</div>
                                     </c:if>
 
-                                    
-                                                <a href="${pageContext.request.contextPath}/ViewOrderListServletAdmin" class="btn btn-outline-primary">
-                                                <i class="fa-solid fa-arrow-left"></i> Back to List
-                                            </a>
-                                        
 
+                                    <a href="${pageContext.request.contextPath}/ViewOrderListServletAdmin" class="btn btn-outline-primary">
+                                        <i class="fa-solid fa-arrow-left"></i> Back to List
+                                    </a>
+
+
+                                </div>
                             </div>
                         </div>
-                    </div>
                 </main>
             </div>
         </div>
