@@ -124,6 +124,9 @@ public class VoucherServlet extends HttpServlet {
             if (minAmount < 0 || maxDiscount < 0) {
                 throw new IllegalArgumentException("Amounts cannot be negative.");
             }
+            if (minAmount > 100000000) {
+                throw new IllegalArgumentException("Minimum order amount cannot exceed 100,000,000.");
+            }
             if (usageLimit < 1) {
                 throw new IllegalArgumentException("Usage limit must be at least 1.");
             }

@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.util.List;
+
 /**
  *
  * @author Vinhntce181630
@@ -22,6 +24,8 @@ public class Order {
     private int addressID;
     private String updatedAt;
     private Customer customer;
+
+    private List<String> outOfStockProducts; // tên sản phẩm hết hàng
 
     public Order() {
     }
@@ -136,7 +140,16 @@ public class Order {
         this.customer = customer;
     }
 
+    public boolean isHasOutOfStock() {
+    return outOfStockProducts != null && !outOfStockProducts.isEmpty();
+}
 
-  
 
+    public List<String> getOutOfStockProducts() {
+        return outOfStockProducts;
+    }
+
+    public void setOutOfStockProducts(List<String> outOfStockProducts) {
+        this.outOfStockProducts = outOfStockProducts;
+    }
 }

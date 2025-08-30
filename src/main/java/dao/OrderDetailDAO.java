@@ -232,4 +232,25 @@ public class OrderDetailDAO extends DBContext {
             return false;
         }
     }
+
+    public List<String> getOutOfStockProductsByOrderId(int orderId) {
+        List<String> outOfStockProducts = new ArrayList<>();
+        String sql = "SELECT p.ProductName "
+                + "FROM OrderDetails od "
+                + "JOIN Products p ON od.ProductID = p.ProductID "
+                + "WHERE od.OrderID = ? "
+                + "AND p.Quantity < od.Quantity";
+        
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                outOfStockProducts.add(rs.getString("ProductName"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return outOfStockProducts;
+    }
+
 }

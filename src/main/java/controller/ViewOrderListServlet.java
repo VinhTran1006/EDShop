@@ -5,6 +5,7 @@
 package controller;
 
 import dao.OrderDAO;
+import dao.OrderDetailDAO;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -12,11 +13,11 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Order;
-
 
 /**
  *
@@ -60,23 +61,29 @@ public class ViewOrderListServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
- protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         OrderDAO oDAO = new OrderDAO();
+        OrderDetailDAO odDAO = new OrderDetailDAO();
         String searchQuery = request.getParameter("search");
-        
+
         List<Order> list;
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
             list = oDAO.searchOrders(searchQuery.trim());
         } else {
             list = oDAO.getOrderList();
         }
-        
-        request.setAttribute("orderList", list); 
+
+       for (Order o : list) {
+    List<String> outOfStock = odDAO.getOutOfStockProductsByOrderId(o.getOrderID());
+    o.setOutOfStockProducts(outOfStock); // chỉ cần set list thôi
+}
+
+
+        request.setAttribute("orderList", list);
         request.setAttribute("searchQuery", searchQuery);
         request.getRequestDispatcher("/WEB-INF/View/staff/orderManagement/orderList.jsp").forward(request, response);
     }
-
 
     /**
      * Handles the HTTP <code>POST</code> method.
