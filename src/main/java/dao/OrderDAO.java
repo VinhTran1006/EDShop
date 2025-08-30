@@ -93,11 +93,25 @@ public class OrderDAO extends DBContext {
         return o;
     }
 
-    public boolean updateStatus(int orderId, String newStatus) {
+    public boolean updateStatus(int orderId, String newStatus, int staffId) {
+        String query = "UPDATE Orders SET Status = ?, StaffID = ?, UpdatedAt = GETDATE() WHERE OrderID = ?";
+        try ( PreparedStatement pre = conn.prepareStatement(query)) {
+            pre.setString(1, newStatus); // set chuỗi
+             pre.setInt(2, staffId);
+            pre.setInt(3, orderId);
+            
+            return pre.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean updateStatusForCustomer(int orderId, String newStatus) {
         String query = "UPDATE Orders SET Status = ?, UpdatedAt = GETDATE() WHERE OrderID = ?";
         try ( PreparedStatement pre = conn.prepareStatement(query)) {
             pre.setString(1, newStatus); // set chuỗi
             pre.setInt(2, orderId);
+            
             return pre.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
