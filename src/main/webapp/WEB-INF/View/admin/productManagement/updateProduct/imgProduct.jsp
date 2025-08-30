@@ -10,10 +10,15 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         <title>JSP Page</title>
 
     </head>
     <body>
+        <c:if test="${not empty sessionScope.errorPicture}">
+            <span style="color:red">${sessionScope.errorPicture}</span>
+        </c:if>
+        <c:remove var="errorPicture" scope="session"/>
         <div style="padding: 10px 20px; max-height: 320px; overflow: hidden;">
             <label for="fileInputMain" style="cursor: pointer; display: block;">
                 <img id="previewImageMain" src="<%= product.getImageUrl1()%>"
@@ -26,7 +31,7 @@
                    style="display: none;" onchange="previewSelectedImage(event, 'previewImageMain')">
         </div>
 
-        
+
 
 
         <div class="d-flex flex-wrap gap-3 row" style="justify-content: center;">
@@ -69,6 +74,6 @@
                        style="display: none;" onchange="previewSelectedImage(event, 'previewImage3')">
             </div>
         </div>
-     
+
     </body>
 </html>

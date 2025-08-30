@@ -241,42 +241,62 @@ public class AdminUpdateProductServlet extends HttpServlet {
             Part part = request.getPart(key);
 
             if (part != null && part.getSize() > 0) {
-                futures.put(key, CompletableFuture.supplyAsync(() -> {
-                    try ( InputStream is = part.getInputStream();  ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-                        byte[] data = new byte[1024];
-                        int bytesRead;
-                        while ((bytesRead = is.read(data)) != -1) {
-                            buffer.write(data, 0, bytesRead);
+                String submittedFileName = part.getSubmittedFileName();
+                String contentType = part.getContentType();
+
+                boolean isPng = submittedFileName != null && submittedFileName.toLowerCase().endsWith(".png")
+                        && "image/png".equalsIgnoreCase(contentType);
+
+                boolean isJpg = submittedFileName != null
+                        && (submittedFileName.toLowerCase().endsWith(".jpg") || submittedFileName.toLowerCase().endsWith(".jpeg"))
+                        && "image/jpeg".equalsIgnoreCase(contentType);
+
+                if (isPng || isJpg) {
+                    futures.put(key, CompletableFuture.supplyAsync(() -> {
+                        try ( InputStream is = part.getInputStream();  ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+
+                            byte[] data = new byte[1024];
+                            int bytesRead;
+                            while ((bytesRead = is.read(data)) != -1) {
+                                buffer.write(data, 0, bytesRead);
+                            }
+                            byte[] fileBytes = buffer.toByteArray();
+
+                            Map uploadResult = cloudinary.uploader().upload(fileBytes,
+                                    ObjectUtils.asMap("resource_type", "image")); // ép type là image
+
+                            return (String) uploadResult.get("secure_url");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return null; // xử lý sau
                         }
-                        byte[] fileBytes = buffer.toByteArray();
-
-                        Map uploadResult = cloudinary.uploader().upload(fileBytes,
-                                ObjectUtils.asMap("resource_type", "auto"));
-
-                        return (String) uploadResult.get("secure_url");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return null; // để sau xử lý
-                    }
-                }));
+                    }));
+                } else {
+                    session.setAttribute("errorPicture", "Picture must be a valid .PNG or .JPG file.");
+                    error = true;
+                }
             }
         }
 
+// lấy kết quả upload
         for (String key : futures.keySet()) {
             try {
                 String url = futures.get(key).get();
                 if (url != null) {
-                    imageUrlMap.put(key, url); // update link mới
+                    imageUrlMap.put(key, url);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+// fallback ảnh mặc định
         imageUrlMap.replaceAll((key, oldUrl)
                 -> (oldUrl == null || oldUrl.isEmpty())
                 ? "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png"
-                : oldUrl);
-        
+                : oldUrl
+        );
+
         //        <====================================== Xử lý ảnh ===========================================>
         if (!error) {
             proDAO.updateProduct(productId, productName, discription, price, Suppliers, Category, Brand, warranty, quantity, imageUrlMap.get("fileMain"), imageUrlMap.get("file1"), imageUrlMap.get("file2"), imageUrlMap.get("file3"));
