@@ -132,8 +132,6 @@
             <jsp:include page="/WEB-INF/View/admin/sideBar.jsp"/>
             <div class="wrapper">
                 <main class="main-content">
-
-
                     <h1>Orders</h1>
 
                     <!-- Search Form -->
@@ -187,25 +185,45 @@
                                         </td>
                                         <td>
                                             <div class="d-flex flex-wrap gap-2">
-                                                <!-- Next button form -->
                                                 <c:choose>
                                                     <c:when test="${order.status eq 'Waiting'}">
-                                                        <form action="${pageContext.request.contextPath}/UpdateOrderStatusAdmin" method="POST" class="d-inline">
-                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
-                                                            <input type="hidden" name="update" value="Packing"/>
-                                                            <button type="submit" class="btn-status btn-next-packing">
-                                                                <i class="fa-solid fa-arrow-right"></i> Next (Packing)
-                                                            </button>
-                                                        </form>
+                                                        <c:choose>
+                                                            <c:when test="${order.hasOutOfStock}">
+                                                                <small class="text-danger w-100 mt-1">
+                                                                    Out of stock:
+                                                                    <c:forEach var="p" items="${order.outOfStockProducts}" varStatus="loop">
+                                                                        ${p}<c:if test="${!loop.last}">, </c:if>
+                                                                    </c:forEach>
+                                                                </small>
+                                                                <form action="${pageContext.request.contextPath}/UpdateOrderStatusAdmin" method="POST" class="d-inline cancel-form">
+                                                                    <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                                    <input type="hidden" name="update" value="Cancelled"/>
+                                                                    <button type="button" class="btn-status btn-cancel cancel-btn">
+                                                                        <i class="fa-solid fa-xmark"></i> Cancel
+                                                                    </button>
+                                                                </form>
 
-                                                        <!-- Cancel button form -->
-                                                        <form action="${pageContext.request.contextPath}/UpdateOrderStatusAdmin" method="POST" class="d-inline cancel-form">
-                                                            <input type="hidden" name="orderID" value="${order.orderID}" />
-                                                            <input type="hidden" name="update" value="Cancelled"/>
-                                                            <button type="button" class="btn-status btn-cancel cancel-btn">
-                                                                <i class="fa-solid fa-xmark"></i> Cancel
-                                                            </button>
-                                                        </form>
+
+                                                            </c:when>
+
+                                                            <c:otherwise>
+                                                                <form action="${pageContext.request.contextPath}/UpdateOrderStatusAdmin" method="POST" class="d-inline">
+                                                                    <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                                    <input type="hidden" name="update" value="Packing"/>
+                                                                    <button type="submit" class="btn-status btn-next-packing">
+                                                                        <i class="fa-solid fa-arrow-right"></i> Next (Packing)
+                                                                    </button>
+                                                                </form>
+
+                                                                <form action="${pageContext.request.contextPath}/UpdateOrderStatusAdmin" method="POST" class="d-inline cancel-form">
+                                                                    <input type="hidden" name="orderID" value="${order.orderID}" />
+                                                                    <input type="hidden" name="update" value="Cancelled"/>
+                                                                    <button type="button" class="btn-status btn-cancel cancel-btn">
+                                                                        <i class="fa-solid fa-xmark"></i> Cancel
+                                                                    </button>
+                                                                </form>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                     </c:when>
 
                                                     <c:when test="${order.status eq 'Packing'}">
@@ -217,7 +235,6 @@
                                                             </button>
                                                         </form>
 
-                                                        <!-- Cancel button form -->
                                                         <form action="${pageContext.request.contextPath}/UpdateOrderStatusAdmin" method="POST" class="d-inline cancel-form">
                                                             <input type="hidden" name="orderID" value="${order.orderID}" />
                                                             <input type="hidden" name="update" value="Cancelled"/>
@@ -238,12 +255,13 @@
                                                     </c:when>
                                                 </c:choose>
 
-                                                <!-- Nút Detail -->
                                                 <a href="ViewOrderDetailAdmin?orderID=${order.orderID}" class="btn-status btn-detail">
                                                     <i class="fa-solid fa-eye"></i> Detail
                                                 </a>
                                             </div>
                                         </td>
+
+
 
                                     </tr>
                                 </c:forEach>

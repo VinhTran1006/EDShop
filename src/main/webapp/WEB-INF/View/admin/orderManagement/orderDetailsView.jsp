@@ -88,7 +88,7 @@
                                 </div>
 
                                 <div class="management-section">
-                                    <h5 class="section-header"><i class="fa-solid fa-cogs"></i> Manage Order</h5>
+                                   
 
                                     <c:if test="${not empty errorMessage}">
                                         <div class="alert alert-danger">${errorMessage}</div>

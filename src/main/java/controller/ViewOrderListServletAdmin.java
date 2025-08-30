@@ -5,6 +5,7 @@
 package controller;
 
 import dao.OrderDAO;
+import dao.OrderDetailDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -58,16 +59,21 @@ public class ViewOrderListServletAdmin extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       OrderDAO oDAO = new OrderDAO();
+        OrderDAO oDAO = new OrderDAO();
+        OrderDetailDAO odDAO = new OrderDetailDAO();
         String searchQuery = request.getParameter("search");
-        
+
         List<Order> list;
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
             list = oDAO.searchOrders(searchQuery.trim());
         } else {
             list = oDAO.getOrderList();
         }
-        
+
+       for (Order o : list) {
+    List<String> outOfStock = odDAO.getOutOfStockProductsByOrderId(o.getOrderID());
+    o.setOutOfStockProducts(outOfStock); // chỉ cần set list thôi
+}
         request.setAttribute("orderList", list); 
         request.setAttribute("searchQuery", searchQuery);
         request.getRequestDispatcher("/WEB-INF/View/admin/orderManagement/orderList.jsp").forward(request, response);
