@@ -91,12 +91,12 @@ public class CancelOrderServlet extends HttpServlet {
 
         if ("Waiting".equals(currentStatus)) {
             // Waiting → Cancelled (không hoàn stock)
-            dao.updateStatus(orderID, "Cancelled");
+            dao.updateStatusForCustomer(orderID, "Cancelled");
             response.sendRedirect("ViewOrderOfCustomer?success=cancel");
 
         } else if ("Packing".equals(currentStatus)) {
             // Packing → Cancelled (có hoàn stock)
-            dao.updateStatus(orderID, "Cancelled");
+            dao.updateStatusForCustomer(orderID, "Cancelled");
             System.out.println("[CancelOrder] OrderID=" + orderID + " | Status: Packing → Cancelled");
 
             OrderDetailDAO itemDAO = new OrderDetailDAO();

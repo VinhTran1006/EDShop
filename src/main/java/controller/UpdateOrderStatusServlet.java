@@ -17,6 +17,7 @@ import jakarta.servlet.http.*;
 import model.Order;
 import model.OrderDetail;
 import java.util.stream.Collectors;
+import model.Staff;
 
 /**
  *
@@ -26,8 +27,7 @@ import java.util.stream.Collectors;
 public class UpdateOrderStatusServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -92,6 +92,13 @@ public class UpdateOrderStatusServlet extends HttpServlet {
             throws ServletException, IOException {
         String status = request.getParameter("update");  // trạng thái muốn chuyển tới
         String orderID = request.getParameter("orderID");
+        HttpSession session = request.getSession();
+        Staff staff = (Staff) session.getAttribute("staff");
+        if (staff == null) {
+            response.sendRedirect("LoginStaff");
+            return;
+        }
+        int staffId = staff.getStaffID(); // giả sử model Staff có getStaffID()
 
         try {
             OrderDAO oDAO = new OrderDAO();
@@ -110,11 +117,12 @@ public class UpdateOrderStatusServlet extends HttpServlet {
                 if ("Cancelled".equalsIgnoreCase(status)) {
                     if ("Waiting".equals(currentStatus)) {
                         // Waiting → Cancelled (không hoàn stock)
-                        oDAO.updateStatus(orderIdInt, "Cancelled");
+
+                        oDAO.updateStatus(orderIdInt, "Cancelled", staffId);
 
                     } else if ("Packing".equals(currentStatus)) {
                         // Packing → Cancelled (hoàn stock)
-                        oDAO.updateStatus(orderIdInt, "Cancelled");
+                        oDAO.updateStatus(orderIdInt, "Cancelled", staffId);
 
                         List<OrderDetail> list = odDAO.getOrderDetail(orderID);
                         ProductDAO pDAO = new ProductDAO();
@@ -144,7 +152,7 @@ public class UpdateOrderStatusServlet extends HttpServlet {
                 // ======================
                 if ("Packing".equalsIgnoreCase(status) && "Waiting".equals(currentStatus)) {
                     // Waiting → Packing (trừ stock FIFO)
-                    oDAO.updateStatus(orderIdInt, "Packing");
+                    oDAO.updateStatus(orderIdInt, "Packing", staffId);
 
                     List<OrderDetail> list = odDAO.getOrderDetail(orderID);
                     ImportStockDetailDAO sDetailDAO = new ImportStockDetailDAO();
@@ -161,11 +169,11 @@ public class UpdateOrderStatusServlet extends HttpServlet {
 
                 } else if ("Waiting for Delivery".equalsIgnoreCase(status) && "Packing".equals(currentStatus)) {
                     // Packing → Waiting for Delivery
-                    oDAO.updateStatus(orderIdInt, "Waiting for Delivery");
+                    oDAO.updateStatus(orderIdInt, "Waiting for Delivery", staffId);
 
                 } else if ("Delivered".equalsIgnoreCase(status) && "Waiting for Delivery".equals(currentStatus)) {
                     // Waiting for Delivery → Delivered
-                    oDAO.updateStatus(orderIdInt, "Delivered");
+                    oDAO.updateStatus(orderIdInt, "Delivered", staffId);
 
                 } else {
                     response.sendRedirect("ViewOrderList?error=invalid-transition");

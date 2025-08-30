@@ -67,7 +67,7 @@
         </style>
     </head>
     <body>
-        <h1>TShop is committed</h1>
+        <h1>EDShop is committed</h1>
 
         <%
             if (product != null) {
