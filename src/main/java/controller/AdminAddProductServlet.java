@@ -128,6 +128,7 @@ public class AdminAddProductServlet extends HttpServlet {
         session.removeAttribute("errorPrice");
         session.removeAttribute("errorWarranty");
         session.removeAttribute("existedProduct");
+        session.removeAttribute("errorPicture");
         String productName = request.getParameter("productName");
         if (productName == null || productName.trim().isEmpty()) {
             session.setAttribute("errorProductName", "Product name cannot be empty.");
@@ -159,7 +160,7 @@ public class AdminAddProductServlet extends HttpServlet {
                 } else if (price.compareTo(new BigDecimal("1000000000")) >= 0) {
                     session.setAttribute("errorPrice", "Price must be less than or equal to 1,000,000,000.");
                     error = true;
-                }else if (price.compareTo(new BigDecimal("100000")) < 0){
+                } else if (price.compareTo(new BigDecimal("100000")) < 0) {
                     session.setAttribute("errorPrice", "Price must be bigger than or equal to 100,000.");
                     error = true;
                 }
@@ -219,28 +220,43 @@ public class AdminAddProductServlet extends HttpServlet {
             Part part = request.getPart(key);
 
             if (part != null && part.getSize() > 0) {
-                futures.put(key, CompletableFuture.supplyAsync(() -> {
-                    try ( InputStream is = part.getInputStream();  ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+                String submittedFileName = part.getSubmittedFileName();
+                String contentType = part.getContentType();
 
-                        byte[] data = new byte[1024];
-                        int bytesRead;
-                        while ((bytesRead = is.read(data)) != -1) {
-                            buffer.write(data, 0, bytesRead);
+                boolean isPng = submittedFileName != null && submittedFileName.toLowerCase().endsWith(".png")
+                        && "image/png".equalsIgnoreCase(contentType);
+
+                boolean isJpg = submittedFileName != null
+                        && (submittedFileName.toLowerCase().endsWith(".jpg") || submittedFileName.toLowerCase().endsWith(".jpeg"))
+                        && "image/jpeg".equalsIgnoreCase(contentType);
+
+                if (isPng || isJpg) {
+                    futures.put(key, CompletableFuture.supplyAsync(() -> {
+                        try ( InputStream is = part.getInputStream();  ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+
+                            byte[] data = new byte[1024];
+                            int bytesRead;
+                            while ((bytesRead = is.read(data)) != -1) {
+                                buffer.write(data, 0, bytesRead);
+                            }
+                            byte[] fileBytes = buffer.toByteArray();
+
+                            Map uploadResult = cloudinary.uploader().upload(fileBytes,
+                                    ObjectUtils.asMap("resource_type", "image"));
+
+                            return (String) uploadResult.get("secure_url");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png";
                         }
-                        byte[] fileBytes = buffer.toByteArray();
-
-                        Map uploadResult = cloudinary.uploader().upload(fileBytes,
-                                ObjectUtils.asMap("resource_type", "auto"));
-
-                        return (String) uploadResult.get("secure_url");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png";
-                    }
-                }));
+                    }));
+                } else {
+                    session.setAttribute("errorPicture", "Picture must be a valid .PNG or .JPG file.");
+                    error = true;
+                }
             } else {
-                // nếu ko có file thì set mặc định ngay
-                imageUrlMap.put(key, "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
+                imageUrlMap.put(key,
+                        "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png");
             }
         }
 
