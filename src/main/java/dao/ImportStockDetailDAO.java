@@ -11,6 +11,7 @@ import model.Product;
 import utils.DBContext;
 
 public class ImportStockDetailDAO extends DBContext {
+    
 
     // Insert nhiều chi tiết (batch)
     public int createImportStockDetails(ArrayList<ImportStockDetail> detailList) {
@@ -205,32 +206,29 @@ public class ImportStockDetailDAO extends DBContext {
     }
 
     public List<int[]> deductStockFIFO(int productID, int quantityToDeduct) throws SQLException {
-
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<int[]> deductedList = new ArrayList<>(); // lưu [detailID, deductedQuantity]
+        List<int[]> deductedList = new ArrayList<>();
 
         try {
-            conn.setAutoCommit(false); // bắt đầu transaction
+            // KHÔNG setAutoCommit(false) ở đây nữa, transaction để Service/Controller quản lý
 
-            // 1. Kiểm tra tổng quantity trong bảng Products
+            // 1. Kiểm tra tổng quantity
             String checkQtySql = "SELECT Quantity FROM Products WHERE ProductID = ?";
             ps = conn.prepareStatement(checkQtySql);
             ps.setInt(1, productID);
             rs = ps.executeQuery();
             if (!rs.next()) {
-                conn.rollback();
-                return null; // product không tồn tại
+                return null;
             }
             int currentQty = rs.getInt("Quantity");
             if (currentQty < quantityToDeduct) {
-                conn.rollback();
-                return null; // không đủ hàng
+                return null;
             }
             rs.close();
             ps.close();
 
-            // 2. Lấy danh sách ImportStockDetails theo FIFO
+            // 2. Lấy danh sách batch theo FIFO
             String fifoSql = "SELECT d.ImportStockDetailsID, d.StockLeft "
                     + "FROM ImportStockDetails d "
                     + "JOIN ImportStocks i ON d.ImportID = i.ImportID "
@@ -242,62 +240,47 @@ public class ImportStockDetailDAO extends DBContext {
 
             List<int[]> fifoList = new ArrayList<>();
             while (rs.next()) {
-                fifoList.add(new int[]{
-                    rs.getInt("ImportStockDetailsID"),
-                    rs.getInt("StockLeft")
-                });
+                fifoList.add(new int[]{rs.getInt(1), rs.getInt(2)});
             }
             rs.close();
             ps.close();
 
             int remaining = quantityToDeduct;
 
-            // 3. Duyệt từng lô và update StockLeft
+            // 3. Update từng batch
+            String updateDetailSql = "UPDATE ImportStockDetails SET StockLeft = StockLeft - ? WHERE ImportStockDetailsID = ?";
+            ps = conn.prepareStatement(updateDetailSql);
             for (int[] detail : fifoList) {
                 if (remaining <= 0) {
                     break;
                 }
-
                 int detailID = detail[0];
                 int stockLeft = detail[1];
                 int deduct = Math.min(stockLeft, remaining);
 
-                String updateDetailSql = "UPDATE ImportStockDetails "
-                        + "SET StockLeft = StockLeft - ? "
-                        + "WHERE ImportStockDetailsID = ?";
-                PreparedStatement psUpdate = conn.prepareStatement(updateDetailSql);
-                psUpdate.setInt(1, deduct);
-                psUpdate.setInt(2, detailID);
-                psUpdate.executeUpdate();
-                psUpdate.close();
+                ps.setInt(1, deduct);
+                ps.setInt(2, detailID);
+                ps.executeUpdate();
 
-                // lưu cặp [ID lô, số lượng trừ]
                 deductedList.add(new int[]{detailID, deduct});
                 remaining -= deduct;
             }
+            ps.close();
 
             if (remaining > 0) {
-                conn.rollback();
-                return null; // không đủ stock
+                return null;
             }
 
-            // 4. Update bảng Products
+            // 4. Update Products
             String updateProductSql = "UPDATE Products SET Quantity = Quantity - ? WHERE ProductID = ?";
-            PreparedStatement psUpdate = conn.prepareStatement(updateProductSql);
-            psUpdate.setInt(1, quantityToDeduct);
-            psUpdate.setInt(2, productID);
-            psUpdate.executeUpdate();
-            psUpdate.close();
+            ps = conn.prepareStatement(updateProductSql);
+            ps.setInt(1, quantityToDeduct);
+            ps.setInt(2, productID);
+            ps.executeUpdate();
+            ps.close();
 
-            conn.commit();
-            return deductedList; // trả về danh sách chi tiết lô đã trừ
+            return deductedList;
 
-        } catch (Exception e) {
-            if (conn != null) {
-                conn.rollback();
-            }
-            e.printStackTrace();
-            return null;
         } finally {
             if (rs != null) {
                 rs.close();
@@ -305,10 +288,7 @@ public class ImportStockDetailDAO extends DBContext {
             if (ps != null) {
                 ps.close();
             }
-            if (conn != null) {
-                conn.setAutoCommit(true);
-                conn.close();
-            }
+            // ❌ Không đóng conn ở đây
         }
     }
 
@@ -364,30 +344,31 @@ public class ImportStockDetailDAO extends DBContext {
     }
 
     // Chỉ dùng trong DAO, private hoặc public static
-private List<int[]> parseBatchString(String batchStr) {
-    List<int[]> list = new ArrayList<>();
-    if (batchStr == null || batchStr.trim().isEmpty()) return list;
+    private List<int[]> parseBatchString(String batchStr) {
+        List<int[]> list = new ArrayList<>();
+        if (batchStr == null || batchStr.trim().isEmpty()) {
+            return list;
+        }
 
-    batchStr = batchStr.trim();
-    if (batchStr.startsWith("[") && batchStr.endsWith("]")) {
-        batchStr = batchStr.substring(1, batchStr.length() - 1);
-    }
+        batchStr = batchStr.trim();
+        if (batchStr.startsWith("[") && batchStr.endsWith("]")) {
+            batchStr = batchStr.substring(1, batchStr.length() - 1);
+        }
 
-    String[] pairs = batchStr.split(",");
-    for (String p : pairs) {
-        String[] parts = p.trim().split(":");
-        if (parts.length == 2) {
-            try {
-                int id = Integer.parseInt(parts[0].trim());
-                int qty = Integer.parseInt(parts[1].trim());
-                list.add(new int[]{id, qty});
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid batch format: " + p);
+        String[] pairs = batchStr.split(",");
+        for (String p : pairs) {
+            String[] parts = p.trim().split(":");
+            if (parts.length == 2) {
+                try {
+                    int id = Integer.parseInt(parts[0].trim());
+                    int qty = Integer.parseInt(parts[1].trim());
+                    list.add(new int[]{id, qty});
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid batch format: " + p);
+                }
             }
         }
+        return list;
     }
-    return list;
-}
-
 
 }
